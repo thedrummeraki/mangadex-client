@@ -41,10 +41,19 @@ const cacheResponseBody = (req, response) => {
     log.warn("Skipping caching...");
     return;
   }
+
+  let parsedResponse = null;
+
+  try {
+    parsedResponse = JSON.parse(response);
+  } catch (e) {
+    log.error("Could not parse the response.", e);
+    return null;
+  }
   const cacheForHours = parseInt(req.header("X-Cache-For-Hour")) || 1;
   const responseToCache = {
     until: hoursFromNow(cacheForHours),
-    response,
+    response: parsedResponse,
   };
   const stringResponse = JSON.stringify(responseToCache);
   redisClient.set(cacheKey(req), stringResponse, (err) => {
