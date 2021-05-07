@@ -5,7 +5,7 @@ const useThumbnailStyles = makeStyles((theme) => ({
   root: {
     width: 185,
     height: 265,
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(8),
 
     // [theme.breakpoints.up("xl")]: {
     //   width: 250,
@@ -15,7 +15,6 @@ const useThumbnailStyles = makeStyles((theme) => ({
   holder: {
     position: "relative",
     overflow: "hidden",
-    padding: "0 0 56.5%",
     height: 265,
 
     // [theme.breakpoints.up("xl")]: {

@@ -1,5 +1,6 @@
 import { makeStyles, Paper, Typography } from "@material-ui/core";
 import { Page } from "components";
+import { preferredTitle } from "helpers/mangadex";
 import { Manga } from "types";
 import { ChaptersList } from "./ChaptersList";
 
@@ -32,7 +33,7 @@ export function ViewManga({ manga }: Props) {
   return (
     <Page
       backUrl="/"
-      title={title.en}
+      title={preferredTitle(title)}
       badges={[lastChapterBadge, statusBadge]}
       tags={pageTags}
     >
