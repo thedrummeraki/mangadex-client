@@ -1,5 +1,5 @@
 import { Thumbnail } from "components/Thumbnail/Thumbnail";
-import { useAtHome } from "sections/ViewManga/useAtHome";
+import { useAtHomeBaseUrl } from "sections/ViewManga/useAtHome";
 import { Chapter } from "types/chapter";
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function ChapterThumbnail({ chapter }: Props) {
-  const serverUrl = useAtHome(chapter);
+  const serverUrl = useAtHomeBaseUrl(chapter);
 
   if (!serverUrl) {
     return null;
