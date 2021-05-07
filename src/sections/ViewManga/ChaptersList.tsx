@@ -48,11 +48,11 @@ export function ChaptersList({ manga }: Props) {
         {chaptersList.results.map((chapterInfo, index) => (
           <Grid item>
             <Thumbnail
-              clickable={false}
               title={`${index + 1}) ${
                 chapterInfo.data.attributes.title || "No title"
               }`}
               img="https://picsum.photos/185/265"
+              url={`/manga/read/${chapterInfo.data.id}`}
             />
           </Grid>
         ))}

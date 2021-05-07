@@ -11,10 +11,14 @@ const AtHomeQuery = gql`
   }
 `;
 
-export function useAtHome(chapter: Chapter): string | null {
-  const { data, loading, error } = useQuery(AtHomeQuery, {
+export function useAtHomeBaseUrl(chapter: Chapter) {
+  const result = useQuery(AtHomeQuery, {
     variables: { chapterId: chapter.id },
   });
 
-  return (!loading && !error && data && data.atHome.baseUrl) || null;
+  const { data, loading, error } = result;
+  const atHomeBaseUrl =
+    (!loading && !error && data && data.atHome.baseUrl) || null;
+
+  return { ...result, atHomeBaseUrl };
 }
