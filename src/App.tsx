@@ -1,13 +1,19 @@
-import { APIProvider, AppProvider } from "config/providers";
+import {
+  APIProvider,
+  RootProvider,
+  WithLayoutProvider,
+} from "config/providers";
 import { AppRouter } from "routes";
 
 function App() {
   return (
-    <AppProvider>
+    <RootProvider>
       <APIProvider>
-        <AppRouter />
+        <WithLayoutProvider>
+          <AppRouter />
+        </WithLayoutProvider>
       </APIProvider>
-    </AppProvider>
+    </RootProvider>
   );
 }
 

@@ -55,7 +55,7 @@ export default function MangaCard({ manga }: { manga: Manga }) {
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            {manga.attributes.title.en}
+            {manga.attributes.title.en[0]}
           </Avatar>
         }
         action={

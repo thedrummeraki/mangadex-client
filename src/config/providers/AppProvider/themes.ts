@@ -1,17 +1,4 @@
 import { createMuiTheme } from "@material-ui/core";
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
-
-declare module "@material-ui/core/styles/createMuiTheme" {
-  interface CustomOptions {
-    [key: string]: CSSProperties;
-  }
-  interface Theme {
-    custom: CustomOptions;
-  }
-  interface ThemeOptions {
-    custom?: CustomOptions;
-  }
-}
 
 const globalThemeParams = {
   spacing: 8,

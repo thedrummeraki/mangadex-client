@@ -1,6 +1,7 @@
 import { gql, useQuery } from "@apollo/client";
-import { Container, Grid, Typography } from "@material-ui/core";
-import MangaCard from "components/MangaCard";
+import { Button, Grid } from "@material-ui/core";
+import { Page } from "components";
+import { MangaThumbnail } from "components/Thumbnails";
 import { Manga, PagedResultsList } from "types";
 
 const query = gql`
@@ -21,37 +22,32 @@ export function HomePage() {
     },
   });
 
-  if (loading) {
-    return <p>Loading</p>;
-  }
-
   if (error) {
-    return <p>erorr</p>;
+    return <p>error</p>;
   }
 
-  if (!data) {
+  if (loading || !data) {
     return null;
   }
 
   const mangaList = data.manga as PagedResultsList<Manga>;
 
   return (
-    <Container>
+    <Page
+      title="Latest manga"
+      primaryAction={
+        <Button size="small" color="secondary" variant="contained">
+          Upload
+        </Button>
+      }
+    >
       <Grid container spacing={2}>
         {mangaList.results.map((mangaResult) => (
-          <Grid
-            key={mangaResult.data.id}
-            item
-            xs={12}
-            sm={6}
-            md={4}
-            lg={3}
-            xl={2}
-          >
-            <MangaCard manga={mangaResult.data} />
+          <Grid key={mangaResult.data.id} item xs={6} sm={4} md={3} lg={2}>
+            <MangaThumbnail manga={mangaResult.data} />
           </Grid>
         ))}
       </Grid>
-    </Container>
+    </Page>
   );
 }

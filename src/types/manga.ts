@@ -16,7 +16,7 @@ export interface MangaAttributes {
   status?: Maybe<string>;
   year: number;
   contentRating?: Maybe<string>;
-  tags: Array<any>;
+  tags: Array<MangaTag>;
   version: number;
   createdAt: string;
   updatedAt: string;
@@ -31,3 +31,14 @@ export type Description = {
 };
 
 export type MangaLink = string | null;
+
+export interface MangaTag {
+  id: string;
+  type: "tag";
+  attributes: MangaTagAttributes;
+}
+
+export interface MangaTagAttributes {
+  name: Title;
+  version: number;
+}
