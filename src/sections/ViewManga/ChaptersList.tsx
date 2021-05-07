@@ -12,6 +12,11 @@ interface Props {
 export function ChaptersList({ manga }: Props) {
   const { data, loading, error } = useQuery(GetChaptersForManga, {
     variables: { mangaId: manga.id },
+    context: {
+      headers: {
+        "X-Allow-Cache": "true",
+      },
+    },
   });
 
   if (error) {

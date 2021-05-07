@@ -16,6 +16,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { Manga } from "types";
+import { mangaTitle } from "helpers/mangadex";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,7 +56,7 @@ export default function MangaCard({ manga }: { manga: Manga }) {
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            {manga.attributes.title.en[0]}
+            {mangaTitle(manga)[0]}
           </Avatar>
         }
         action={
@@ -63,7 +64,7 @@ export default function MangaCard({ manga }: { manga: Manga }) {
             <MoreVertIcon />
           </IconButton>
         }
-        title={manga.attributes.title.en}
+        title={mangaTitle(manga)}
         subheader={manga.attributes.createdAt}
       />
       <CardMedia

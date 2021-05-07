@@ -10,6 +10,11 @@ export default function ViewMangaContainer() {
   const { id } = useParams<{ id: string }>();
   const { data, loading, error } = useQuery(ViewMangaQuery, {
     variables: { id },
+    context: {
+      headers: {
+        "X-Allow-Cache": "true",
+      },
+    },
   });
 
   const response = data?.manga as GenericResponse<Manga>;
