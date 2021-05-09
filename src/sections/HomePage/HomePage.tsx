@@ -6,7 +6,8 @@ import { Manga, PagedResultsList } from "types";
 
 const query = gql`
   query GetMangaList($limit: Integer!) {
-    manga(limit: $limit) @rest(type: "Manga", path: "/manga?{args}") {
+    manga(limit: $limit)
+      @rest(type: "Manga", path: "/manga?{args}&contentRating[]=safe") {
       results
     }
   }

@@ -1,6 +1,7 @@
 import { useTheme } from "@material-ui/core";
 import { BreakpointValues } from "@material-ui/core/styles/createBreakpoints";
 import { useEffect, useState } from "react";
+import { DateTime } from "luxon";
 
 export const noop = () => {};
 
@@ -216,3 +217,46 @@ export function useCurrentBreakpoint() {
 
   return currentBreakpoint as keyof BreakpointValues;
 }
+
+export const timeAgo = (
+  date: string | null | undefined,
+  options?: { showDate?: boolean; capitalize?: boolean }
+) => {
+  if (!date) {
+    return null;
+  }
+
+  const units = [
+    "year",
+    "month",
+    "week",
+    "day",
+    "hour",
+    "minute",
+    "second",
+  ] as Intl.RelativeTimeFormatUnit[];
+
+  let dateTime = DateTime.fromISO(date);
+  const diff = dateTime.diffNow().shiftTo(...units);
+  const unit = units.find((unit) => diff.get(unit) !== 0) || "second";
+
+  const relativeFormatter = new Intl.RelativeTimeFormat("en", {
+    numeric: "auto",
+  });
+  let relativeTimeInWords = relativeFormatter.format(
+    Math.trunc(diff.as(unit)),
+    unit
+  );
+
+  if (options?.capitalize) {
+    relativeTimeInWords = capitalize(relativeTimeInWords);
+  }
+
+  if (options?.showDate) {
+    return `${relativeTimeInWords} (${dateTime.toLocaleString(
+      DateTime.DATE_FULL
+    )})`;
+  }
+
+  return relativeTimeInWords;
+};

@@ -1,4 +1,6 @@
 import clsx from "clsx";
+import { useRef } from "react";
+import { ThumbnailFeatures } from "./ThumbnailFeatures";
 import { ThumbnailImage } from "./ThumbnailImage";
 import { ThumbnailWrapper } from "./ThumbnailWrapper";
 import { ThumbnailProps } from "./types";
@@ -10,13 +12,21 @@ export function Thumbnail({
   title,
   clickable,
   url,
+  features,
   onClick,
 }: ThumbnailProps) {
   const classes = useThumbnailStyles();
   const hasTitle = Boolean(title);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   if (raw) {
-    return <ThumbnailImage img={img} alt={title || "No image"} />;
+    return (
+      <ThumbnailImage
+        overlayRef={overlayRef}
+        img={img}
+        alt={title || "No image"}
+      />
+    );
   }
 
   return (
@@ -28,10 +38,14 @@ export function Thumbnail({
     >
       <ThumbnailWrapper url={url} onClick={onClick}>
         <div style={{ position: "relative" }}>
-          <div className={classes.holder} />
+          <div className={classes.holder}>
+            <div ref={overlayRef} className={classes.overlay} />
+          </div>
           <div className={clsx(classes.thumbnailWrapper, classes.container)}>
+            <ThumbnailFeatures features={features} />
             <ThumbnailImage
               clickable={clickable}
+              overlayRef={overlayRef}
               img={img}
               alt={title || "No image"}
             />

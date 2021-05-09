@@ -2,6 +2,7 @@ import { Chapter } from "types/chapter";
 import { useAtHomeBaseUrl } from "sections/ViewManga/useAtHome";
 import { Page, Thumbnail } from "components";
 import { Grid } from "@material-ui/core";
+import { chapterTitle } from "helpers";
 
 interface Props {
   chapter: Chapter;
@@ -23,7 +24,7 @@ export function ReadChapter({ chapter, mangaId }: Props) {
   return (
     <Page
       backUrl={`/manga/${mangaId}`}
-      title={`You are reading: "${chapter.attributes.title}"`}
+      title={`You are reading: "${chapterTitle(chapter)}"`}
       badges={[
         chapter.attributes.volume !== null
           ? `Volume ${chapter.attributes.volume}`
@@ -34,9 +35,9 @@ export function ReadChapter({ chapter, mangaId }: Props) {
         {pageURLs.map((pageUrl, index) => (
           <Grid item>
             <Thumbnail
+              features={[`Page ${index + 1}`]}
               clickable={false}
               img={pageUrl}
-              title={`Page ${index + 1}`}
             />
           </Grid>
         ))}

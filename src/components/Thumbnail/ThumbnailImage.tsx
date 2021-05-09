@@ -6,15 +6,15 @@ import useThumbnailStyles from "./useThumbnailStyles";
 interface Props {
   img: string;
   alt: string;
+  overlayRef: React.RefObject<HTMLDivElement>;
   clickable?: boolean | null;
 }
 
-export function ThumbnailImage({ img, alt, clickable }: Props) {
+export function ThumbnailImage({ img, alt, clickable, overlayRef }: Props) {
   const classes = useThumbnailStyles();
   const { loaded, error } = useImageLoaded(img);
 
   const imageRef = useRef<HTMLImageElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
 
   const onImageLoad = useCallback(() => {
     if (imageRef.current) {

@@ -1,8 +1,10 @@
 import { useQuery } from "@apollo/client";
 import { CircularProgress, Grid } from "@material-ui/core";
 import { Thumbnail, TitledSection } from "components";
+import { chapterTitle } from "helpers";
 import { PagedResultsList, Manga } from "types";
 import { Chapter } from "types/chapter";
+import { timeAgo } from "utils";
 import GetChaptersForManga from "./queries/GetChaptersForManga";
 
 interface Props {
@@ -48,9 +50,8 @@ export function ChaptersList({ manga }: Props) {
         {chaptersList.results.map((chapterInfo, index) => (
           <Grid item>
             <Thumbnail
-              title={`${index + 1}) ${
-                chapterInfo.data.attributes.title || "No title"
-              }`}
+              features={[timeAgo(chapterInfo.data.attributes.publishAt)]}
+              title={`${index + 1}) ${chapterTitle(chapterInfo.data)}`}
               img="https://picsum.photos/185/265"
               url={`/manga/read/${chapterInfo.data.id}`}
             />

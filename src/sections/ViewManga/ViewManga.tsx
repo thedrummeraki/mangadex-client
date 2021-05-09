@@ -34,7 +34,11 @@ export function ViewManga({ manga }: Props) {
     <Page
       backUrl="/"
       title={preferredTitle(title)}
-      badges={[lastChapterBadge, statusBadge]}
+      badges={[
+        lastChapterBadge,
+        statusBadge,
+        manga.attributes.contentRating || null,
+      ]}
       tags={pageTags}
     >
       {description.en && (
