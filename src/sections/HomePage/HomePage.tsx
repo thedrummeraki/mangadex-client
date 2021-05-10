@@ -3,24 +3,34 @@ import { Button, Grid } from "@material-ui/core";
 import { Page } from "components";
 import { MangaThumbnail } from "components/Thumbnails";
 import { Manga, PagedResultsList } from "types";
+import { useScrollListeners } from "utils";
 
 const query = gql`
-  query GetMangaList($limit: Integer!) {
-    manga(limit: $limit)
-      @rest(type: "Manga", path: "/manga?{args}&contentRating[]=safe") {
+  query GetMangaList($limit: Integer!, $offset: Integer!) {
+    manga(limit: $limit, offset: $Integer)
+      @rest(type: "MangaResults", path: "/manga?{args}") {
       results
+      limit
+      offset
+      total
     }
   }
 `;
 
 export function HomePage() {
   const { data, loading, error } = useQuery(query, {
-    variables: { limit: 50 },
+    variables: { limit: 18, offset: 0 },
     context: {
       headers: {
         "X-Allow-Cache": "true",
       },
     },
+  });
+
+  const mangaList = data?.manga as PagedResultsList<Manga>;
+
+  useScrollListeners(null, () => {
+    console.log("fetching more...");
   });
 
   if (error) {
@@ -30,8 +40,6 @@ export function HomePage() {
   if (loading || !data) {
     return null;
   }
-
-  const mangaList = data.manga as PagedResultsList<Manga>;
 
   return (
     <Page

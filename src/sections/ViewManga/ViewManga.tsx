@@ -1,6 +1,15 @@
-import { makeStyles, Paper, Typography } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  makeStyles,
+  Paper,
+  Typography,
+} from "@material-ui/core";
 import { Page } from "components";
+import { useLocalCurrentlyReading } from "helpers";
 import { preferredTitle } from "helpers/mangadex";
+import { useState } from "react";
+import { useHistory } from "react-router";
 import { Manga } from "types";
 import { ChaptersList } from "./ChaptersList";
 
@@ -15,7 +24,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function ViewManga({ manga }: Props) {
+  const history = useHistory();
   const classes = useStyles();
+  const [firstChapterId, setFirstChapterId] = useState<string | null>(null);
   const {
     attributes: { lastChapter, status, description, tags, title },
   } = manga;
@@ -30,6 +41,30 @@ export function ViewManga({ manga }: Props) {
     content: tag.attributes.name.en,
   }));
 
+  const { latestChapterForManga } = useLocalCurrentlyReading({ manga });
+
+  const primaryAction = latestChapterForManga ? (
+    <Button
+      size="small"
+      color="secondary"
+      variant="contained"
+      onClick={() =>
+        history.push(`/manga/read/${latestChapterForManga.chapterId}`)
+      }
+    >
+      Continue
+    </Button>
+  ) : firstChapterId ? (
+    <Button
+      size="small"
+      color="secondary"
+      variant="contained"
+      onClick={() => history.push(`/manga/read/${firstChapterId}`)}
+    >
+      Start reading
+    </Button>
+  ) : null;
+
   return (
     <Page
       backUrl="/"
@@ -40,13 +75,14 @@ export function ViewManga({ manga }: Props) {
         manga.attributes.contentRating || null,
       ]}
       tags={pageTags}
+      primaryAction={primaryAction}
     >
       {description.en && (
         <Paper className={classes.description}>
           <Typography>{description.en}</Typography>
         </Paper>
       )}
-      <ChaptersList manga={manga} />
+      <ChaptersList onFirstChapterReady={setFirstChapterId} manga={manga} />
     </Page>
   );
 }

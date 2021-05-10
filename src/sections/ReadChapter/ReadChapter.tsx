@@ -1,8 +1,8 @@
 import { Chapter } from "types/chapter";
 import { useAtHomeBaseUrl } from "sections/ViewManga/useAtHome";
-import { Page, Thumbnail } from "components";
+import { Page, Thumbnail, ChapterReader } from "components";
 import { Grid } from "@material-ui/core";
-import { chapterTitle } from "helpers";
+import { chapterTitle, useLocalCurrentlyReading } from "helpers";
 
 interface Props {
   chapter: Chapter;
@@ -11,6 +11,9 @@ interface Props {
 
 export function ReadChapter({ chapter, mangaId }: Props) {
   const { atHomeBaseUrl, loading, error } = useAtHomeBaseUrl(chapter);
+  const { setCurrentlyReading } = useLocalCurrentlyReading({ manga: mangaId });
+
+  setCurrentlyReading({ chapter, manga: mangaId });
 
   if (!atHomeBaseUrl || loading || error) {
     return null;
@@ -31,17 +34,13 @@ export function ReadChapter({ chapter, mangaId }: Props) {
           : null,
       ]}
     >
-      <Grid container spacing={1}>
-        {pageURLs.map((pageUrl, index) => (
-          <Grid item>
-            <Thumbnail
-              features={[`Page ${index + 1}`]}
-              clickable={false}
-              img={pageUrl}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      <ChapterReader
+        chapter={chapter}
+        offset={2}
+        pageUrls={pageURLs}
+        onPrevious={() => {}}
+        onNext={() => {}}
+      />
     </Page>
   );
 }
