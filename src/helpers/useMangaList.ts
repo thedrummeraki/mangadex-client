@@ -56,12 +56,12 @@ export default function useMangaList({
       return;
     }
 
-    const limit = options?.limit;
+    const fetchMoreLimit = options?.limit || limit;
 
     if (mangaList.total > mangaList.results.length) {
       await fetchMore({
         variables: {
-          limit,
+          limit: fetchMoreLimit,
           offset: mangaList.offset + pageSize,
         },
       });

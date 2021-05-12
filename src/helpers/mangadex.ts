@@ -1,6 +1,8 @@
 import { Description, Manga, Title } from "types";
 import { Chapter } from "types/chapter";
 
+import DOMPurify from "dompurify";
+
 export function mangaTitle(manga: Manga) {
   return preferredTitle(manga.attributes.title);
 }
@@ -14,7 +16,7 @@ export function preferredTitle(title: Title) {
 }
 
 export function preferredDescription(description: Description) {
-  return description.en;
+  return DOMPurify.sanitize(description.en, { USE_PROFILES: { html: true } });
 }
 
 export function chapterTitle(chapter: Chapter) {

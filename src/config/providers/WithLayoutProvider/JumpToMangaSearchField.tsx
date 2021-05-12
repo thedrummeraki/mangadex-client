@@ -106,7 +106,8 @@ export default function JumpToMangaSearchField() {
         <List
           className={clsx(
             classes.autocompleteList,
-            showResults || classes.hidden
+            (showResults && debouncedQuery.length && results.length) ||
+              classes.hidden
           )}
         >
           {results.map((result) => {
