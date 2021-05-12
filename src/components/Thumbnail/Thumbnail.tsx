@@ -1,12 +1,12 @@
 import clsx from "clsx";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { ThumbnailFeatures } from "./ThumbnailFeatures";
 import { ThumbnailImage } from "./ThumbnailImage";
 import { ThumbnailWrapper } from "./ThumbnailWrapper";
 import { ThumbnailProps } from "./types";
 import useThumbnailStyles from "./useThumbnailStyles";
 
-export function Thumbnail({
+function Thumbnail({
   img,
   raw,
   title,
@@ -56,3 +56,9 @@ export function Thumbnail({
     </div>
   );
 }
+
+const MemoizedThumbnail = React.memo(Thumbnail, (prevProps, nextProps) => {
+  return prevProps.img === nextProps.img && prevProps.title === nextProps.title;
+});
+
+export default MemoizedThumbnail;

@@ -1,14 +1,18 @@
 import { makeStyles } from "@material-ui/core";
 import { PropsWithChildren } from "react";
+import { useNavigationBarVisible } from "./WithLayoutProvider";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: theme.spacing(4),
-  },
+  root: {},
 }));
 
 export default function Body({ children }: PropsWithChildren<{}>) {
   const classes = useStyles();
+  const { visible } = useNavigationBarVisible();
 
-  return <div className={classes.root}>{children}</div>;
+  return visible ? (
+    <div className={classes.root}>{children}</div>
+  ) : (
+    <>{children}</>
+  );
 }

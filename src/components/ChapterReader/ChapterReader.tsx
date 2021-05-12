@@ -107,7 +107,7 @@ export function ChapterReader({
         <Grid item xs={12} md={6}>
           <DesktopReaderPage
             shouldDisplay={pagesLoaded}
-            pageNumber={currentIndex.left}
+            pageNumber={currentIndex.left + 1}
             pageUrl={currentPageUrl.left}
             direction="left"
             onClick={requestNextPage}
@@ -117,7 +117,7 @@ export function ChapterReader({
         <Grid item xs={12} md={6}>
           <DesktopReaderPage
             shouldDisplay={pagesLoaded}
-            pageNumber={currentIndex.right}
+            pageNumber={currentIndex.right + 1}
             pageUrl={currentPageUrl.right}
             direction="right"
             onClick={requestPreviousPage}
@@ -144,7 +144,9 @@ export function ChapterReader({
             }
           }
         }}
-        valueLabelFormat={() => `${currentIndex.left}/${currentIndex.right}`}
+        valueLabelFormat={() =>
+          `${currentIndex.left + 1}/${currentIndex.right + 1}`
+        }
         valueLabelDisplay="auto"
         min={-pageUrls.length + 1}
         step={2}

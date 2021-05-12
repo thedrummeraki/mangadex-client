@@ -1,36 +1,19 @@
-import { gql, useQuery } from "@apollo/client";
 import { Button, Grid } from "@material-ui/core";
 import { Page } from "components";
 import { MangaThumbnail } from "components/Thumbnails";
-import { Manga, PagedResultsList } from "types";
+import useMangaList from "helpers/useMangaList";
 import { useScrollListeners } from "utils";
 
-const query = gql`
-  query GetMangaList($limit: Integer!, $offset: Integer!) {
-    manga(limit: $limit, offset: $Integer)
-      @rest(type: "MangaResults", path: "/manga?{args}") {
-      results
-      limit
-      offset
-      total
-    }
-  }
-`;
-
 export function HomePage() {
-  const { data, loading, error } = useQuery(query, {
-    variables: { limit: 18, offset: 0 },
-    context: {
-      headers: {
-        "X-Allow-Cache": "true",
-      },
-    },
+  const { mangaList, data, loading, error, fetchMoreManga } = useMangaList({
+    limit: 18,
+    offset: 0,
+    pageSize: 18,
+    allowCache: true,
   });
 
-  const mangaList = data?.manga as PagedResultsList<Manga>;
-
   useScrollListeners(null, () => {
-    console.log("fetching more...");
+    fetchMoreManga();
   });
 
   if (error) {

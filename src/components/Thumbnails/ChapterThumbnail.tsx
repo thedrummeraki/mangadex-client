@@ -1,4 +1,4 @@
-import { Thumbnail } from "components/Thumbnail/Thumbnail";
+import { Thumbnail } from "components";
 import { useAtHomeBaseUrl } from "sections/ViewManga/useAtHome";
 import { Chapter } from "types/chapter";
 

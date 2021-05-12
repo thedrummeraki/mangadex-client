@@ -1,1 +1,4 @@
-export * from "./WithLayoutProvider";
+export {
+  WithLayoutProvider,
+  useNavigationBarVisible,
+} from "./WithLayoutProvider";
