@@ -12,11 +12,7 @@ function mangadexOffsetLimitPagination<T extends Reference>(
 ): FieldPolicy<PagedResultsList<T>> {
   return {
     keyArgs,
-    merge(existing, incoming, { args }) {
-      console.log("existing", existing);
-      console.log("incoming", incoming);
-      console.log("args", args);
-
+    merge(existing, incoming) {
       if (!existing) {
         return incoming;
       }

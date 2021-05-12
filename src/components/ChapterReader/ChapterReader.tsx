@@ -3,7 +3,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Chapter } from "types/chapter";
 import { DesktopReaderPage } from "./DesktopReaderPage";
 
+export enum Direction {
+  LeftToRight = 1,
+  RightToLeft = -1,
+}
+
 interface Props {
+  direction?: Direction;
   chapter: Chapter;
   pageUrls: Array<string>;
   // How many pages should be flipped at once. Default: 1
@@ -25,41 +31,50 @@ interface CurrentPageUrlState {
 }
 
 export function ChapterReader({
+  direction = Direction.RightToLeft,
   chapter,
   pageUrls,
-  offset = 1,
   onPrevious,
   onNext,
 }: Props) {
-  const savedPages = () => ({
-    left: parseInt(localStorage.getItem(`chapter-${chapter.id}.left`) || "1"),
-    right: parseInt(localStorage.getItem(`chapter-${chapter.id}.right`) || "0"),
-  });
+  const savedPage = () =>
+    parseInt(localStorage.getItem(`chapter-${chapter.id}`) || "0");
 
-  const [currentIndex, setCurrentIndices] = useState<CurrentIndexState>(
-    savedPages()
-  );
+  const [currentIndex, setCurrentIndices] = useState(savedPage());
 
-  const [currentPageUrl, setCurrentPageUrl] = useState<CurrentPageUrlState>({
-    left: null,
-    right: null,
-  });
+  const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
 
   const [canGoNext, setCanGoNext] = useState(false);
   const [canGoPrevious, setCanGoPrevious] = useState(false);
-  const [loaded, setLoaded] = useState({ left: false, right: false });
+  const [loaded, setLoaded] = useState(false);
 
-  const sliderValue = useMemo(() => -currentIndex.left, [currentIndex]);
-  const pagesLoaded = useMemo(() => loaded.left && loaded.right, [loaded]);
+  const sliderValue = useMemo(() => direction * currentIndex, [currentIndex]);
+
+  const handleLeftClick = () => {
+    if (direction === Direction.RightToLeft) {
+      console.log("next page, left");
+      requestNextPage();
+    } else {
+      console.log("prev page, left");
+      requestPreviousPage();
+    }
+  };
+
+  const handleRightClick = () => {
+    if (direction === Direction.RightToLeft) {
+      console.log("prev page, right");
+      requestPreviousPage();
+    } else {
+      console.log("next page, right");
+      requestNextPage();
+    }
+  };
 
   const requestNextPage = () => {
     if (!canGoNext) {
       return;
     }
-    setCurrentIndices((currentIndex) => ({
-      left: currentIndex.left + offset,
-      right: currentIndex.right + offset,
-    }));
+    setCurrentIndices((currentIndex) => currentIndex + 1);
     onNext();
   };
 
@@ -67,89 +82,49 @@ export function ChapterReader({
     if (!canGoPrevious) {
       return;
     }
-    setCurrentIndices((currentIndex) => ({
-      left: currentIndex.left - offset,
-      right: currentIndex.right - offset,
-    }));
+    setCurrentIndices((currentIndex) => currentIndex - 1);
     onPrevious();
   };
 
   useEffect(() => {
-    setCurrentPageUrl({
-      left: pageUrls[currentIndex.left],
-      right: pageUrls[currentIndex.right],
-    });
-    setCanGoNext(currentIndex.left < pageUrls.length - 1);
-    setCanGoPrevious(currentIndex.right > 0);
+    setCurrentPageUrl(pageUrls[currentIndex]);
+    setCanGoNext(currentIndex < pageUrls.length - 1);
+    setCanGoPrevious(currentIndex > 0);
 
-    localStorage.setItem(
-      `chapter-${chapter.id}.left`,
-      String(currentIndex.left)
-    );
-    localStorage.setItem(
-      `chapter-${chapter.id}.right`,
-      String(currentIndex.right)
-    );
+    localStorage.setItem(`chapter-${chapter.id}`, String(currentIndex));
   }, [currentIndex]);
 
   useEffect(() => {
     if (canGoNext) {
-      loadImage(pageUrls[currentIndex.left + 1]);
+      loadImage(pageUrls[currentIndex + 1]);
     }
     if (canGoPrevious) {
-      loadImage(pageUrls[currentIndex.right - 1]);
+      loadImage(pageUrls[currentIndex - 1]);
     }
   }, [canGoNext, canGoPrevious]);
 
   return (
     <>
-      <Grid container>
-        <Grid item xs={12} md={6}>
-          <DesktopReaderPage
-            shouldDisplay={pagesLoaded}
-            pageNumber={currentIndex.left + 1}
-            pageUrl={currentPageUrl.left}
-            direction="left"
-            onClick={requestNextPage}
-            onLoaded={() => setLoaded((loaded) => ({ ...loaded, left: true }))}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <DesktopReaderPage
-            shouldDisplay={pagesLoaded}
-            pageNumber={currentIndex.right + 1}
-            pageUrl={currentPageUrl.right}
-            direction="right"
-            onClick={requestPreviousPage}
-            onLoaded={() => setLoaded((loaded) => ({ ...loaded, right: true }))}
-          />
-        </Grid>
-      </Grid>
+      <DesktopReaderPage
+        shouldDisplay={loaded}
+        pageNumber={currentIndex + 1}
+        pageUrl={currentPageUrl}
+        direction="left"
+        onClickLeft={handleLeftClick}
+        onClickRight={handleRightClick}
+        onLoaded={() => setLoaded(true)}
+      />
       <Slider
         marks
         value={sliderValue}
         onChangeCommitted={(_, value) => {
           if (typeof value === "number") {
-            const index = -value;
-            if (index % 2 === 0) {
-              setCurrentIndices(() => ({
-                left: index + 1,
-                right: index,
-              }));
-            } else {
-              setCurrentIndices(() => ({
-                left: index,
-                right: index - 1,
-              }));
-            }
+            setCurrentIndices(direction * value);
           }
         }}
-        valueLabelFormat={() =>
-          `${currentIndex.left + 1}/${currentIndex.right + 1}`
-        }
+        valueLabelFormat={() => `${currentIndex}`}
         valueLabelDisplay="auto"
         min={-pageUrls.length + 1}
-        step={2}
         max={-1}
         scale={(x) => -x}
         track="inverted"

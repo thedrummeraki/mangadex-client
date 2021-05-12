@@ -48,7 +48,7 @@ export function TitledSection({
       .filter(notEmpty);
 
   return (
-    <div className={classes.titledSection}>
+    <div key={title?.toString()} className={classes.titledSection}>
       <div className={classes.titledSectionTitleContainer}>
         <>
           <Typography

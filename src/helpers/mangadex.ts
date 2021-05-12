@@ -18,5 +18,12 @@ export function preferredDescription(description: Description) {
 }
 
 export function chapterTitle(chapter: Chapter) {
-  return chapter.attributes.title || `Chapter ${chapter.attributes.chapter}`;
+  const {
+    attributes: { title, chapter: number },
+  } = chapter;
+  if (title) {
+    return title;
+  }
+
+  return number != null ? `Chapter ${number}` : "Chapter";
 }

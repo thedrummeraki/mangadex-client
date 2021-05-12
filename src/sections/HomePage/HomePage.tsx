@@ -1,4 +1,4 @@
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid, TextField } from "@material-ui/core";
 import { Page } from "components";
 import { MangaThumbnail } from "components/Thumbnails";
 import useMangaList from "helpers/useMangaList";
@@ -6,9 +6,8 @@ import { useScrollListeners } from "utils";
 
 export function HomePage() {
   const { mangaList, data, loading, error, fetchMoreManga } = useMangaList({
-    limit: 18,
-    offset: 0,
-    pageSize: 18,
+    limit: 20,
+    pageSize: 20,
     allowCache: true,
   });
 
@@ -26,20 +25,33 @@ export function HomePage() {
 
   return (
     <Page
-      title="Latest manga"
+      maxWitdh={false}
+      title={`Latest manga`}
       primaryAction={
         <Button size="small" color="secondary" variant="contained">
           Upload
         </Button>
       }
     >
-      <Grid container spacing={2}>
+      <div
+        style={{
+          display: "grid",
+          gap: "28px 30px",
+          gridTemplateColumns: "repeat(auto-fill, 185px)",
+          justifyContent: "space-between",
+        }}
+      >
         {mangaList.results.map((mangaResult) => (
-          <Grid key={mangaResult.data.id} item xs={6} sm={4} md={3} lg={2}>
-            <MangaThumbnail manga={mangaResult.data} />
-          </Grid>
+          <MangaThumbnail
+            chaptersCount={
+              mangaResult.relationships.filter(
+                (relationship) => relationship.type === "chapter"
+              ).length
+            }
+            manga={mangaResult.data}
+          />
         ))}
-      </Grid>
+      </div>
     </Page>
   );
 }

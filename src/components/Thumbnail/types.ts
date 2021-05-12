@@ -4,7 +4,7 @@ interface BaseProps {
   raw?: boolean | null;
   title?: string | null;
   url?: string | null;
-  features?: Array<string | null>;
+  features?: Array<string | null | undefined>;
   onClick?: VoidFunction;
 }
 

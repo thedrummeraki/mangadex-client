@@ -13,7 +13,7 @@ interface Tag {
 interface Props {
   backUrl?: string;
   title: string;
-  fluid?: boolean;
+  maxWitdh?: "xs" | "sm" | "md" | "lg" | "xl" | false;
   tags?: Array<Tag>;
 }
 
@@ -44,12 +44,11 @@ export function Page({
   title,
   badges,
   tags,
-  fluid,
+  maxWitdh,
   children,
   primaryAction,
 }: PropsWithChildren<PageProps>) {
   const classes = useStyles();
-  const maxWitdh = fluid && "xl";
 
   const history = useHistory();
 

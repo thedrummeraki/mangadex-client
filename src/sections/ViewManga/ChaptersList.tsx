@@ -5,7 +5,7 @@ import { chapterTitle } from "helpers";
 import { useEffect } from "react";
 import { PagedResultsList, Manga } from "types";
 import { Chapter } from "types/chapter";
-import { timeAgo } from "utils";
+import { timeAgo, useCurrentBreakpoint } from "utils";
 import GetChaptersForManga from "./queries/GetChaptersForManga";
 
 interface Props {
@@ -24,6 +24,7 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
   });
 
   const chaptersList = data?.chapters as PagedResultsList<Chapter>;
+  const bp = useCurrentBreakpoint();
 
   useEffect(() => {
     if (chaptersList?.results?.length) {
@@ -47,27 +48,35 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
     );
   }
 
-  if (!chaptersList) {
+  if (!chaptersList || !chaptersList.results) {
     return <TitledSection title="No chapters were found yet" />;
   }
 
   return (
     <>
-      <TitledSection title={`Chapters list (${chaptersList.total})`} />
+      <TitledSection title={`Chapters list (${chaptersList.total}) ${bp}`} />
       <Grid container spacing={2}>
-        {chaptersList.results.map((chapterInfo, index) => (
-          <Grid item>
-            <Thumbnail
-              features={[
-                timeAgo(chapterInfo.data.attributes.publishAt),
-                `${chapterInfo.data.attributes.data.length} page(s)`,
-              ]}
-              title={`${index + 1}) ${chapterTitle(chapterInfo.data)}`}
-              img="https://picsum.photos/185/265"
-              url={`/manga/read/${chapterInfo.data.id}`}
-            />
-          </Grid>
-        ))}
+        {chaptersList.results.map((chapterInfo, index) => {
+          const {
+            data: {
+              attributes: { publishAt, data },
+            },
+          } = chapterInfo;
+          const publishedTimeAgo = timeAgo(publishAt);
+          const pagesCount =
+            data.length === 1 ? "1 page" : `${data.length} pages`;
+
+          return (
+            <Grid item sm={6} md={4} lg={3} xl={2}>
+              <Thumbnail
+                features={[publishedTimeAgo, pagesCount]}
+                title={`${index + 1}) ${chapterTitle(chapterInfo.data)}`}
+                img="https://picsum.photos/185/265"
+                url={`/manga/read/${chapterInfo.data.id}`}
+              />
+            </Grid>
+          );
+        })}
       </Grid>
     </>
   );

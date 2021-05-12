@@ -4,16 +4,20 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { CustomAppBar } from "./CustomAppBar";
 import Body from "./Body";
-import NavigationBar from "./NavigationBar";
+import JumpToMangaSearchField from "./JumpToMangaSearchField";
+import NavigationDrawer from "./NavigationDrawer";
 
 export function WithLayoutProvider({ children }: PropsWithChildren<{}>) {
   const [visible, setVisible] = useState(true);
 
   return (
     <NavigationBarContext.Provider value={{ visible, setVisible }}>
-      <NavigationBar />
-      <Body>{children}</Body>
+      <NavigationDrawer>
+        <CustomAppBar />
+        <Body>{children}</Body>
+      </NavigationDrawer>
     </NavigationBarContext.Provider>
   );
 }
@@ -24,9 +28,8 @@ export const NavigationBarContext = React.createContext({
 });
 
 export function useNavigationBarVisible(setVisible?: boolean) {
-  const { visible, setVisible: setVisibleFn } = useContext(
-    NavigationBarContext
-  );
+  const { visible, setVisible: setVisibleFn } =
+    useContext(NavigationBarContext);
 
   useEffect(() => {
     if (setVisible != null) {

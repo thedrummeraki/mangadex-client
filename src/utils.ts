@@ -34,7 +34,7 @@ export function useImageLoaded(url: string) {
   return { loaded, error };
 }
 
-export function useDebounceedValue<T>(value: T, delay: number) {
+export function useDebouncedValue<T>(value: T, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {

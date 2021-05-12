@@ -6,7 +6,7 @@ import clsx from "clsx";
 const useStyles = makeStyles((theme) => ({
   ...sharedStyles(theme),
   error: {
-    background: theme.palette.primary.light,
+    background: "#262626", //theme.palette.background.default,
   },
   skeleton: {
     height: 265,

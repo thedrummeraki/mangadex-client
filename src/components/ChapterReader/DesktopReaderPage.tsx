@@ -1,13 +1,20 @@
 import { makeStyles } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
-import { useEffect, useRef, useState } from "react";
+import {
+  MouseEvent,
+  MouseEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 interface Props {
   pageNumber: number;
   pageUrl: string | null;
   direction: "left" | "right";
   shouldDisplay: boolean;
-  onClick: VoidFunction;
+  onClickLeft: VoidFunction;
+  onClickRight: VoidFunction;
   onLoaded: VoidFunction;
 }
 
@@ -31,13 +38,12 @@ export function DesktopReaderPage({
   pageUrl,
   direction,
   shouldDisplay,
-  onClick,
+  onClickLeft,
+  onClickRight,
   onLoaded,
 }: Props) {
   const classes = useStyles();
   const { loading, loaded: imgOk, error } = usePageImageUrl(pageUrl);
-
-  console.log("shouldDisplay", shouldDisplay);
 
   useEffect(() => {
     if (!imgOk) {
@@ -45,17 +51,38 @@ export function DesktopReaderPage({
     }
   }, [!imgOk]);
 
+  const onClick = (event: MouseEvent<HTMLDivElement> | undefined) => {
+    if (!event) {
+      return;
+    }
+  };
+
   const imageMarkup =
     loading || !shouldDisplay ? (
       <Skeleton variant="rect" style={{ height: "100%" }} />
     ) : error && shouldDisplay ? (
       <Skeleton variant="rect" animation={false} style={{ height: "100%" }} />
     ) : shouldDisplay && pageUrl ? (
-      <img src={pageUrl} onClick={onClick} className={classes.image} />
+      <img src={pageUrl} className={classes.image} />
     ) : null;
 
   return (
-    <div className={classes.root}>
+    <div
+      className={classes.root}
+      onClick={(event) => {
+        if (event) {
+          const rect = event.currentTarget.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = rect.right - event.clientX;
+
+          if (x >= y) {
+            onClickRight();
+          } else {
+            onClickLeft();
+          }
+        }
+      }}
+    >
       <div style={{ backgroundColor: "#000", color: "white" }}>
         <span
           style={{

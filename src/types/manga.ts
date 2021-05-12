@@ -1,5 +1,27 @@
 import { Maybe } from "graphql/jsutils/Maybe";
 
+export enum MangaStatus {
+  ongoing = "ongoing",
+  completed = "completed",
+  hiatus = "hiatus",
+  abandoned = "abandoned",
+}
+
+export enum PublicationDemographic {
+  shonen = "shonen",
+  shoujo = "shoujo",
+  josei = "josei",
+  seinen = "seinen",
+  none = "none",
+}
+
+export enum ContentRating {
+  safe = "safe",
+  suggestive = "suggestive",
+  erotica = "erotica",
+  pornographic = "pornographic",
+}
+
 export interface Manga {
   id: string;
   type: "manga";
@@ -12,10 +34,10 @@ export interface MangaAttributes {
   description: Description;
   links: Array<MangaLink>;
   lastChapter?: Maybe<string>;
-  publicationDemographic?: Maybe<string>;
-  status?: Maybe<string>;
+  publicationDemographic?: Maybe<PublicationDemographic>;
+  status?: Maybe<MangaStatus>;
   year: number;
-  contentRating?: Maybe<string>;
+  contentRating?: Maybe<ContentRating>;
   tags: Array<MangaTag>;
   version: number;
   createdAt: string;

@@ -13,17 +13,27 @@ const query = gql`
   }
 `;
 
-interface Options {
-  limit: number;
+interface BasicOptions {
   offset?: number;
   pageSize?: number;
+}
+
+interface MandatoryOptions {
+  limit: number;
+}
+
+interface InternalOptions {
+  sliceAt?: number | null;
   allowCache?: boolean;
 }
+
+type Options = MandatoryOptions & InternalOptions & BasicOptions;
 
 export default function useMangaList({
   limit,
   offset = 0,
   pageSize = 10,
+  sliceAt = null,
   allowCache = true,
 }: Options) {
   const result = useQuery(query, {
@@ -36,20 +46,22 @@ export default function useMangaList({
   });
 
   const { data, loading, error, fetchMore } = result;
-  console.log("data", data);
 
   const mangaList =
     (data?.mangaList as PagedResultsList<Manga>) ||
     defaultPagedResults<Manga>();
 
-  const fetchMoreManga = async () => {
-    if (!mangaList || loading || error) {
+  const fetchMoreManga = async (options?: { limit?: number }) => {
+    if (!mangaList?.results || loading || error || sliceAt != null) {
       return;
     }
 
-    if (mangaList?.total > mangaList?.results.length) {
+    const limit = options?.limit;
+
+    if (mangaList.total > mangaList.results.length) {
       await fetchMore({
         variables: {
+          limit,
           offset: mangaList.offset + pageSize,
         },
       });
@@ -58,7 +70,11 @@ export default function useMangaList({
 
   return {
     ...result,
-    mangaList,
+    mangaList: {
+      ...mangaList,
+      results:
+        sliceAt != null ? mangaList.results.slice(sliceAt) : mangaList.results,
+    },
     fetchMoreManga,
   };
 }
