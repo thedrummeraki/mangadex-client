@@ -4,6 +4,7 @@ var express = require("express"),
   app = express();
 
 const log = require("./logger");
+const yaml = require("js-yaml");
 
 const {
   cacheMiddleware,
@@ -137,6 +138,17 @@ app.use(allowCrossDomain);
 
 app.use(cacheMiddleware);
 // app.use(authenticateWithOAuthProvider);
+
+app.get("/version", (req, res) => {
+  request({ uri: "https://api.mangadex.org/api.yaml" }, (err, response) => {
+    if (err) {
+      res.send({ error: true });
+    } else {
+      console.log(yaml.load(response.body));
+      res.send({ version: yaml.load(response.body).info.version });
+    }
+  });
+});
 
 app.all("*", function (req, res, next) {
   log.info("Request coming from IP address", parseIp(req));
