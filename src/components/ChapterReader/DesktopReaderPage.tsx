@@ -1,17 +1,10 @@
 import { makeStyles } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
-import {
-  MouseEvent,
-  MouseEventHandler,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { MouseEvent, useEffect, useState } from "react";
 
 interface Props {
   pageNumber: number;
   pageUrl: string | null;
-  direction: "left" | "right";
   shouldDisplay: boolean;
   onClickLeft: VoidFunction;
   onClickRight: VoidFunction;
@@ -36,7 +29,6 @@ const useStyles = makeStyles(() => ({
 export function DesktopReaderPage({
   pageNumber,
   pageUrl,
-  direction,
   shouldDisplay,
   onClickLeft,
   onClickRight,
@@ -49,13 +41,25 @@ export function DesktopReaderPage({
     if (!imgOk) {
       onLoaded();
     }
-  }, [!imgOk]);
+  }, [imgOk, onLoaded]);
 
   const onClick = (event: MouseEvent<HTMLDivElement> | undefined) => {
     if (!event) {
       return;
     }
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = rect.right - event.clientX;
+
+    if (x >= y) {
+      onClickRight();
+    } else {
+      onClickLeft();
+    }
   };
+
+  const pageTitle = `Page ${pageNumber}`;
 
   const imageMarkup =
     loading || !shouldDisplay ? (
@@ -63,26 +67,11 @@ export function DesktopReaderPage({
     ) : error && shouldDisplay ? (
       <Skeleton variant="rect" animation={false} style={{ height: "100%" }} />
     ) : shouldDisplay && pageUrl ? (
-      <img src={pageUrl} className={classes.image} />
+      <img alt={pageTitle} src={pageUrl} className={classes.image} />
     ) : null;
 
   return (
-    <div
-      className={classes.root}
-      onClick={(event) => {
-        if (event) {
-          const rect = event.currentTarget.getBoundingClientRect();
-          const x = event.clientX - rect.left;
-          const y = rect.right - event.clientX;
-
-          if (x >= y) {
-            onClickRight();
-          } else {
-            onClickLeft();
-          }
-        }
-      }}
-    >
+    <div className={classes.root} onClick={onClick}>
       <div style={{ backgroundColor: "#000", color: "white" }}>
         <span
           style={{
@@ -92,7 +81,7 @@ export function DesktopReaderPage({
             padding: 2,
           }}
         >
-          Page {pageNumber}
+          {pageTitle}
         </span>
       </div>
       {imageMarkup}
@@ -131,7 +120,7 @@ function usePageImageUrl(pageUrl: string | null) {
       }
       setReset(false);
     }
-  }, [reset]);
+  }, [reset, pageUrl]);
 
   return { loading, error, loaded: !loading && !error };
 }

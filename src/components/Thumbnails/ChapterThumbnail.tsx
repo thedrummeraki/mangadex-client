@@ -19,9 +19,6 @@ export function ChapterThumbnail({ chapter }: Props) {
     chapter.attributes.dataSaver[0],
   ].join("/");
 
-  console.log("serverUrl", serverUrl);
-  console.log("built", new URL(`${serverUrl}/${path}`).toString());
-
   return (
     <Thumbnail
       title={chapter.attributes.title}

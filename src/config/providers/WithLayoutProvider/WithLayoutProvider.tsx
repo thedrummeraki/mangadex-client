@@ -6,7 +6,6 @@ import React, {
 } from "react";
 import { CustomAppBar } from "./CustomAppBar";
 import Body from "./Body";
-import JumpToMangaSearchField from "./JumpToMangaSearchField";
 import NavigationDrawer from "./NavigationDrawer";
 
 export function WithLayoutProvider({ children }: PropsWithChildren<{}>) {
@@ -35,7 +34,7 @@ export function useNavigationBarVisible(setVisible?: boolean) {
     if (setVisible != null) {
       setVisibleFn(setVisible);
     }
-  }, [visible]);
+  }, [setVisibleFn, setVisible]);
 
   return { visible };
 }

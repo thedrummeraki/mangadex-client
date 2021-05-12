@@ -9,7 +9,7 @@ interface Props {
 
 export function MangaThumbnail({ chaptersCount, manga }: Props) {
   const {
-    attributes: { title, year, contentRating, status },
+    attributes: { title, year, status },
   } = manga;
 
   const chaptersCountFeature =

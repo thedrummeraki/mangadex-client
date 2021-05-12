@@ -23,7 +23,7 @@ export function ThumbnailImage({ img, alt, clickable, overlayRef }: Props) {
     if (overlayRef.current) {
       overlayRef.current.classList.add(classes.overlayLoaded);
     }
-  }, [classes.loaded, classes.overlayLoaded]);
+  }, [classes.loaded, classes.overlayLoaded, overlayRef]);
 
   if (loaded && !error) {
     return (

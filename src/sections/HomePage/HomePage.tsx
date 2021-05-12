@@ -1,4 +1,4 @@
-import { Button, Grid, TextField } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { Page } from "components";
 import { MangaThumbnail } from "components/Thumbnails";
 import useMangaList from "helpers/useMangaList";

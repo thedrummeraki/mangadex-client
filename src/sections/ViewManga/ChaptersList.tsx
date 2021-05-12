@@ -30,7 +30,7 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
     if (chaptersList?.results?.length) {
       onFirstChapterReady(chaptersList.results[0].data.id);
     }
-  }, [chaptersList]);
+  }, [onFirstChapterReady, chaptersList]);
 
   if (error) {
     return <TitledSection title="Error" />;

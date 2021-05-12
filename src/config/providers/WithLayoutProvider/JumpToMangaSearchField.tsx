@@ -1,7 +1,6 @@
 import {
   Avatar,
   Chip,
-  Grid,
   IconButton,
   InputBase,
   List,
@@ -10,9 +9,7 @@ import {
   ListItemText,
   makeStyles,
   Paper,
-  TextField,
   Typography,
-  useTheme,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import clsx from "clsx";
@@ -75,7 +72,7 @@ export default function JumpToMangaSearchField() {
     } else if (debouncedQuery.length === 0) {
       setResults([]);
     }
-  }, [debouncedQuery]);
+  }, [debouncedQuery, searchManga]);
 
   useEffect(() => {
     if (!loading && mangaList?.results && mangaList.results.length > 0) {
