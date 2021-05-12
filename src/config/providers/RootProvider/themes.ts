@@ -20,6 +20,20 @@ const globalThemeParams = {
       fontWeight: 1,
     },
   },
+  custom: {
+    thumbnail: {
+      borderRadius: "10px",
+      height: 256,
+      width: 185,
+    },
+    clampedTitle: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      display: "-webkit-box",
+      "-webkit-line-clamp": 2,
+      "-webkit-box-orient": "vertical",
+    },
+  },
 };
 
 export const darkTheme = () =>
@@ -60,13 +74,6 @@ export const darkTheme = () =>
         dark: "#d32f2f",
         light: "#e57373",
         main: "#f44336",
-      },
-    },
-    custom: {
-      thumbnail: {
-        borderRadius: "10px",
-        height: 256,
-        width: 185,
       },
     },
   });
@@ -110,11 +117,6 @@ export const lightTheme = () =>
         dark: "#d32f2f",
         light: "#e57373",
         main: "#f44336",
-      },
-    },
-    custom: {
-      thumbnail: {
-        borderRadius: 20,
       },
     },
     // overrides: {

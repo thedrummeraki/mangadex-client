@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Chip,
   Grid,
   IconButton,
   InputBase,
@@ -10,10 +11,12 @@ import {
   makeStyles,
   Paper,
   TextField,
+  Typography,
+  useTheme,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import clsx from "clsx";
-import { mangaTitle, useSearchMangaList } from "helpers";
+import { mangaDescription, mangaTitle, useSearchMangaList } from "helpers";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { ContentRating, GenericResponse, Manga } from "types";
@@ -39,9 +42,14 @@ const useStyles = makeStyles((theme) => ({
   },
   autocompleteList: {
     position: "absolute",
-    width: 340,
+    width: "50%",
+    minWidth: 340,
+    maxWidth: 700,
     backgroundColor: theme.palette.background.paper,
     zIndex: 99,
+  },
+  searchResultItemTitle: {
+    ...theme.custom.clampedTitle,
   },
   hidden: {
     display: "none",
@@ -54,7 +62,7 @@ export default function JumpToMangaSearchField() {
   const [showResults, setShowResults] = useState(false);
   const [input, setInput] = useState("");
   const [results, setResults] = useState<Array<GenericResponse<Manga>>>([]);
-  const { mangaList, loading, searchManga } = useSearchMangaList({ limit: 10 });
+  const { mangaList, loading, searchManga } = useSearchMangaList({ limit: 5 });
 
   const debouncedQuery = useDebouncedValue(input.trim(), 750);
 
@@ -102,14 +110,18 @@ export default function JumpToMangaSearchField() {
           )}
         >
           {results.map((result) => {
-            const labelId = `result-item-${result.data.id}`;
+            const manga = result.data;
+            const {
+              attributes: { year, status, tags },
+            } = manga;
+            const labelId = `result-item-${manga.id}`;
 
             return (
               <ListItem
-                key={result.data.id}
+                key={manga.id}
                 button
                 onClick={() => {
-                  history.push(`/manga/${result.data.id}`);
+                  history.push(`/manga/${manga.id}`);
                   setShowResults(false);
                 }}
               >
@@ -117,7 +129,48 @@ export default function JumpToMangaSearchField() {
                   <Avatar src="#" />
                 </ListItemAvatar>
 
-                <ListItemText id={labelId} primary={mangaTitle(result.data)} />
+                <ListItemText
+                  id={labelId}
+                  primary={
+                    <Typography className={classes.searchResultItemTitle}>
+                      {mangaTitle(manga)}
+                    </Typography>
+                  }
+                  secondary={
+                    <div>
+                      <div>
+                        {year && (
+                          <Chip
+                            size="small"
+                            style={{ marginRight: 8, marginBottom: 6 }}
+                            label={String(year)}
+                          />
+                        )}
+                        {status && (
+                          <Chip
+                            size="small"
+                            style={{ marginRight: 8, marginBottom: 6 }}
+                            label={String(status)}
+                            color="primary"
+                          />
+                        )}
+                        {tags.map((tag) => (
+                          <Chip
+                            size="small"
+                            style={{ marginRight: 8, marginBottom: 6 }}
+                            label={tag.attributes.name.en}
+                          />
+                        ))}
+                      </div>
+                      <Typography
+                        variant="subtitle2"
+                        className={classes.searchResultItemTitle}
+                      >
+                        {mangaDescription(manga)}
+                      </Typography>
+                    </div>
+                  }
+                />
               </ListItem>
             );
           })}
