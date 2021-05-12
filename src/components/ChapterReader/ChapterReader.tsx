@@ -1,5 +1,5 @@
-import { Grid, Slider } from "@material-ui/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Slider } from "@material-ui/core";
+import { useEffect, useMemo, useState } from "react";
 import { Chapter } from "types/chapter";
 import { DesktopReaderPage } from "./DesktopReaderPage";
 
@@ -20,16 +20,6 @@ interface Props {
   onNext: VoidFunction;
 }
 
-interface CurrentIndexState {
-  left: number;
-  right: number;
-}
-
-interface CurrentPageUrlState {
-  left: string | null;
-  right: string | null;
-}
-
 export function ChapterReader({
   direction = Direction.RightToLeft,
   chapter,
@@ -48,24 +38,23 @@ export function ChapterReader({
   const [canGoPrevious, setCanGoPrevious] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const sliderValue = useMemo(() => direction * currentIndex, [currentIndex]);
+  const sliderValue = useMemo(
+    () => direction * currentIndex,
+    [direction, currentIndex]
+  );
 
   const handleLeftClick = () => {
     if (direction === Direction.RightToLeft) {
-      console.log("next page, left");
       requestNextPage();
     } else {
-      console.log("prev page, left");
       requestPreviousPage();
     }
   };
 
   const handleRightClick = () => {
     if (direction === Direction.RightToLeft) {
-      console.log("prev page, right");
       requestPreviousPage();
     } else {
-      console.log("next page, right");
       requestNextPage();
     }
   };
@@ -92,7 +81,7 @@ export function ChapterReader({
     setCanGoPrevious(currentIndex > 0);
 
     localStorage.setItem(`chapter-${chapter.id}`, String(currentIndex));
-  }, [currentIndex]);
+  }, [currentIndex, chapter.id, pageUrls]);
 
   useEffect(() => {
     if (canGoNext) {
@@ -101,7 +90,7 @@ export function ChapterReader({
     if (canGoPrevious) {
       loadImage(pageUrls[currentIndex - 1]);
     }
-  }, [canGoNext, canGoPrevious]);
+  }, [canGoNext, canGoPrevious, pageUrls, currentIndex]);
 
   return (
     <>
@@ -109,7 +98,6 @@ export function ChapterReader({
         shouldDisplay={loaded}
         pageNumber={currentIndex + 1}
         pageUrl={currentPageUrl}
-        direction="left"
         onClickLeft={handleLeftClick}
         onClickRight={handleRightClick}
         onLoaded={() => setLoaded(true)}

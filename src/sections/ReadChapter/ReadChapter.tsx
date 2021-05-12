@@ -1,7 +1,6 @@
 import { Chapter } from "types/chapter";
 import { useAtHomeBaseUrl } from "sections/ViewManga/useAtHome";
-import { Page, Thumbnail, ChapterReader } from "components";
-import { Grid } from "@material-ui/core";
+import { Page, ChapterReader } from "components";
 import { chapterTitle, useLocalCurrentlyReading } from "helpers";
 
 interface Props {

@@ -1,10 +1,4 @@
-import {
-  Button,
-  CircularProgress,
-  makeStyles,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Button, makeStyles, Paper, Typography } from "@material-ui/core";
 import { Page } from "components";
 import { useLocalCurrentlyReading } from "helpers";
 import { mangaDescription, preferredTitle } from "helpers/mangadex";

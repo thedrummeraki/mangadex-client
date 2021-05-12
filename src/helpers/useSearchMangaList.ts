@@ -61,11 +61,6 @@ enum TagMode {
   OR = "OR",
 }
 
-enum OrderDirection {
-  Ascending = "asc",
-  Descending = "desc",
-}
-
 interface SearchOptions {
   title?: string;
   year?: number;
