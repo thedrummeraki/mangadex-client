@@ -1,5 +1,6 @@
 import { gql, useLazyQuery } from "@apollo/client";
 import { DateTime } from "luxon";
+import { useCallback } from "react";
 import {
   ContentRating,
   defaultPagedResults,
@@ -113,21 +114,24 @@ export default function useSearchMangaList({
     },
   });
 
-  const searchManga = (options: SearchOptions) => {
-    const filteredOptions = Object.fromEntries(
-      Object.entries(options).filter(([_, v]) => {
-        return v != null && ((Array.isArray(v) && v.length > 0) || v !== "");
-      })
-    );
+  const searchManga = useCallback(
+    (options: SearchOptions) => {
+      const filteredOptions = Object.fromEntries(
+        Object.entries(options).filter(([_, v]) => {
+          return v != null && ((Array.isArray(v) && v.length > 0) || v !== "");
+        })
+      );
 
-    callback({
-      variables: {
-        limit,
-        offset,
-        ...filteredOptions,
-      },
-    });
-  };
+      callback({
+        variables: {
+          limit,
+          offset,
+          ...filteredOptions,
+        },
+      });
+    },
+    [limit, offset, callback]
+  );
 
   const { data, loading, error, fetchMore } = result;
 
