@@ -159,6 +159,12 @@ export function noEmptyString(value: string | null | undefined) {
   return notEmpty(value) && value.trim().length > 0;
 }
 
+export function noEmptyArray<T>(
+  value: Array<T> | null | undefined
+): value is T[] {
+  return value != null && value.length > 0;
+}
+
 export function openInNewTab(url: string) {
   window.open(url, "_blank");
 }

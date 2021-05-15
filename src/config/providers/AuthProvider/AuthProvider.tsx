@@ -1,12 +1,55 @@
-import { useApolloClient } from "@apollo/client";
+import { gql, useApolloClient, useLazyQuery, useQuery } from "@apollo/client";
 import React, {
   PropsWithChildren,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
+import { GenericResponse } from "types";
 import { Token, User } from "types/user";
+
+interface CheckSessionResponse extends GenericResponse<User> {
+  session?: string | null;
+  refresh?: string | null;
+}
+
+const currentUserQuery = gql`
+  query CurrentUser {
+    me @rest(type: "User", path: "/user/me") {
+      result
+      data {
+        id
+        type
+        attributes {
+          username
+          version
+        }
+      }
+      relationships
+    }
+  }
+`;
+
+const checkSessionQuery = gql`
+  query CheckSession {
+    currentUser @rest(type: "UserResponse", path: "/auth/check-and-refresh") {
+      result
+      data {
+        id
+        type
+        attributes {
+          username
+          version
+        }
+      }
+      relationships
+      session
+      refresh
+    }
+  }
+`;
 
 type AuthUser = User | null;
 
@@ -16,7 +59,35 @@ interface AuthContextState {
 }
 
 export function AuthProvider({ children }: PropsWithChildren<{}>) {
+  const token = getToken();
   const [currentUser, setCurrentUser] = useState<AuthUser>(null);
+  const { data } = useQuery(checkSessionQuery, {
+    context: {
+      headers: {
+        "X-Auth-Session": token?.session || "",
+        "X-Auth-Refresh": token?.refresh || "",
+      },
+    },
+    skip:
+      token == null ||
+      (token.session.length === 0 && token.refresh.length === 0),
+  });
+
+  useEffect(() => {
+    if (data?.currentUser) {
+      const response = data?.currentUser as CheckSessionResponse;
+      if (response.result === "ok") {
+        setCurrentUser(response.data);
+
+        if (response.session?.length && response.refresh?.length) {
+          saveToken({ ...response } as Token);
+        }
+      } else {
+        console.error(response);
+      }
+    }
+  }, [data]);
+
   return (
     <AuthContext.Provider value={{ currentUser, setCurrentUser }}>
       {children}
@@ -29,33 +100,53 @@ const AuthContext = React.createContext<AuthContextState>({
   setCurrentUser: (_: AuthUser) => {},
 });
 
-export function useAuth() {
+export function useAuth(options?: {
+  onLogin: (response: GenericResponse<User>) => void;
+}) {
   const client = useApolloClient();
   const { currentUser, setCurrentUser } = useContext(AuthContext);
   const token = useMemo(getToken, [currentUser]);
 
+  const [getCurrentUserCallback, { data, loading, error }] =
+    useLazyQuery(currentUserQuery);
+
+  useEffect(() => {
+    if (data?.me) {
+      const response = data.me as GenericResponse<User>;
+      if (response.result === "ok") {
+        setCurrentUser(response.data);
+
+        if (options?.onLogin) {
+          options.onLogin(response);
+        }
+      }
+    }
+  }, [data, options]);
+
   // Call this after manually logging in the user
   const login = useCallback(
     async (token: Token) => {
-      if (currentUser) {
-        return;
-      }
-
+      setCurrentUser(null);
       saveToken(token);
-      const headers = new Headers();
-      headers.append("Authorization", token.session);
 
-      const response = await fetch("http://localhost:3001/user/me", {
-        method: "GET",
-        headers,
-      });
+      const promise = new Promise<GenericResponse<User> | null>(
+        (resolve, reject) => {
+          if (error) {
+            reject(error);
+          }
+          if (!loading && data) {
+            resolve(data as GenericResponse<User>);
+          } else if (!data && !error) {
+            resolve(null);
+          }
+        }
+      );
 
-      const user = (await response.json()) as User;
-      setCurrentUser(user);
+      getCurrentUserCallback();
 
-      return user;
+      return await promise;
     },
-    [currentUser]
+    [currentUser, data]
   );
 
   const logout = useCallback(() => {
@@ -65,7 +156,7 @@ export function useAuth() {
 
     setCurrentUser(null);
     clearToken();
-    client.resetStore();
+    client.resetStore().catch(console.error);
   }, [currentUser]);
 
   return { currentUser, token, login, logout };

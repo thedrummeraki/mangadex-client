@@ -7,6 +7,8 @@ import NewReleasesIcon from "@material-ui/icons/NewReleases";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import SettingsIcon from "@material-ui/icons/Settings";
 import { useHistory } from "react-router";
+import { useAuth } from "config/providers/AuthProvider";
+import { noEmptyArray } from "utils";
 
 interface BaseDrawerItem {
   icon: ReactNode;
@@ -29,6 +31,7 @@ type DrawerItem = ClickableDrawerItem | LinkableDrawerItem;
 
 export default function useDrawerItems() {
   const history = useHistory();
+  const { currentUser, logout } = useAuth();
 
   const top: Array<DrawerItem> = [
     {
@@ -59,18 +62,25 @@ export default function useDrawerItems() {
       onClick: () => history.push("/"),
     },
   ];
-  const user: Array<DrawerItem> = [
-    {
-      content: "My account",
-      icon: <AccountCircleIcon />,
-      onClick: () => history.push("/"),
-    },
-    {
-      content: "Application settings",
-      icon: <SettingsIcon />,
-      onClick: () => history.push("/"),
-    },
-  ];
+  const user: Array<DrawerItem> =
+    (currentUser && [
+      {
+        content: "My account",
+        icon: <AccountCircleIcon />,
+        onClick: () => history.push("/"),
+      },
+      {
+        content: "Application settings",
+        icon: <SettingsIcon />,
+        onClick: () => history.push("/"),
+      },
+      {
+        content: "Logout",
+        icon: null,
+        onClick: logout,
+      },
+    ]) ||
+    [];
 
-  return [top, manga, user];
+  return [top, manga, user].filter(noEmptyArray);
 }
