@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { CircularProgress, Grid } from "@material-ui/core";
-import { Thumbnail, TitledSection } from "components";
+import { CustomGrid, Thumbnail, TitledSection } from "components";
 import { chapterTitle } from "helpers";
 import { useEffect } from "react";
 import { PagedResultsList, Manga } from "types";
@@ -55,7 +55,7 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
   return (
     <>
       <TitledSection title={`Chapters list (${chaptersList.total}) ${bp}`} />
-      <Grid container spacing={2}>
+      <CustomGrid>
         {chaptersList.results.map((chapterInfo, index) => {
           const {
             data: {
@@ -67,17 +67,15 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
             data.length === 1 ? "1 page" : `${data.length} pages`;
 
           return (
-            <Grid item sm={6} md={4} lg={3} xl={2}>
-              <Thumbnail
-                features={[publishedTimeAgo, pagesCount]}
-                title={`${index + 1}) ${chapterTitle(chapterInfo.data)}`}
-                img="https://picsum.photos/185/265"
-                url={`/manga/read/${chapterInfo.data.id}`}
-              />
-            </Grid>
+            <Thumbnail
+              features={[publishedTimeAgo, pagesCount]}
+              title={`${index + 1}) ${chapterTitle(chapterInfo.data)}`}
+              img="https://picsum.photos/185/265"
+              url={`/manga/read/${chapterInfo.data.id}`}
+            />
           );
         })}
-      </Grid>
+      </CustomGrid>
     </>
   );
 }
