@@ -1,4 +1,10 @@
-import { gql, useApolloClient, useLazyQuery, useQuery } from "@apollo/client";
+import {
+  gql,
+  useApolloClient,
+  useLazyQuery,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
 import React, {
   PropsWithChildren,
   useCallback,
@@ -47,6 +53,21 @@ const checkSessionQuery = gql`
       relationships
       session
       refresh
+    }
+  }
+`;
+
+const logoutMutation = gql`
+  mutation Logout {
+    logout(body: {})
+      @rest(
+        type: "Logout"
+        method: "POST"
+        path: "/auth/logout"
+        bodyKey: "body"
+      ) {
+      result
+      errors
     }
   }
 `;
@@ -110,6 +131,8 @@ export function useAuth(options?: {
   const [getCurrentUserCallback, { data, loading, error }] =
     useLazyQuery(currentUserQuery);
 
+  const [clearSession] = useMutation(logoutMutation);
+
   useEffect(() => {
     if (data?.me) {
       const response = data.me as GenericResponse<User>;
@@ -154,9 +177,13 @@ export function useAuth(options?: {
       return;
     }
 
-    setCurrentUser(null);
-    clearToken();
-    client.resetStore().catch(console.error);
+    clearSession().then((result) => {
+      if (result.data?.logout?.result === "ok") {
+        client.resetStore().catch(console.error);
+        setCurrentUser(null);
+        clearToken();
+      }
+    });
   }, [currentUser]);
 
   return { currentUser, token, login, logout };
