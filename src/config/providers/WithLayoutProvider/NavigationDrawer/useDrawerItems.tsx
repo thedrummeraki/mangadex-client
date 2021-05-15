@@ -6,6 +6,8 @@ import MenuBookIcon from "@material-ui/icons/MenuBook";
 import NewReleasesIcon from "@material-ui/icons/NewReleases";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import SettingsIcon from "@material-ui/icons/Settings";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+
 import { useHistory } from "react-router";
 import { useAuth } from "config/providers/AuthProvider";
 import { noEmptyArray } from "utils";
@@ -76,7 +78,7 @@ export default function useDrawerItems() {
       },
       {
         content: "Logout",
-        icon: null,
+        icon: <ExitToAppIcon />,
         onClick: logout,
       },
     ]) ||
