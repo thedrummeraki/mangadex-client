@@ -218,7 +218,7 @@ function proxyRequest(req, res, requestPath, proxiedHeaders) {
     ...proxiedHeaders,
   });
 
-  const body = Object.keys(req.body).length === 0 ? undefined : res.body;
+  const body = Object.keys(req.body).length === 0 ? undefined : req.body;
 
   request(
     {

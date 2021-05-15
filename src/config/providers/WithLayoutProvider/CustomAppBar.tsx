@@ -1,4 +1,4 @@
-import { Container, Grid, IconButton } from "@material-ui/core";
+import { Container, Grid, Button } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { LoginModal } from "components/modals";
 import { useState } from "react";
@@ -15,15 +15,15 @@ export function CustomAppBar() {
         </Grid>
 
         <Grid item>
-          <IconButton
+          <Button
             aria-label="account of current user"
             aria-controls="primary-search-account-menu"
             aria-haspopup="true"
             color="inherit"
             onClick={() => setOpen(true)}
           >
-            <AccountCircle />
-          </IconButton>
+            <AccountCircle /> Login
+          </Button>
         </Grid>
       </Grid>
       <LoginModal open={open} onClose={() => setOpen(false)} />

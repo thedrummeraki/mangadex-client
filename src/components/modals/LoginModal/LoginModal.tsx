@@ -1,10 +1,10 @@
 import {
   FormControl,
   OutlinedInput,
-  InputLabel,
   makeStyles,
   Button,
 } from "@material-ui/core";
+import useLogin from "helpers/useLogin";
 import { useMemo, useState } from "react";
 import BasicModal from "../BasicModal";
 
@@ -33,6 +33,14 @@ export default function LoginModal({ open, onClose }: Props) {
   const classes = useStyles();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const { loginUser } = useLogin();
+
+  const loginNow = () => {
+    if (validEntry) {
+      loginUser({ username, password });
+    }
+  };
 
   const validEntry = useMemo(
     () =>
@@ -74,6 +82,7 @@ export default function LoginModal({ open, onClose }: Props) {
             size="large"
             variant="contained"
             color="primary"
+            onClick={loginNow}
           >
             Sign in
           </Button>
