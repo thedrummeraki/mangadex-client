@@ -34,14 +34,26 @@ export function useAuth() {
   const { currentUser, setCurrentUser } = useContext(AuthContext);
   const token = useMemo(getToken, [currentUser]);
 
+  // Call this after manually logging in the user
   const login = useCallback(
     async (token: Token) => {
       if (currentUser) {
         return;
       }
 
-      // setCurrentUser(user);
       saveToken(token);
+      const headers = new Headers();
+      headers.append("Authorization", token.session);
+
+      const response = await fetch("http://localhost:3001/user/me", {
+        method: "GET",
+        headers,
+      });
+
+      const user = (await response.json()) as User;
+      setCurrentUser(user);
+
+      return user;
     },
     [currentUser]
   );
@@ -59,7 +71,7 @@ export function useAuth() {
   return { currentUser, token, login, logout };
 }
 
-function getToken(): Token | null {
+export function getToken(): Token | null {
   const savedSession = sessionStorage.getItem("auth.session");
   const savedRefresh = sessionStorage.getItem("auth.refresh");
 

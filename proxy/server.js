@@ -145,7 +145,6 @@ app.get("/version", (req, res) => {
     if (err) {
       res.send({ error: true });
     } else {
-      console.log(yaml.load(response.body));
       res.send({ version: yaml.load(response.body).info.version });
     }
   });
@@ -293,7 +292,11 @@ function proxyRequest(req, res, requestPath, proxiedHeaders) {
   );
   console.log(req.body);
   log.info("headers", {
-    Authorization: req.header("Authorization") ? "[REDACTED]" : "undefined",
+    Authorization: req.header("Authorization")
+      ? process.env.DEBUG === "true"
+        ? req.header("Authorization")
+        : "[REDACTED]"
+      : "undefined",
     ...proxiedHeaders,
   });
 
@@ -301,8 +304,9 @@ function proxyRequest(req, res, requestPath, proxiedHeaders) {
 
   request(
     {
-      url: targetURL + req.url,
+      url: requestPath,
       method: req.method,
+      headers: req.headers,
       json: body,
     },
     function (error, response) {
@@ -313,6 +317,7 @@ function proxyRequest(req, res, requestPath, proxiedHeaders) {
           log.error("error: " + response.statusCode);
         } else {
           log.error("unknown error!");
+          log.debug(error);
           res.send({ error: true, unknown: true });
         }
       } else {

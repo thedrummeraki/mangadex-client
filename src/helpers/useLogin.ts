@@ -38,8 +38,10 @@ export default function useLogin() {
   }) => {
     const result = await requestLogin({ variables: { username, password } });
     if (result.data?.loginUser?.result === "ok") {
-      const user = await login(result.data.loginUser.token);
+      return await login(result.data.loginUser.token);
     }
+
+    return null;
     // .then((result) => {
     //   if (result.data?.loginUser?.result === "ok") {
     //     login(result.data.loginUser.token);

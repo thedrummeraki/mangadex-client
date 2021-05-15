@@ -48,6 +48,7 @@ const basicExpressLogger = function (req, res, next) {
     "\x1b[0m",
     req.originalUrl
   );
+  debug(`(${cacheKey(req).slice(0, 10)})`, "Headers:", req.headers);
 
   res.on("finish", () => {
     const end = new Date();

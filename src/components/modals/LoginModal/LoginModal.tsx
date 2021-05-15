@@ -33,12 +33,18 @@ export default function LoginModal({ open, onClose }: Props) {
   const classes = useStyles();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { loginUser } = useLogin();
 
   const loginNow = () => {
-    if (validEntry) {
-      loginUser({ username, password });
+    if (validEntry && !loading) {
+      setLoading(true);
+      loginUser({ username, password }).then((user) => {
+        if (user) {
+          alert("welcome, " + user.attributes.username);
+        }
+      });
     }
   };
 
@@ -78,7 +84,7 @@ export default function LoginModal({ open, onClose }: Props) {
         </FormControl>
         <FormControl>
           <Button
-            disabled={!validEntry}
+            disabled={loading || !validEntry}
             size="large"
             variant="contained"
             color="primary"
