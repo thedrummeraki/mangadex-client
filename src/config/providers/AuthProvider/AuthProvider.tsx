@@ -89,9 +89,7 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
         "X-Auth-Refresh": token?.refresh || "",
       },
     },
-    skip:
-      token == null ||
-      (token.session.length === 0 && token.refresh.length === 0),
+    skip: token == null,
   });
 
   useEffect(() => {
