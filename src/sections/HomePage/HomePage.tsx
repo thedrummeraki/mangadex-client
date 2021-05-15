@@ -1,5 +1,5 @@
 import { Button } from "@material-ui/core";
-import { Page } from "components";
+import { Page, CustomGrid } from "components";
 import { MangaThumbnail } from "components/Thumbnails";
 import useMangaList from "helpers/useMangaList";
 import { useScrollListeners } from "utils";
@@ -33,16 +33,10 @@ export function HomePage() {
         </Button>
       }
     >
-      <div
-        style={{
-          display: "grid",
-          gap: "28px 30px",
-          gridTemplateColumns: "repeat(auto-fill, 185px)",
-          justifyContent: "space-between",
-        }}
-      >
+      <CustomGrid>
         {mangaList.results.map((mangaResult) => (
           <MangaThumbnail
+            key={mangaResult.data.id}
             chaptersCount={
               mangaResult.relationships.filter(
                 (relationship) => relationship.type === "chapter"
@@ -51,7 +45,7 @@ export function HomePage() {
             manga={mangaResult.data}
           />
         ))}
-      </div>
+      </CustomGrid>
     </Page>
   );
 }
