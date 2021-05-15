@@ -1,3 +1,4 @@
+const e = require("express");
 const strftime = require("strftime");
 const { cacheKey } = require("./middleware/cache");
 const formatDatetime = strftime.localizeByIdentifier("en_CA");
@@ -14,6 +15,21 @@ const print = (level, message, ...otherParams) => {
     message,
     ...otherParams
   );
+};
+
+const printObject = (identifier, object) => {
+  const sensitiveFields = ["Authorization", "password"];
+  if (process.env.DEBUG === "true") {
+    debug(`${identifier}:`, object);
+  } else {
+    const copiedObject = { ...object };
+    Object.keys(copiedObject).forEach((key) => {
+      if (sensitiveFields.includes(key)) {
+        copiedObject[key] = "[REDACTED]";
+      }
+    });
+    info(`${identifier}:`, copiedObject);
+  }
 };
 
 const info = (message, ...otherParams) => {
@@ -74,3 +90,4 @@ exports.warn = warn;
 exports.error = error;
 exports.fatal = fatal;
 exports.info = info;
+exports.printObject = printObject;

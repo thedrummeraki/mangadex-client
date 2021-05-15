@@ -290,15 +290,12 @@ function proxyRequest(req, res, requestPath, proxiedHeaders) {
   log.info(
     `Proxying request ${requestCacheKey} to ${req.method} ${requestPath} with body`
   );
-  console.log(req.body);
-  log.info("headers", {
-    Authorization: req.header("Authorization")
-      ? process.env.DEBUG === "true"
-        ? req.header("Authorization")
-        : "[REDACTED]"
-      : "undefined",
+  log.printObject("Body", req.body);
+  const headers = {
+    Authorization: req.header("Authorization") || "",
     ...proxiedHeaders,
-  });
+  };
+  log.printObject("Headers", headers);
 
   const body = Object.keys(req.body).length === 0 ? undefined : req.body;
 
@@ -306,7 +303,7 @@ function proxyRequest(req, res, requestPath, proxiedHeaders) {
     {
       url: requestPath,
       method: req.method,
-      headers: req.headers,
+      headers,
       json: body,
     },
     function (error, response) {
