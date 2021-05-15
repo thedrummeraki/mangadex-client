@@ -1,7 +1,8 @@
 import { useMutation } from "@apollo/client";
+import { useAuth } from "config/providers";
 import gql from "graphql-tag";
 
-const mutation = gql`
+const loginMutation = gql`
   mutation LoginUser($username: String!, $password: String!) {
     loginUser(body: { username: $username, password: $password })
       @rest(
@@ -16,26 +17,35 @@ const mutation = gql`
   }
 `;
 
-export default function useLogin() {
-  const [login] = useMutation(mutation);
+// const authMutation = gql`
+//   mutation AuthUser {
+//     me @rest(type: "User", path: "/user/me") {
 
-  const loginUser = ({
+//     }
+//   }
+// `;
+
+export default function useLogin() {
+  const { login } = useAuth();
+  const [requestLogin] = useMutation(loginMutation);
+
+  const loginUser = async ({
     username,
     password,
   }: {
     username: string;
     password: string;
   }) => {
-    login({ variables: { username, password } })
-      .then((result) => {
-        if (result.data?.loginUser?.result === "ok") {
-          const token = result.data.loginUser.token;
-
-          sessionStorage.setItem("auth.token", token.session);
-          sessionStorage.setItem("refresh.token", token.refresh);
-        }
-      })
-      .catch((err) => console.log(err));
+    const result = await requestLogin({ variables: { username, password } });
+    if (result.data?.loginUser?.result === "ok") {
+      const user = await login(result.data.loginUser.token);
+    }
+    // .then((result) => {
+    //   if (result.data?.loginUser?.result === "ok") {
+    //     login(result.data.loginUser.token);
+    //   }
+    // })
+    // .catch((err) => console.log(err));
   };
 
   const logoutUser = () => {};

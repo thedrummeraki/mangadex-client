@@ -21,8 +21,10 @@ export function CustomAppBar() {
             aria-haspopup="true"
             color="inherit"
             onClick={() => setOpen(true)}
+            startIcon={<AccountCircle />}
+            size="large"
           >
-            <AccountCircle /> Login
+            Login
           </Button>
         </Grid>
       </Grid>

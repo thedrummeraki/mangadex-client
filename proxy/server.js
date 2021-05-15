@@ -1,6 +1,7 @@
 var express = require("express"),
   request = require("request"),
   geoip = require("geoip-lite"),
+  axios = require("axios"),
   app = express();
 
 const log = require("./logger");
@@ -148,6 +149,84 @@ app.get("/version", (req, res) => {
       res.send({ version: yaml.load(response.body).info.version });
     }
   });
+});
+
+app.get("/auth/check-and-refresh", async (req, res) => {
+  const session = req.headers["x-auth-session"];
+  const refresh = req.headers["x-auth-refresh"];
+
+  if (session.length === 0 && refresh.length === 0) {
+    return res
+      .status(401)
+      .send({ error: true, message: "No session or refresh token." });
+  }
+
+  if (session.length) {
+    const bearerToken = session.trim();
+    const { data: checkAuthData } = await axios.request({
+      baseURL: "https://api.mangadex.org",
+      method: "GET",
+      url: "/auth/check",
+      headers: {
+        Authorization: bearerToken,
+      },
+    });
+
+    if (checkAuthData.result !== "ok") {
+      return res.status(400).send({
+        error: true,
+        message: "Could not check the validity of the token",
+        bearerToken,
+      });
+    }
+
+    try {
+      const { data: getUserData } = await axios.request({
+        baseURL: "https://api.mangadex.org",
+        method: "GET",
+        url: "/user/me",
+        headers: {
+          Authorization: bearerToken,
+        },
+      });
+
+      if (getUserData.result === "ok") {
+        return res.send({ ...getUserData });
+      }
+    } catch (e) {
+      console.log("could not get user info", e.response.status);
+    }
+  }
+
+  if (refresh.length) {
+    try {
+      const { data } = await axios.request({
+        baseURL: "https://api.mangadex.org",
+        method: "POST",
+        url: "/auth/refresh",
+        data: { token: refresh },
+      });
+
+      if (data.result === "ok") {
+        const newSession = data.token.session;
+
+        const { data: getUserData } = await axios.request({
+          baseURL: "https://api.mangadex.org",
+          method: "GET",
+          url: "/user/me",
+          headers: {
+            Authorization: newSession,
+          },
+        });
+
+        return res.send({ ...getUserData, ...data.token });
+      }
+    } catch (e) {
+      console.log("could not refresh token", e.response.status);
+    }
+  }
+
+  res.status(401).send({ error: true });
 });
 
 app.all("*", function (req, res, next) {
