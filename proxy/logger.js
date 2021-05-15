@@ -16,6 +16,21 @@ const print = (level, message, ...otherParams) => {
   );
 };
 
+const printObject = (identifier, object) => {
+  const sensitiveFields = ["Authorization", "password"];
+  if (process.env.DEBUG === "true") {
+    debug(`${identifier}:`, object);
+  } else {
+    const copiedObject = { ...object };
+    Object.keys(copiedObject).forEach((key) => {
+      if (sensitiveFields.includes(key)) {
+        copiedObject[key] = "[REDACTED]";
+      }
+    });
+    info(`${identifier}:`, copiedObject);
+  }
+};
+
 const info = (message, ...otherParams) => {
   print(INFO_LEVEL, message, ...otherParams);
 };
@@ -48,6 +63,7 @@ const basicExpressLogger = function (req, res, next) {
     "\x1b[0m",
     req.originalUrl
   );
+  debug(`(${cacheKey(req).slice(0, 10)})`, "Headers:", req.headers);
 
   res.on("finish", () => {
     const end = new Date();
@@ -73,3 +89,4 @@ exports.warn = warn;
 exports.error = error;
 exports.fatal = fatal;
 exports.info = info;
+exports.printObject = printObject;

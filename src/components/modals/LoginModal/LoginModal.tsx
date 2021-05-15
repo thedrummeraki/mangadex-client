@@ -1,10 +1,10 @@
 import {
   FormControl,
   OutlinedInput,
-  InputLabel,
   makeStyles,
   Button,
 } from "@material-ui/core";
+import useLogin from "helpers/useLogin";
 import { useMemo, useState } from "react";
 import BasicModal from "../BasicModal";
 
@@ -33,6 +33,22 @@ export default function LoginModal({ open, onClose }: Props) {
   const classes = useStyles();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  const { loginUser } = useLogin({
+    onLogin: (response) => {
+      setLoggedIn(response.result === "ok");
+      setLoading(false);
+    },
+  });
+
+  const loginNow = () => {
+    if (validEntry && !loading) {
+      setLoading(true);
+      loginUser({ username, password });
+    }
+  };
 
   const validEntry = useMemo(
     () =>
@@ -46,7 +62,7 @@ export default function LoginModal({ open, onClose }: Props) {
     <BasicModal
       title="Sign in"
       description="Enter your MangaDex account credentials below."
-      open={open}
+      open={open && !loggedIn}
       onClose={onClose}
     >
       <form noValidate autoComplete="off" className={classes.root}>
@@ -70,10 +86,11 @@ export default function LoginModal({ open, onClose }: Props) {
         </FormControl>
         <FormControl>
           <Button
-            disabled={!validEntry}
+            disabled={loading || !validEntry}
             size="large"
             variant="contained"
             color="primary"
+            onClick={loginNow}
           >
             Sign in
           </Button>

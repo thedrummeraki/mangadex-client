@@ -1,11 +1,13 @@
-import { APIProvider, RootProvider } from "config/providers";
+import { APIProvider, AuthProvider, RootProvider } from "config/providers";
 import { AppRouter } from "routes";
 
 function App() {
   return (
     <RootProvider>
       <APIProvider>
-        <AppRouter />
+        <AuthProvider>
+          <AppRouter />
+        </AuthProvider>
       </APIProvider>
     </RootProvider>
   );
