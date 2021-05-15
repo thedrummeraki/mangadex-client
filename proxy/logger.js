@@ -1,4 +1,3 @@
-const e = require("express");
 const strftime = require("strftime");
 const { cacheKey } = require("./middleware/cache");
 const formatDatetime = strftime.localizeByIdentifier("en_CA");

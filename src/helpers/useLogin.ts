@@ -39,12 +39,6 @@ export default function useLogin(options?: {
     }
 
     return null;
-    // .then((result) => {
-    //   if (result.data?.loginUser?.result === "ok") {
-    //     login(result.data.loginUser.token);
-    //   }
-    // })
-    // .catch((err) => console.log(err));
   };
 
   const logoutUser = () => {};
