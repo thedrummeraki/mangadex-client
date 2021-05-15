@@ -7,7 +7,6 @@ import {
 } from "@apollo/client";
 import React, {
   PropsWithChildren,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -142,47 +141,48 @@ export function useAuth(options?: {
         }
       }
     }
-  }, [data, options]);
+  }, [data, options, setCurrentUser]);
 
   // Call this after manually logging in the user
-  const login = useCallback(
-    async (token: Token) => {
-      setCurrentUser(null);
-      saveToken(token);
+  const login = async (token: Token) => {
+    setCurrentUser(null);
+    saveToken(token);
 
-      const promise = new Promise<GenericResponse<User> | null>(
-        (resolve, reject) => {
-          if (error) {
-            reject(error);
-          }
-          if (!loading && data) {
-            resolve(data as GenericResponse<User>);
-          } else if (!data && !error) {
-            resolve(null);
-          }
+    const promise = new Promise<GenericResponse<User> | null>(
+      (resolve, reject) => {
+        if (error) {
+          reject(error);
         }
-      );
+        if (!loading && data) {
+          resolve(data as GenericResponse<User>);
+        } else if (!data && !error) {
+          resolve(null);
+        }
+      }
+    );
 
-      getCurrentUserCallback();
+    getCurrentUserCallback();
 
-      return await promise;
-    },
-    [currentUser, data]
-  );
+    return await promise;
+  };
 
-  const logout = useCallback(() => {
+  const logout = () => {
     if (!currentUser) {
       return;
     }
 
     clearSession().then((result) => {
       if (result.data?.logout?.result === "ok") {
-        client.resetStore().catch(console.error);
-        setCurrentUser(null);
-        clearToken();
+        client
+          .resetStore()
+          .catch(console.error)
+          .finally(() => {
+            setCurrentUser(null);
+            clearToken();
+          });
       }
     });
-  }, [currentUser]);
+  };
 
   return { currentUser, token, login, logout };
 }

@@ -1,7 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useAuth } from "config/providers";
 import gql from "graphql-tag";
-import { useCallback } from "react";
 import { GenericResponse } from "types";
 import { User } from "types/user";
 
