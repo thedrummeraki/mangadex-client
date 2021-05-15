@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { CircularProgress, Grid } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import { CustomGrid, Thumbnail, TitledSection } from "components";
 import { chapterTitle } from "helpers";
 import { useEffect } from "react";
