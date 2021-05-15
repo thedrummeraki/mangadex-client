@@ -266,3 +266,10 @@ export const timeAgo = (
 
   return relativeTimeInWords;
 };
+
+export function decodeHTML(htmlString: string) {
+  const element = document.createElement("div");
+  element.innerHTML = htmlString;
+
+  return element.innerText;
+}
