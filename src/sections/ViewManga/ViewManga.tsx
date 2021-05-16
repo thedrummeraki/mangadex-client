@@ -1,5 +1,5 @@
 import { Button, makeStyles, Paper, Typography } from "@material-ui/core";
-import { Page } from "components";
+import { Page, BBDescription } from "components";
 import { useLocalCurrentlyReading } from "helpers";
 import { mangaDescription, preferredTitle } from "helpers/mangadex";
 import { useState } from "react";
@@ -73,7 +73,9 @@ export function ViewManga({ manga }: Props) {
     >
       {description.en && (
         <Paper className={classes.description}>
-          <Typography>{mangaDescription(manga)}</Typography>
+          <Typography>
+            <BBDescription description={mangaDescription(manga)} />
+          </Typography>
         </Paper>
       )}
       <ChaptersList onFirstChapterReady={setFirstChapterId} manga={manga} />

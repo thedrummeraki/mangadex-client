@@ -2,6 +2,7 @@ import { Description, Manga, Title } from "types";
 import { Chapter } from "types/chapter";
 
 import DOMPurify from "dompurify";
+import { decodeHTML } from "utils";
 
 export function mangaTitle(manga: Manga) {
   return preferredTitle(manga.attributes.title);
@@ -12,7 +13,7 @@ export function mangaDescription(manga: Manga) {
 }
 
 export function preferredTitle(title: Title) {
-  return title.en;
+  return decodeHTML(title.en);
 }
 
 export function preferredDescription(description: Description) {
@@ -24,7 +25,7 @@ export function chapterTitle(chapter: Chapter) {
     attributes: { title, chapter: number },
   } = chapter;
   if (title) {
-    return title;
+    return decodeHTML(title);
   }
 
   return number != null ? `Chapter ${number}` : "Chapter";

@@ -33,6 +33,14 @@ const globalThemeParams = {
       "-webkit-line-clamp": 2,
       "-webkit-box-orient": "vertical",
     },
+    noSelect: {
+      "-webkit-touch-callout": "none",
+      "-webkit-user-select": "none",
+      "-khtml-user-select": "none",
+      "-moz-user-select": "none",
+      "-ms-user-select": "none",
+      "user-select": "none",
+    },
   },
 };
 
