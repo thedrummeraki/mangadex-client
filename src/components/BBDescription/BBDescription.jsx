@@ -2,7 +2,7 @@ import BBCode from "@bbob/react/es/Component";
 import reactPreset from "@bbob/preset-react";
 import { Button, makeStyles } from "@material-ui/core";
 import { decodeHTML } from "utils";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +48,7 @@ export function BBDescription({ description }) {
         spoilerElement.classList.remove(classes.showing);
       }
     });
-  }, [showSpoilers]);
+  }, [showSpoilers, classes.showing]);
 
   return (
     <div className={classes.root}>

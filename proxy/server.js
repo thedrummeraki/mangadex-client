@@ -2,6 +2,7 @@ var express = require("express"),
   request = require("request"),
   geoip = require("geoip-lite"),
   axios = require("axios"),
+  fs = require("fs"),
   app = express();
 
 const log = require("./logger");
@@ -10,6 +11,7 @@ const yaml = require("js-yaml");
 const {
   cacheMiddleware,
   cacheResponseBody,
+  cacheAnything,
   cacheKey,
 } = require("./middleware/cache");
 
@@ -148,6 +150,89 @@ app.get("/version", (req, res) => {
       res.send({ version: yaml.load(response.body).info.version });
     }
   });
+});
+
+app.get("/at-home/img", async (req, res) => {
+  const chapterId = req.query.chapterId;
+  const page = parseInt(req.query.page);
+  const dataServer = req.query.dataServer === "true";
+
+  if (!chapterId || !chapterId.length) {
+    return res.status(400).send({ error: true, message: "Missing chapter id" });
+  }
+
+  if (!page) {
+    return res.status(400).send({ error: true, message: "Missing page" });
+  }
+
+  try {
+    const { data: chapterData } = await axios.request({
+      baseURL: "https://api.mangadex.org",
+      method: "GET",
+      url: `/chapter/${chapterId}`,
+    });
+
+    if (!chapterData || chapterData.result !== "ok") {
+      return res.status(404).send({
+        error: true,
+        message: "Could not get chapter by id",
+        id: chapterId,
+        data: chapterData,
+      });
+    }
+
+    const source = dataServer
+      ? { chapter: "dataSaver", atHome: "data-saver" }
+      : { chapter: "data", atHome: "data" };
+
+    const chapterPageIds = chapterData.data.attributes[source.chapter];
+    if (page - 1 < 0 || page - 1 >= chapterPageIds.length) {
+      return res.status(400).send({
+        error: true,
+        message: "Page number out of bounds.",
+        max: chapterPageIds.length,
+      });
+    }
+
+    const { data: atHomeData } = await axios.request({
+      baseURL: "https://api.mangadex.org",
+      method: "GET",
+      url: `/at-home/server/${chapterId}`,
+    });
+
+    console.log("data", atHomeData.baseUrl, `/chapter/${chapterId}`);
+
+    if (!atHomeData.baseUrl) {
+      return res
+        .status(500)
+        .send({ error: true, message: "Could not get at home server URL" });
+    }
+
+    const hash = chapterData.data.attributes.hash;
+    const finalUrl = [
+      atHomeData.baseUrl,
+      source.atHome,
+      hash,
+      chapterPageIds[page],
+    ].join("/");
+
+    const extension = finalUrl.split(".").slice(-1);
+
+    request.get(finalUrl, { encoding: "binary" }, (error, response) => {
+      if (!error && response) {
+        cacheAnything(req, response.body);
+        res.writeHead(200, {
+          "Content-Type": `image/png`,
+          "Cache-Control": "max-age=300",
+          "X-At-Home-Url": finalUrl,
+        });
+        res.end(response.body, "binary");
+      }
+    });
+  } catch (error) {
+    log.error(error.data);
+    res.status(503).send({ error: true, message: "Unknown error" });
+  }
 });
 
 app.get("/auth/check-and-refresh", async (req, res) => {

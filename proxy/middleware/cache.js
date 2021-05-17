@@ -12,7 +12,8 @@ redisClient.on("error", function (error) {
 
 // Helper methods
 const { isPast, hoursFromNow } = require("../helpers.js");
-const allowsCaching = (req) => req.header("x-allow-cache") === "true";
+const allowsCaching = (req) =>
+  req.header("x-allow-cache") === "true" || req.query.cache === "true";
 const cacheKey = (req) => {
   const { originalUrl, hostname, body } = req;
   const shouldAuthorize = req.header("x-should-auth") === "true";
@@ -50,10 +51,31 @@ const cacheResponseBody = (req, response) => {
     log.error("Could not parse the response.", e);
     return null;
   }
-  const cacheForHours = parseInt(req.header("X-Cache-For-Hour")) || 1;
+
+  cacheAnything(req, parsedResponse);
+};
+
+const cacheImage = (req, img, type) => {
+  if (!allowsCaching(req)) {
+    log.warn("Skipping caching...");
+    return;
+  }
+
+  let parsedResponse = {
+    img,
+    image: true,
+    headers: { "Content-Type": `image/${type}` },
+  };
+
+  cacheAnything(req, parsedResponse);
+};
+
+const cacheAnything = (req, response) => {
+  const cacheForHours =
+    parseInt(req.header("X-Cache-For-Hour") || req.query.cache_duration) || 1;
   const responseToCache = {
     until: hoursFromNow(cacheForHours),
-    response: parsedResponse,
+    response,
   };
   const stringResponse = JSON.stringify(responseToCache);
   redisClient.set(cacheKey(req), stringResponse, (err) => {
@@ -91,17 +113,32 @@ const cacheMiddleware = (req, res, next) => {
       try {
         const cachedResponse = JSON.parse(reply);
         const cacheValidUntil = new Date(cachedResponse["until"]);
-        if (!cachedResponse.response) {
-          throw new Error("Missing cached response...");
-        }
-
         if (isPast(cacheValidUntil)) {
           log.info("cache is expired, clearning up and fetching new batch...");
           redisClient.del(requestCacheKey);
           next();
         } else {
-          log.debug(cachedResponse);
-          res.send({ ...cachedResponse["response"], cached: true });
+          if (!cachedResponse.response) {
+            throw new Error("Missing cached response...");
+          }
+
+          const { response } = cachedResponse;
+
+          if (response.image) {
+            if (!response.img) {
+              throw new Error("Missing cached image response...");
+            }
+
+            res.writeHead(200, {
+              "Content-Type": `image/png`,
+              "X-At-Home-Url": "unknown",
+              "X-Cached-Image": "true",
+            });
+            res.end(response.img, "binary");
+          } else {
+            log.debug(cachedResponse);
+            res.send({ ...cachedResponse["response"], cached: true });
+          }
         }
       } catch (error) {
         log.warn(
@@ -117,4 +154,6 @@ const cacheMiddleware = (req, res, next) => {
 
 exports.cacheMiddleware = cacheMiddleware;
 exports.cacheResponseBody = cacheResponseBody;
+exports.cacheImage = cacheImage;
+exports.cacheAnything = cacheAnything;
 exports.cacheKey = cacheKey;

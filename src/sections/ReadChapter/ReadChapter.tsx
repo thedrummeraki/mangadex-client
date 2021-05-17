@@ -1,5 +1,4 @@
 import { Chapter } from "types/chapter";
-import { useAtHomeBaseUrl } from "sections/ViewManga/useAtHome";
 import { Page, ChapterReader } from "components";
 import { chapterTitle, useLocalCurrentlyReading } from "helpers";
 
@@ -9,18 +8,17 @@ interface Props {
 }
 
 export function ReadChapter({ chapter, mangaId }: Props) {
-  const { atHomeBaseUrl, loading, error } = useAtHomeBaseUrl(chapter);
   const { setCurrentlyReading } = useLocalCurrentlyReading({ manga: mangaId });
 
   setCurrentlyReading({ chapter, manga: mangaId });
 
-  if (!atHomeBaseUrl || loading || error) {
-    return null;
-  }
-
   const pageData = chapter.attributes.dataSaver;
-  const pageURLs = pageData.map((data) =>
-    [atHomeBaseUrl, "data-saver", chapter.attributes.hash, data].join("/")
+  const pageURLs = pageData.map((data, index) =>
+    ["http://localhost:3001", "at-home", "img"]
+      .join("/")
+      .concat(
+        `?chapterId=${chapter.id}&page=${index + 1}&cache=true&duration=1`
+      )
   );
 
   return (

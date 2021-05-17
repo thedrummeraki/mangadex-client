@@ -59,16 +59,18 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
         {chaptersList.results.map((chapterInfo, index) => {
           const {
             data: {
-              attributes: { publishAt, data },
+              attributes: { publishAt, data, volume },
             },
           } = chapterInfo;
           const publishedTimeAgo = timeAgo(publishAt);
           const pagesCount =
             data.length === 1 ? "1 page" : `${data.length} pages`;
 
+          const volumeText = volume != null ? `Vol. ${volume}` : null;
+
           return (
             <Thumbnail
-              features={[publishedTimeAgo, pagesCount]}
+              features={[volumeText || publishedTimeAgo, pagesCount]}
               title={`${index + 1}) ${chapterTitle(chapterInfo.data)}`}
               img="https://picsum.photos/185/265"
               url={`/manga/read/${chapterInfo.data.id}`}

@@ -31,7 +31,6 @@ export function ChapterReader({
     parseInt(localStorage.getItem(`chapter-${chapter.id}`) || "0");
 
   const [currentIndex, setCurrentIndices] = useState(savedPage());
-
   const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
 
   const [canGoNext, setCanGoNext] = useState(false);

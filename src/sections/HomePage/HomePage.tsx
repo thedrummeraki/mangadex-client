@@ -1,6 +1,7 @@
 import { Button } from "@material-ui/core";
 import { Page, CustomGrid } from "components";
 import { MangaThumbnail } from "components/Thumbnails";
+import { useAuth } from "config/providers";
 import useMangaList from "helpers/useMangaList";
 import { useScrollListeners } from "utils";
 
@@ -10,6 +11,8 @@ export function HomePage() {
     pageSize: 20,
     allowCache: true,
   });
+
+  const { currentUser } = useAuth();
 
   useScrollListeners(null, () => {
     fetchMoreManga();
@@ -26,11 +29,17 @@ export function HomePage() {
   return (
     <Page
       maxWitdh={false}
-      title={`Latest manga`}
+      title={
+        currentUser
+          ? `Welcome, ${currentUser.attributes.username}. Here's the latest from MangaDex`
+          : `Latest manga`
+      }
       primaryAction={
-        <Button size="small" color="secondary" variant="contained">
-          Upload
-        </Button>
+        currentUser && (
+          <Button size="small" color="secondary" variant="contained">
+            Upload
+          </Button>
+        )
       }
     >
       <CustomGrid>

@@ -91,8 +91,8 @@ export default function NavigationDrawer(props: PropsWithChildren<Props>) {
       </div>
       <Divider />
       {drawerItems.map((items, index) => (
-        <>
-          <List key={`drawer-item-list-${index}`}>
+        <React.Fragment key={`drawer-item-list-${index}`}>
+          <List>
             {items.map((item) => (
               <ListItem button key={item.content} onClick={item.onClick}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
@@ -101,7 +101,7 @@ export default function NavigationDrawer(props: PropsWithChildren<Props>) {
             ))}
           </List>
           <Divider />
-        </>
+        </React.Fragment>
       ))}
     </div>
   );
