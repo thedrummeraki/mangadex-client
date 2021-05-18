@@ -2,7 +2,6 @@ import { useQuery } from "@apollo/client";
 import { Typography } from "@material-ui/core";
 import { Page } from "components";
 import { useParams } from "react-router";
-import { GenericResponse, Manga } from "types";
 import { ViewManga } from "./ViewManga";
 import ViewMangaQuery from "./queries/ViewMangaQuery";
 
@@ -17,14 +16,12 @@ export default function ViewMangaContainer() {
     },
   });
 
-  const response = data?.manga as GenericResponse<Manga>;
-
   const errored =
-    !data && !loading && (Boolean(error) || response.result === "ko");
+    (!data && !loading) || Boolean(error) || data?.manga?.result === "ko";
 
-  if (errored) {
+  if (errored || (!loading && !data?.manga?.data)) {
     return (
-      <Page title="Uh oh...">
+      <Page backUrl="/" title="Uh oh...">
         <Typography>
           We're sorry, we were not able to get the latest information from
           Mangadex.
@@ -33,9 +30,9 @@ export default function ViewMangaContainer() {
     );
   }
 
-  if (loading) {
-    return <Page title="Loading" />;
+  if (loading || !data?.manga) {
+    return <Page backUrl="/" title="Loading..." />;
   }
 
-  return <ViewManga manga={response.data} />;
+  return <ViewManga manga={data.manga.data} />;
 }

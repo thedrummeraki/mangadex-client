@@ -81,7 +81,7 @@ interface AuthContextState {
 export function AuthProvider({ children }: PropsWithChildren<{}>) {
   const token = getToken();
   const [currentUser, setCurrentUser] = useState<AuthUser>(null);
-  const { data } = useQuery(checkSessionQuery, {
+  const { data, loading } = useQuery(checkSessionQuery, {
     context: {
       headers: {
         "X-Auth-Session": token?.session || "",
@@ -105,6 +105,10 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
       }
     }
   }, [data]);
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider value={{ currentUser, setCurrentUser }}>

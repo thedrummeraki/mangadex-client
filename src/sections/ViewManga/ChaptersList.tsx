@@ -3,8 +3,7 @@ import { CircularProgress } from "@material-ui/core";
 import { CustomGrid, Thumbnail, TitledSection } from "components";
 import { chapterTitle } from "helpers";
 import { useEffect } from "react";
-import { PagedResultsList, Manga } from "types";
-import { Chapter } from "types/chapter";
+import { Manga } from "types";
 import { timeAgo, useCurrentBreakpoint } from "utils";
 import GetChaptersForManga from "./queries/GetChaptersForManga";
 
@@ -23,16 +22,15 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
     },
   });
 
-  const chaptersList = data?.chapters as PagedResultsList<Chapter>;
   const bp = useCurrentBreakpoint();
 
   useEffect(() => {
-    if (chaptersList?.results?.length) {
-      onFirstChapterReady(chaptersList.results[0].data.id);
+    if (data?.chapters?.results?.length) {
+      onFirstChapterReady(data?.chapters.results[0].data.id);
     }
-  }, [onFirstChapterReady, chaptersList]);
+  }, [onFirstChapterReady, data?.chapters]);
 
-  if (error) {
+  if (error || data?.chapters?.result === "error") {
     return <TitledSection title="Error" />;
   }
 
@@ -48,15 +46,15 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
     );
   }
 
-  if (!chaptersList || !chaptersList.results) {
+  if (!data?.chapters || !data?.chapters) {
     return <TitledSection title="No chapters were found yet" />;
   }
 
   return (
     <>
-      <TitledSection title={`Chapters list (${chaptersList.total}) ${bp}`} />
+      <TitledSection title={`Chapters list (${data?.chapters.total}) ${bp}`} />
       <CustomGrid>
-        {chaptersList.results.map((chapterInfo, index) => {
+        {data?.chapters.results.map((chapterInfo, index) => {
           const {
             data: {
               attributes: { publishAt, data, volume },

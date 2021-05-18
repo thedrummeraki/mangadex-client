@@ -1,4 +1,6 @@
+import { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import gql from "graphql-tag";
+import { Chapter, PagedResultsList } from "types";
 
 const query = gql`
   query GetChaptersFormManga($mangaId: String!) {
@@ -33,4 +35,7 @@ const query = gql`
   }
 `;
 
-export default query;
+export default query as TypedDocumentNode<
+  { chapters: PagedResultsList<Chapter> },
+  { mangaId: string }
+>;

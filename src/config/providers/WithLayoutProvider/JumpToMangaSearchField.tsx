@@ -1,6 +1,9 @@
 import {
   Avatar,
+  Box,
   Chip,
+  CircularProgress,
+  CircularProgressProps,
   IconButton,
   InputBase,
   List,
@@ -51,6 +54,10 @@ const useStyles = makeStyles((theme) => ({
   hidden: {
     display: "none",
   },
+  loading: {
+    color: theme.palette.secondary.dark,
+    marginRight: theme.spacing(),
+  },
 }));
 
 export default function JumpToMangaSearchField() {
@@ -61,7 +68,8 @@ export default function JumpToMangaSearchField() {
   const [results, setResults] = useState<Array<GenericResponse<Manga>>>([]);
   const { mangaList, loading, searchManga } = useSearchMangaList({ limit: 5 });
 
-  const debouncedQuery = useDebouncedValue(input.trim(), 750);
+  const debounceDelayMs = 750;
+  const debouncedQuery = useDebouncedValue(input.trim(), debounceDelayMs);
 
   useEffect(() => {
     if (debouncedQuery.length > 2) {
@@ -79,6 +87,19 @@ export default function JumpToMangaSearchField() {
       setResults(mangaList.results);
     }
   }, [loading, mangaList]);
+
+  // useEffect(() => {
+  //   setDebouncing(input.length > 0);
+  //   if (input.length > 0) {
+  //     setProgress({
+  //       value: 1,
+  //       variant: "determinate",
+  //       className: classes.loading,
+  //     });
+  //   } else {
+  //     setProgress(defaultProgress);
+  //   }
+  // }, [input]);
 
   return (
     <Paper
@@ -174,6 +195,33 @@ export default function JumpToMangaSearchField() {
           })}
         </List>
       </div>
+      {loading && <CircularProgress size={24} className={classes.loading} />}
     </Paper>
+  );
+}
+
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number }
+) {
+  return (
+    <Box position="relative" display="inline-flex">
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        position="absolute"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          color="textSecondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
   );
 }

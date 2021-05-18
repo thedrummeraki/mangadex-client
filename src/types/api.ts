@@ -7,12 +7,26 @@ export function defaultPagedResults<T>() {
   };
 }
 
-export interface PagedResultsList<T> {
+interface MangaDexError {
+  id: string;
+  status: number;
+  title: string;
+  detail: string;
+}
+
+interface SuccessPagedResults<T> {
   results: Array<GenericResponse<T>>;
   limit: number;
   offset: number;
   total: number;
 }
+
+interface ErrorPagedResults {
+  result: "error";
+  errors: Array<MangaDexError>;
+}
+
+export type PagedResultsList<T> = SuccessPagedResults<T> & ErrorPagedResults;
 
 export interface GenericResponse<T> {
   result: "ok" | "ko";
