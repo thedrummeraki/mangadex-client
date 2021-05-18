@@ -47,13 +47,13 @@ export default function useDrawerItems() {
     {
       content: "Continue reading...",
       icon: <PlayArrowIcon />,
-      requiresAuth: loggedIn,
-      onClick: () => history.push("/"),
+      requiresAuth: true,
+      onClick: () => history.push("/continue-reading"),
     },
     {
       content: "Follows",
       icon: <GroupIcon />,
-      requiresAuth: loggedIn,
+      requiresAuth: true,
       onClick: () => history.push("/follows"),
     },
     {
@@ -87,5 +87,15 @@ export default function useDrawerItems() {
     ]) ||
     [];
 
-  return [top, manga, user].filter(noEmptyArray);
+  return [top, manga, user]
+    .map((categoryList) => {
+      return categoryList.filter((category) => {
+        if (!category.requiresAuth) {
+          return category;
+        }
+
+        return category.requiresAuth && loggedIn;
+      });
+    })
+    .filter(noEmptyArray);
 }

@@ -1,9 +1,9 @@
 import {
   Avatar,
   Chip,
-  CircularProgress,
   IconButton,
   InputBase,
+  LinearProgress,
   List,
   ListItem,
   ListItemAvatar,
@@ -86,114 +86,104 @@ export default function JumpToMangaSearchField() {
     }
   }, [loading, mangaList]);
 
-  // useEffect(() => {
-  //   setDebouncing(input.length > 0);
-  //   if (input.length > 0) {
-  //     setProgress({
-  //       value: 1,
-  //       variant: "determinate",
-  //       className: classes.loading,
-  //     });
-  //   } else {
-  //     setProgress(defaultProgress);
-  //   }
-  // }, [input]);
-
   return (
-    <Paper
-      className={classes.root}
-      onBlur={(event) => {
-        if (!event.relatedTarget) {
-          setShowResults(false);
-        }
-      }}
-    >
-      <IconButton className={classes.iconButton}>
-        <SearchIcon />
-      </IconButton>
-      <div className={classes.search}>
-        <InputBase
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          className={classes.input}
-          placeholder="Jump to manga..."
-          onFocus={() => setShowResults(true)}
-        />
-        <List
-          className={clsx(
-            classes.autocompleteList,
-            (showResults && debouncedQuery.length && results.length) ||
-              classes.hidden
-          )}
-        >
-          {results.map((result) => {
-            const manga = result.data;
-            const {
-              attributes: { year, status, tags },
-            } = manga;
-            const labelId = `result-item-${manga.id}`;
+    <>
+      <Paper
+        className={classes.root}
+        onBlur={(event) => {
+          if (!event.relatedTarget) {
+            setShowResults(false);
+          }
+        }}
+      >
+        <IconButton className={classes.iconButton}>
+          <SearchIcon />
+        </IconButton>
+        <div className={classes.search}>
+          <InputBase
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            className={classes.input}
+            placeholder="Jump to manga..."
+            onFocus={() => setShowResults(true)}
+          />
+          <List
+            className={clsx(
+              classes.autocompleteList,
+              (showResults && debouncedQuery.length && results.length) ||
+                classes.hidden
+            )}
+          >
+            {results.map((result) => {
+              const manga = result.data;
+              const {
+                attributes: { year, status, tags },
+              } = manga;
+              const labelId = `result-item-${manga.id}`;
 
-            return (
-              <ListItem
-                key={manga.id}
-                button
-                onClick={() => {
-                  history.push(`/manga/${manga.id}`);
-                  setShowResults(false);
-                }}
-              >
-                <ListItemAvatar>
-                  <Avatar src="#" />
-                </ListItemAvatar>
+              return (
+                <ListItem
+                  key={manga.id}
+                  button
+                  onClick={() => {
+                    history.push(`/manga/${manga.id}`);
+                    setShowResults(false);
+                  }}
+                >
+                  <ListItemAvatar>
+                    <Avatar src="#" />
+                  </ListItemAvatar>
 
-                <ListItemText
-                  id={labelId}
-                  primary={
-                    <Typography className={classes.searchResultItemTitle}>
-                      {mangaTitle(manga)}
-                    </Typography>
-                  }
-                  secondary={
-                    <div>
-                      <div>
-                        {year && (
-                          <Chip
-                            size="small"
-                            style={{ marginRight: 8, marginBottom: 6 }}
-                            label={String(year)}
-                          />
-                        )}
-                        {status && (
-                          <Chip
-                            size="small"
-                            style={{ marginRight: 8, marginBottom: 6 }}
-                            label={String(status)}
-                            color="primary"
-                          />
-                        )}
-                        {tags.map((tag) => (
-                          <Chip
-                            size="small"
-                            style={{ marginRight: 8, marginBottom: 6 }}
-                            label={tag.attributes.name.en}
-                          />
-                        ))}
-                      </div>
-                      <Typography
-                        variant="subtitle2"
-                        className={classes.searchResultItemTitle}
-                      >
-                        {mangaDescription(manga)}
+                  <ListItemText
+                    id={labelId}
+                    primary={
+                      <Typography className={classes.searchResultItemTitle}>
+                        {mangaTitle(manga)}
                       </Typography>
-                    </div>
-                  }
-                />
-              </ListItem>
-            );
-          })}
-        </List>
-      </div>
-      {loading && <CircularProgress size={24} className={classes.loading} />}
-    </Paper>
+                    }
+                    secondary={
+                      <div>
+                        <div>
+                          {year && (
+                            <Chip
+                              size="small"
+                              style={{ marginRight: 8, marginBottom: 6 }}
+                              label={String(year)}
+                            />
+                          )}
+                          {status && (
+                            <Chip
+                              size="small"
+                              style={{ marginRight: 8, marginBottom: 6 }}
+                              label={String(status)}
+                              color="primary"
+                            />
+                          )}
+                          {tags.map((tag) => (
+                            <Chip
+                              size="small"
+                              style={{ marginRight: 8, marginBottom: 6 }}
+                              label={tag.attributes.name.en}
+                            />
+                          ))}
+                        </div>
+                        <Typography
+                          variant="subtitle2"
+                          className={classes.searchResultItemTitle}
+                        >
+                          {mangaDescription(manga)}
+                        </Typography>
+                      </div>
+                    }
+                  />
+                </ListItem>
+              );
+            })}
+          </List>
+        </div>
+      </Paper>
+
+      {loading && <LinearProgress variant="indeterminate" />}
+    </>
   );
 }
