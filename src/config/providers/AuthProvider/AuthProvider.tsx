@@ -188,7 +188,7 @@ export function useAuth(options?: {
     });
   };
 
-  return { currentUser, token, login, logout };
+  return { currentUser, token, login, logout, loggedIn: Boolean(currentUser) };
 }
 
 export function getToken(): Token | null {

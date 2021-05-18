@@ -73,7 +73,9 @@ export default function useMangaList({
     mangaList: {
       ...mangaList,
       results:
-        sliceAt != null ? mangaList.results.slice(sliceAt) : mangaList.results,
+        sliceAt != null
+          ? mangaList.results?.slice(sliceAt) || []
+          : mangaList.results || [],
     },
     fetchMoreManga,
   };

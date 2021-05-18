@@ -23,6 +23,7 @@ const client = new ApolloClient({
       Query: {
         fields: {
           mangaList: mangadexOffsetLimitPagination(),
+          followsList: mangadexOffsetLimitPagination(),
         },
       },
     },

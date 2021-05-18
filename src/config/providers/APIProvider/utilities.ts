@@ -10,8 +10,12 @@ export function mangadexOffsetLimitPagination<T extends Reference>(
   return {
     keyArgs,
     merge(existing, incoming) {
-      if (!existing) {
+      if (!existing || !existing.results) {
         return incoming;
+      }
+
+      if (!incoming.results) {
+        return existing;
       }
 
       return {

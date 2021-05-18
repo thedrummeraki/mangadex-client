@@ -146,7 +146,7 @@ export default function useSearchMangaList({
 
     const limit = options?.limit;
 
-    if (mangaList?.total > mangaList?.results.length) {
+    if (mangaList?.results && mangaList?.total > mangaList?.results.length) {
       await fetchMore({
         variables: {
           limit,

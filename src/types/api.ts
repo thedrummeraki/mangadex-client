@@ -15,7 +15,7 @@ interface MangaDexError {
 }
 
 interface SuccessPagedResults<T> {
-  results: Array<GenericResponse<T>>;
+  results?: Array<GenericResponse<T>>;
   limit: number;
   offset: number;
   total: number;
@@ -38,3 +38,7 @@ export interface Relationship {
   id: string;
   type: string;
 }
+
+export type Order<K extends keyof any> = {
+  [P in K]?: "asc" | "desc";
+};

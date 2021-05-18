@@ -51,7 +51,7 @@ export default function useDrawerItems() {
     {
       content: "Follows",
       icon: <GroupIcon />,
-      onClick: () => history.push("/"),
+      onClick: () => history.push("/follows"),
     },
     {
       content: "All manga",
