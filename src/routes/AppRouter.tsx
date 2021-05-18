@@ -1,7 +1,4 @@
-import { Typography } from "@material-ui/core";
-import { Page } from "components";
-import { useAuth, WithLayoutProvider } from "config/providers";
-import { PropsWithChildren } from "react";
+import { WithLayoutProvider } from "config/providers";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {
   HomePage,
@@ -11,15 +8,20 @@ import {
   FollowsListPage,
 } from "sections";
 
+import AuthenticatedRoute from "./AuthenticatedRoute";
+
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Switch>
         <WithLayoutProvider>
-          <Authenticated>
-            <Route exact path="/custom-lists" component={CustomListPage} />
-            <Route exact path="/follows" component={FollowsListPage} />
-          </Authenticated>
+          <AuthenticatedRoute exact path="/custom-lists">
+            <CustomListPage />
+          </AuthenticatedRoute>
+          <AuthenticatedRoute exact path="/follows">
+            <FollowsListPage />
+          </AuthenticatedRoute>
+
           <Route exact path="/" component={HomePage} />
           <Route exact path="/manga/:id" component={ViewManga} />
           <Route exact path="/manga/read/:id" component={ReadChapter} />
@@ -27,20 +29,4 @@ export function AppRouter() {
       </Switch>
     </BrowserRouter>
   );
-}
-
-function Authenticated({ children }: PropsWithChildren<{}>) {
-  const { loggedIn } = useAuth();
-
-  if (!loggedIn) {
-    return (
-      <Page backUrl="/" title="You are not logged in.">
-        <Typography>
-          Sorry, you need to be logged in to see this page.
-        </Typography>
-      </Page>
-    );
-  }
-
-  return <>{children}</>;
 }

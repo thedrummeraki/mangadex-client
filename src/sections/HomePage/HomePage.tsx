@@ -28,7 +28,6 @@ export function HomePage() {
 
   return (
     <Page
-      maxWitdh={false}
       title={
         currentUser
           ? `Welcome, ${currentUser.attributes.username}. Here's the latest from MangaDex`
