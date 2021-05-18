@@ -1,3 +1,5 @@
+import { Typography } from "@material-ui/core";
+import { Page } from "components";
 import { useAuth, WithLayoutProvider } from "config/providers";
 import { PropsWithChildren } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
@@ -31,7 +33,13 @@ function Authenticated({ children }: PropsWithChildren<{}>) {
   const { loggedIn } = useAuth();
 
   if (!loggedIn) {
-    return null;
+    return (
+      <Page backUrl="/" title="You are not logged in.">
+        <Typography>
+          Sorry, you need to be logged in to see this page.
+        </Typography>
+      </Page>
+    );
   }
 
   return <>{children}</>;

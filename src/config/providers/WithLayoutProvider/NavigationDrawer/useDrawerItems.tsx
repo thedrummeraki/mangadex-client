@@ -15,6 +15,7 @@ import { noEmptyArray } from "utils";
 interface BaseDrawerItem {
   icon: ReactNode;
   content: string;
+  requiresAuth?: boolean;
   onClick?: VoidFunction;
   url?: string;
 }
@@ -33,7 +34,7 @@ type DrawerItem = ClickableDrawerItem | LinkableDrawerItem;
 
 export default function useDrawerItems() {
   const history = useHistory();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, loggedIn, logout } = useAuth();
 
   const top: Array<DrawerItem> = [
     {
@@ -46,11 +47,13 @@ export default function useDrawerItems() {
     {
       content: "Continue reading...",
       icon: <PlayArrowIcon />,
+      requiresAuth: loggedIn,
       onClick: () => history.push("/"),
     },
     {
       content: "Follows",
       icon: <GroupIcon />,
+      requiresAuth: loggedIn,
       onClick: () => history.push("/follows"),
     },
     {
