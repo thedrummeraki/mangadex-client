@@ -57,9 +57,9 @@ export default function useDrawerItems() {
       onClick: () => history.push("/follows"),
     },
     {
-      content: "All manga",
+      content: "Browse manga",
       icon: <MenuBookIcon />,
-      onClick: () => history.push("/"),
+      onClick: () => history.push("/browse-manga"),
     },
     {
       content: "Latest releases",
