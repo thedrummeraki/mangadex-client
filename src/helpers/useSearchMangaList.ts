@@ -8,6 +8,7 @@ import {
   MangaStatus,
   PagedResultsList,
   PublicationDemographic,
+  SearchState,
 } from "types";
 
 const query = gql`
@@ -25,7 +26,7 @@ const query = gql`
     $status: [String!]
     $originalLanguage: [String!]
     $publicationDemographic: [String!]
-    $mangaIds: [String!]
+    $ids: [String!]
     $contentRating: [String!]
     $createdAtSince: String
     $updatedAtSince: String
@@ -44,7 +45,7 @@ const query = gql`
       status: $status
       originalLanguage: $originalLanguage
       publicationDemographic: $publicationDemographic
-      mangaIds: $mangaIds
+      ids: $ids
       contentRating: $contentRating
       createdAtSince: $createdAtSince
       updatedAtSince: $updatedAtSince
@@ -56,33 +57,6 @@ const query = gql`
     }
   }
 `;
-
-enum TagMode {
-  AND = "AND",
-  OR = "OR",
-}
-
-interface SearchOptions {
-  title?: string;
-  year?: number;
-  includedTagsMode?: Array<TagMode>;
-  excludedTagsMore?: Array<TagMode>;
-  status?: Array<MangaStatus>;
-  originalLanguage?: Array<string>;
-  publicationDemographic?: Array<PublicationDemographic>;
-  ids?: Array<string>;
-  contentRating?: Array<ContentRating>;
-  createdAtSince?: DateTime;
-  updatedAtSince?: DateTime;
-  // order?: { createdAt?: OrderDirection; updatedAt?: OrderDirection };
-  // // TODO: implement author type
-  // authors?: Array<any>;
-  // // TODO: implement artist type
-  // artists?: Array<any>;
-  // // TODO: implement tag type
-  // includedTags?: Array<any>;
-  // excludedTags?: Array<any>;
-}
 
 interface BasicOptions {
   offset?: number;
@@ -97,7 +71,12 @@ interface InternalOptions {
   allowCache?: boolean;
 }
 
-type Options = MandatoryOptions & InternalOptions & BasicOptions;
+type SearchOptions = Partial<SearchState>;
+
+type Options = MandatoryOptions &
+  InternalOptions &
+  BasicOptions &
+  SearchOptions;
 
 export default function useSearchMangaList({
   limit,
@@ -121,6 +100,8 @@ export default function useSearchMangaList({
           return v != null && ((Array.isArray(v) && v.length > 0) || v !== "");
         })
       );
+
+      console.log("filtered options", filteredOptions);
 
       callback({
         variables: {
