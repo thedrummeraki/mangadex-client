@@ -1,25 +1,26 @@
-import { Grid } from "@material-ui/core";
 import { Page } from "components";
+import { useSearchMangaList } from "helpers";
 import { useEffect, useState } from "react";
 import { ContentRating, SearchState } from "types";
 import { useDebouncedValue, useQueryParam } from "utils";
-import { BrowseMangaContainer } from "./BrowseMangaContainer";
+import { BrowseSearchFields } from "./BrowseSearchFields";
 
 export default function BrowseMangaPageContainer() {
   const defaultSearchState = useDefaultSearchState();
+  const { searchManga } = useSearchMangaList({ limit: 10 });
 
   const [searchState, setSearchState] =
     useState<SearchState>(defaultSearchState);
   const debouncedSearchState = useDebouncedValue(searchState, 500);
 
   useEffect(() => {
-    console.log("search state", debouncedSearchState);
+    searchManga(debouncedSearchState);
   }, [debouncedSearchState]);
 
   return (
     <Page backUrl="/" title="Browse all manga">
-      <BrowseMangaContainer
-        searchOptions={debouncedSearchState}
+      <BrowseSearchFields
+        searchOptions={searchState}
         onChange={setSearchState}
       />
     </Page>

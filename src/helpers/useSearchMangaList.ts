@@ -1,13 +1,9 @@
 import { gql, useLazyQuery } from "@apollo/client";
-import { DateTime } from "luxon";
 import { useCallback } from "react";
 import {
-  ContentRating,
   defaultPagedResults,
   Manga,
-  MangaStatus,
   PagedResultsList,
-  PublicationDemographic,
   SearchState,
 } from "types";
 
@@ -101,15 +97,15 @@ export default function useSearchMangaList({
         })
       );
 
-      console.log("filtered options", filteredOptions);
+      console.log("SEARCH NOW", filteredOptions);
 
-      callback({
-        variables: {
-          limit,
-          offset,
-          ...filteredOptions,
-        },
-      });
+      // callback({
+      //   variables: {
+      //     limit,
+      //     offset,
+      //     ...filteredOptions,
+      //   },
+      // });
     },
     [limit, offset, callback]
   );
