@@ -25,6 +25,7 @@ export function ChaptersGrid({ chaptersResponse }: Props) {
 
         return (
           <Thumbnail
+            follow
             features={[volumeText || publishedTimeAgo, pagesCount]}
             title={`${index + 1}) ${chapterTitle(chapterInfo.data)}`}
             img="https://picsum.photos/185/265"

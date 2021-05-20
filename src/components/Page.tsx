@@ -4,6 +4,7 @@ import { TitledSection, TitledSectionProps } from "./TitledSection";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router";
+import { useQueryParam } from "utils";
 
 interface Tag {
   content: string;
@@ -49,14 +50,14 @@ export function Page({
   primaryAction,
 }: PropsWithChildren<PageProps>) {
   const classes = useStyles();
-
   const history = useHistory();
+  const defaultBackUrl = useQueryParam("from", backUrl);
 
-  const titleMarkup = backUrl ? (
+  const titleMarkup = defaultBackUrl ? (
     <>
       <IconButton
         size="medium"
-        onClick={() => history.push(backUrl)}
+        onClick={() => history.push(decodeURIComponent(defaultBackUrl))}
         style={{ marginRight: 8 }}
       >
         <ArrowBackIcon />

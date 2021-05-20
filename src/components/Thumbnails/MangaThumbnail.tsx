@@ -29,6 +29,7 @@ export function MangaThumbnail({
   return (
     <Thumbnail
       img="#"
+      follow
       title={preferredTitle(title)}
       features={[
         year ? String(year) : null,
