@@ -1,7 +1,8 @@
 import { useTheme } from "@material-ui/core";
 import { BreakpointValues } from "@material-ui/core/styles/createBreakpoints";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DateTime } from "luxon";
+import { useHistory } from "react-router";
 
 export const noop = () => {};
 
@@ -272,4 +273,38 @@ export function decodeHTML(htmlString: string) {
   element.innerHTML = htmlString;
 
   return element.innerText;
+}
+
+export function filterObject(object: object) {
+  return Object.fromEntries(
+    Object.entries(object).filter(([_, v]) => {
+      return v != null && ((Array.isArray(v) && v.length > 0) || v !== "");
+    })
+  );
+}
+
+export function useCustomHistory() {
+  const history = useHistory();
+
+  const pushToHistory = useCallback(
+    (object: object) => {
+      const pairs: string[][] = [];
+      Object.entries(object).forEach((pair) => {
+        const key = pair[0];
+        const value = pair[1];
+
+        if (Array.isArray(value) && value.length > 0) {
+          pairs.push([key, value.map((v) => encodeURIComponent(v)).join(",")]);
+        } else if (typeof value === "string") {
+          pairs.push([key, encodeURIComponent(value)]);
+        }
+      });
+
+      const newParams = new URLSearchParams(pairs).toString();
+      history.replace({ search: `?${newParams}` });
+    },
+    [history]
+  );
+
+  return { ...history, pushToHistory };
 }

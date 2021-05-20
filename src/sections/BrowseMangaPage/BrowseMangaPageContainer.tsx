@@ -3,8 +3,19 @@ import { CustomGrid, Page, TitledSection } from "components";
 import { MangaThumbnail } from "components/Thumbnails";
 import { useSearchMangaList } from "helpers";
 import { useEffect, useState } from "react";
-import { ContentRating, SearchState } from "types";
-import { useDebouncedValue, useQueryParam, useScrollListeners } from "utils";
+import {
+  ContentRating,
+  MangaStatus,
+  PublicationDemographic,
+  SearchState,
+} from "types";
+import {
+  noEmptyString,
+  notEmpty,
+  useDebouncedValue,
+  useQueryParam,
+  useScrollListeners,
+} from "utils";
 import { BrowseSearchFieldsPreview } from "./BrowerSearchFieldsPreview";
 import { BrowseSearchFields } from "./BrowseSearchFields";
 
@@ -17,7 +28,7 @@ export default function BrowseMangaPageContainer() {
   const actualCount = mangaList.results?.length || 0;
   const countText =
     totalCount > actualCount
-      ? `showing ${actualCount} results`
+      ? `showing up to ${actualCount} results`
       : totalCount === 1
       ? "1 result"
       : `${totalCount} results`;
@@ -71,6 +82,16 @@ export default function BrowseMangaPageContainer() {
 
 function useDefaultSearchState() {
   const title = useQueryParam("title", "");
+  const contentRating = useTypedQueryParams("contentRating", [
+    ContentRating.safe,
+  ]);
+
+  const status = useTypedQueryParams<MangaStatus>("status");
+  const publicationDemographic = useTypedQueryParams<PublicationDemographic>(
+    "publicationDemographic"
+  );
+
+  console.log(contentRating);
 
   const defaultSearchState: SearchState = {
     artists: [],
@@ -82,13 +103,23 @@ function useDefaultSearchState() {
     includedTagsMode: [],
     order: {},
     originalLanguage: [],
-    publicationDemographic: [],
-    status: [],
+    publicationDemographic,
+    status,
     updatedAtSince: "",
     year: null,
-    contentRating: [ContentRating.safe],
+    contentRating,
     title,
   };
 
   return defaultSearchState;
+}
+
+function useTypedQueryParams<T>(key: string, defaultValue: T[] = []) {
+  const typedData: T[] = useQueryParam(key, "")
+    .split(",")
+    .map((param) => param.trim())
+    .filter(noEmptyString)
+    .map((param) => param as unknown as T);
+
+  return typedData.length > 0 ? typedData : defaultValue;
 }

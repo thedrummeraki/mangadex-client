@@ -6,6 +6,7 @@ import {
   PagedResultsList,
   SearchState,
 } from "types";
+import { filterObject } from "utils";
 
 const query = gql`
   query GetMangaList(
@@ -91,13 +92,7 @@ export default function useSearchMangaList({
 
   const searchManga = useCallback(
     (options: SearchOptions) => {
-      const filteredOptions = Object.fromEntries(
-        Object.entries(options).filter(([_, v]) => {
-          return v != null && ((Array.isArray(v) && v.length > 0) || v !== "");
-        })
-      );
-
-      console.log("SEARCH NOW", filteredOptions);
+      const filteredOptions = filterObject(options);
 
       callback({
         variables: {
@@ -111,8 +106,6 @@ export default function useSearchMangaList({
   );
 
   const { data, loading, error, fetchMore } = result;
-
-  console.log("data?", data);
 
   const mangaList =
     (data?.mangaSearchList as PagedResultsList<Manga>) ||

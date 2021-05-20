@@ -2,6 +2,7 @@ import { Chip, Paper } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useEffect, useState } from "react";
 import { SearchState } from "types";
+import { filterObject, useCustomHistory } from "utils";
 
 interface Props {
   searchOptions: SearchState;
@@ -47,14 +48,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
   const classes = useStyles();
+  const { pushToHistory } = useCustomHistory();
   const [chipData, setChipData] = useState<ChipData[]>([]);
 
   useEffect(() => {
-    const filteredOptions = Object.fromEntries(
-      Object.entries(searchOptions).filter(([_, v]) => {
-        return v != null && ((Array.isArray(v) && v.length > 0) || v !== "");
-      })
-    );
+    const filteredOptions = filterObject(searchOptions);
+    pushToHistory(filteredOptions);
 
     const data: ChipData[] = [];
     Object.entries(filteredOptions).forEach((entry) => {
