@@ -91,8 +91,6 @@ function useDefaultSearchState() {
     "publicationDemographic"
   );
 
-  console.log(contentRating);
-
   const defaultSearchState: SearchState = {
     artists: [],
     authors: [],

@@ -81,7 +81,7 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
     setChipData(data.reverse());
   }, [searchOptions]);
 
-  return (
+  return chipData.length > 0 ? (
     <Paper component="ul" className={classes.root}>
       {chipData.map((data) => (
         <li key={data.key}>
@@ -93,5 +93,5 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
         </li>
       ))}
     </Paper>
-  );
+  ) : null;
 }

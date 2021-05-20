@@ -18,7 +18,6 @@ export default function FollowListPageContainer() {
   });
 
   useScrollListeners(null, () => {
-    console.log(loading);
     if (!data?.followsList.results || loading) {
       return;
     }
