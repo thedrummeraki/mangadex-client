@@ -117,7 +117,7 @@ const useThumbnailStyles = makeStyles((theme) => ({
       background: theme.palette.info.light,
     },
   },
-  platformIconsContainer: {
+  bottomIconsContainer: {
     position: "absolute",
     bottom: 0,
     left: 10,
@@ -126,6 +126,7 @@ const useThumbnailStyles = makeStyles((theme) => ({
     "& > *": {
       marginRight: theme.spacing(),
       marginBottom: theme.spacing(0.75),
+      color: "white",
     },
   },
   ...sharedStyles(theme),

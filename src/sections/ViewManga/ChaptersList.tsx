@@ -52,7 +52,10 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
   return (
     <>
       <TitledSection title={`Chapters list (${data?.chapters.total}) ${bp}`} />
-      <ChaptersGrid chaptersResponse={data?.chapters.results || []} />
+      <ChaptersGrid
+        chaptersResponse={data?.chapters.results || []}
+        manga={manga}
+      />
     </>
   );
 }

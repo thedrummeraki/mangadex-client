@@ -1,4 +1,5 @@
 import { Slider } from "@material-ui/core";
+import { savedPage } from "helpers/useCurrentlyReading";
 import { useEffect, useMemo, useState } from "react";
 import { Chapter } from "types/chapter";
 import { DesktopReaderPage } from "./DesktopReaderPage";
@@ -27,10 +28,7 @@ export function ChapterReader({
   onPrevious,
   onNext,
 }: Props) {
-  const savedPage = () =>
-    parseInt(localStorage.getItem(`chapter-${chapter.id}`) || "0");
-
-  const [currentIndex, setCurrentIndices] = useState(savedPage());
+  const [currentIndex, setCurrentIndices] = useState(savedPage(chapter));
   const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
 
   const [canGoNext, setCanGoNext] = useState(false);
