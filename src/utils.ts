@@ -111,12 +111,21 @@ export function useScrollListeners(
   });
 }
 
-export function getQueryParam(key: string, defaultValue = "") {
+export function getQueryParam(
+  key: string,
+  defaultValue = "",
+  decode: boolean = false
+) {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(key) || defaultValue;
+  const value = urlParams.get(key) || defaultValue;
+  return decode ? decodeURIComponent(value) : value;
 }
 
-export function useQueryParam(key: string, defaultValue = "") {
+export function useQueryParam(
+  key: string,
+  defaultValue = "",
+  decode: boolean = false
+) {
   return getQueryParam(key, defaultValue);
 }
 

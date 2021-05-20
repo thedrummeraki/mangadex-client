@@ -108,7 +108,7 @@ function useDefaultSearchState() {
     updatedAtSince: "",
     year: null,
     contentRating,
-    title,
+    title: decodeURIComponent(title),
   };
 
   return defaultSearchState;
