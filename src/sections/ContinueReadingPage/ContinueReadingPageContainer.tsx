@@ -1,13 +1,16 @@
 import { Typography } from "@material-ui/core";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { Page } from "components";
+import { useAuth } from "config/providers";
 import { useLocalCurrentlyReading, useSearchMangaList } from "helpers";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ContinueReadingPage } from "./ContinueReadingPage";
 
 export default function ContinueReadingPageContainer() {
   const { currentlyReading } = useLocalCurrentlyReading();
   const mangaIds = currentlyReading.map((cr) => cr.mangaId);
+  const [warning, setWarning] = useState(showWarning());
+  const { currentUser } = useAuth();
 
   const initialized = useRef(false);
 
@@ -23,6 +26,12 @@ export default function ContinueReadingPageContainer() {
     searchManga({ ids: mangaIds });
     initialized.current = true;
   }, [searchManga, loading, mangaIds]);
+
+  useEffect(() => {
+    if (showWarning() && !warning) {
+      hideWarningNow();
+    }
+  }, [warning]);
 
   if (!loading) {
     console.log(mangaList);
@@ -44,21 +53,40 @@ export default function ContinueReadingPageContainer() {
 
   return (
     <Page title="Reading history">
-      <Alert color="warning" variant="outlined" style={{ marginBottom: 32 }}>
-        <AlertTitle>
-          Your reading history is currently on your current device!
-        </AlertTitle>
-        MangaDex currently doesn't have a nice way to save your history for now,
-        so we've decided to keep things local and securely store your reading
-        history on your current device! While we keep that amazing history for
-        you,
-        <strong>
-          please note that deleting your browser cache/storage maybe
-          permanentally delete your history
-        </strong>
-        . This is <strong>not</strong> tied to your MangaDex account.
-      </Alert>
+      {warning && (
+        <Alert
+          color="warning"
+          variant="outlined"
+          style={{ marginBottom: 32 }}
+          onClose={() => setWarning(false)}
+        >
+          <AlertTitle>
+            👋 Hey {currentUser ? currentUser.attributes.username : "there"}!
+            Your reading history is <em>only</em> stored on your current device!
+          </AlertTitle>
+          MangaDex currently doesn't have a nice way to save your history for
+          now, so we've decided to keep things local and securely store your
+          reading history on your current device! While we keep that amazing
+          history for you,{" "}
+          <strong>
+            please note that deleting your browser cache/storage maybe
+            permanentally delete your history
+          </strong>
+          . This is <strong>not</strong> tied to your MangaDex account.
+        </Alert>
+      )}
       <ContinueReadingPage mangas={mangaList.results} />
     </Page>
   );
+}
+
+function showWarning() {
+  return (
+    localStorage.getItem("current-reading-history-local-warning") !==
+    "dismissed"
+  );
+}
+
+function hideWarningNow() {
+  localStorage.setItem("current-reading-history-local-warning", "dismissed");
 }
