@@ -43,7 +43,7 @@ export default function ContinueReadingPageContainer() {
   }
 
   return (
-    <Page title="Currently reading">
+    <Page title="Reading history">
       <Alert color="warning" variant="outlined" style={{ marginBottom: 32 }}>
         <AlertTitle>
           Your reading history is currently on your current device!
