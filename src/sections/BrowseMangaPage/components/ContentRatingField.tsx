@@ -11,7 +11,9 @@ export function ContentRatingField({
       multiple
       value={contentRatings}
       onChange={(event) => onChange(event.target.value as ContentRating[])}
+      style={{ width: "100%" }}
     >
+      <MenuItem disabled>Content rating</MenuItem>
       <MenuItem value={ContentRating.safe}>Safe</MenuItem>
       <MenuItem value={ContentRating.suggestive}>Suggestive</MenuItem>
       <MenuItem value={ContentRating.erotica}>Erotica</MenuItem>

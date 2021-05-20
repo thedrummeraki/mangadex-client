@@ -1,2 +1,5 @@
 export { ContentRatingField } from "./ContentRatingField";
-export { QuerySearchField } from "./QuerySearchField";
+export { TitleField } from "./QuerySearchField";
+export { StatusField } from "./StatusField";
+export { PublicationDemographicField } from "./PublicationDemographicField";
+export { AuthorsField } from "./AuthorsField";

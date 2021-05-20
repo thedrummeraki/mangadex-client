@@ -99,13 +99,13 @@ export default function useSearchMangaList({
 
       console.log("SEARCH NOW", filteredOptions);
 
-      // callback({
-      //   variables: {
-      //     limit,
-      //     offset,
-      //     ...filteredOptions,
-      //   },
-      // });
+      callback({
+        variables: {
+          limit,
+          offset,
+          ...filteredOptions,
+        },
+      });
     },
     [limit, offset, callback]
   );

@@ -1,13 +1,23 @@
-import { Page } from "components";
+import { Container } from "@material-ui/core";
+import { CustomGrid, Page } from "components";
+import { MangaThumbnail } from "components/Thumbnails";
 import { useSearchMangaList } from "helpers";
 import { useEffect, useState } from "react";
-import { ContentRating, SearchState } from "types";
+import {
+  ContentRating,
+  GenericResponse,
+  Manga,
+  MangaStatus,
+  SearchState,
+} from "types";
 import { useDebouncedValue, useQueryParam } from "utils";
+import { BrowseSearchFieldsPreview } from "./BrowerSearchFieldsPreview";
 import { BrowseSearchFields } from "./BrowseSearchFields";
 
 export default function BrowseMangaPageContainer() {
   const defaultSearchState = useDefaultSearchState();
-  const { searchManga } = useSearchMangaList({ limit: 10 });
+  const { mangaList, loading, searchManga } = useSearchMangaList({ limit: 10 });
+  const [results, setResults] = useState<GenericResponse<Manga>[]>([]);
 
   const [searchState, setSearchState] =
     useState<SearchState>(defaultSearchState);
@@ -19,10 +29,23 @@ export default function BrowseMangaPageContainer() {
 
   return (
     <Page backUrl="/" title="Browse all manga">
-      <BrowseSearchFields
-        searchOptions={searchState}
-        onChange={setSearchState}
-      />
+      <Container>
+        <BrowseSearchFields
+          searchOptions={searchState}
+          onChange={setSearchState}
+        />
+      </Container>
+      <Container>
+        <BrowseSearchFieldsPreview searchOptions={searchState} />
+      </Container>
+      <Container>
+        <CustomGrid>
+          {mangaList.results != null &&
+            mangaList.results.map((mangaResponse) => (
+              <MangaThumbnail showContentRating manga={mangaResponse.data} />
+            ))}
+        </CustomGrid>
+      </Container>
     </Page>
   );
 }
@@ -38,7 +61,7 @@ function useDefaultSearchState() {
     excludedTagsMode: [],
     includedTags: [],
     includedTagsMode: [],
-    order: { createdAt: "desc" },
+    order: {},
     originalLanguage: [],
     publicationDemographic: [],
     status: [],

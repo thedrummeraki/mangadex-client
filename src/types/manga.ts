@@ -5,7 +5,7 @@ export enum MangaStatus {
   ongoing = "ongoing",
   completed = "completed",
   hiatus = "hiatus",
-  abandoned = "abandoned",
+  cancelled = "cancelled",
 }
 
 export enum PublicationDemographic {
