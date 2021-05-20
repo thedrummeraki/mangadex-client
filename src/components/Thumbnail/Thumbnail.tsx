@@ -12,6 +12,7 @@ function Thumbnail({
   title,
   clickable,
   url,
+  follow,
   features,
   onClick,
 }: ThumbnailProps) {
@@ -36,7 +37,7 @@ function Thumbnail({
       })}
       style={{ position: "relative" }}
     >
-      <ThumbnailWrapper url={url} onClick={onClick}>
+      <ThumbnailWrapper follow={follow} url={url} onClick={onClick}>
         <div style={{ position: "relative" }}>
           <div className={classes.holder}>
             <div ref={overlayRef} className={classes.overlay} />

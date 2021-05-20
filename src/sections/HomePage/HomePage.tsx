@@ -30,7 +30,7 @@ export function HomePage() {
     <Page
       title={
         currentUser
-          ? `Welcome, ${currentUser.attributes.username}. Here's the latest from MangaDex`
+          ? `Welcome, ${currentUser.attributes.username}.`
           : `Latest manga`
       }
       primaryAction={

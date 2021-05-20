@@ -1,16 +1,23 @@
 import { useQuery } from "@apollo/client";
-import { Typography } from "@material-ui/core";
+import { makeStyles, Paper, Typography } from "@material-ui/core";
 import { ChaptersGrid, Page } from "components";
 import { useScrollListeners } from "utils";
 import GetFollowListsQuery from "./queries/GetFollowListsQuery";
 
+const useStyles = makeStyles((theme) => ({
+  description: {
+    margin: theme.spacing(2, 0),
+    padding: theme.spacing(),
+  },
+}));
+
 export default function FollowListPageContainer() {
+  const classes = useStyles();
   const { data, loading, error, fetchMore } = useQuery(GetFollowListsQuery, {
     variables: { limit: 20 },
   });
 
   useScrollListeners(null, () => {
-    console.log(loading);
     if (!data?.followsList.results || loading) {
       return;
     }
@@ -38,7 +45,7 @@ export default function FollowListPageContainer() {
   }
 
   if (!data.followsList.results || data.followsList.results.length === 0) {
-    <Page backUrl="/" title="Your follows feed">
+    <Page backUrl="/" title="Your chapters feed">
       <Typography>
         You do not have any chapters if your feed for now! Please check back
         later.
@@ -47,7 +54,13 @@ export default function FollowListPageContainer() {
   }
 
   return (
-    <Page backUrl="/" title="Your follows feed">
+    <Page backUrl="/" title="Your chapters feed">
+      <Paper className={classes.description}>
+        <Typography>
+          MangaDex generated this <em>long</em> list of chapters for you to
+          discover. Enjoy!
+        </Typography>
+      </Paper>
       <ChaptersGrid chaptersResponse={data.followsList.results || []} />
     </Page>
   );

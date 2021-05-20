@@ -46,7 +46,6 @@ export function CreateCustomListPage({ name, onCustomListCreated }: Props) {
       return () => clearTimeout(id);
     } else {
       createFollowsList().then((result) => {
-        console.log("result", result);
         if (result.data?.createCustomList.result === "ok") {
           setCreatedCustomList(result.data.createCustomList.data);
         }
