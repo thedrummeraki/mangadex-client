@@ -1,5 +1,5 @@
-import { Container } from "@material-ui/core";
-import { CustomGrid, Page } from "components";
+import { CircularProgress, Container } from "@material-ui/core";
+import { CustomGrid, Page, TitledSection } from "components";
 import { MangaThumbnail } from "components/Thumbnails";
 import { useSearchMangaList } from "helpers";
 import { useEffect, useState } from "react";
@@ -10,14 +10,25 @@ import {
   MangaStatus,
   SearchState,
 } from "types";
-import { useDebouncedValue, useQueryParam } from "utils";
+import { useDebouncedValue, useQueryParam, useScrollListeners } from "utils";
 import { BrowseSearchFieldsPreview } from "./BrowerSearchFieldsPreview";
 import { BrowseSearchFields } from "./BrowseSearchFields";
 
 export default function BrowseMangaPageContainer() {
   const defaultSearchState = useDefaultSearchState();
-  const { mangaList, loading, searchManga } = useSearchMangaList({ limit: 10 });
-  const [results, setResults] = useState<GenericResponse<Manga>[]>([]);
+  const { mangaList, data, loading, searchManga, fetchMoreManga } =
+    useSearchMangaList({ limit: 100 });
+
+  const totalCount = data?.mangaSearchList?.total || 0;
+  const actualCount = mangaList.results?.length || 0;
+  const countText =
+    totalCount > actualCount ? `${actualCount}+` : `${totalCount}`;
+  const searchResultsMarkup = (
+    <span>
+      Search results{" "}
+      {loading ? <CircularProgress size={18} /> : `(${countText})`}
+    </span>
+  );
 
   const [searchState, setSearchState] =
     useState<SearchState>(defaultSearchState);
@@ -26,6 +37,10 @@ export default function BrowseMangaPageContainer() {
   useEffect(() => {
     searchManga(debouncedSearchState);
   }, [debouncedSearchState]);
+
+  useScrollListeners(null, () => {
+    // fetchMoreManga();
+  });
 
   return (
     <Page backUrl="/" title="Browse all manga">
@@ -39,6 +54,7 @@ export default function BrowseMangaPageContainer() {
         <BrowseSearchFieldsPreview searchOptions={searchState} />
       </Container>
       <Container>
+        <TitledSection title={searchResultsMarkup} />
         <CustomGrid>
           {mangaList.results != null &&
             mangaList.results.map((mangaResponse) => (
@@ -51,7 +67,7 @@ export default function BrowseMangaPageContainer() {
 }
 
 function useDefaultSearchState() {
-  const title = useQueryParam("title", "nagatoro");
+  const title = useQueryParam("title", "");
 
   const defaultSearchState: SearchState = {
     artists: [],

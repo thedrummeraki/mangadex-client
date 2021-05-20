@@ -51,7 +51,7 @@ export function useDebouncedValue<T>(value: T, delay: number) {
 export function useScrollListeners(
   element: HTMLElement | null,
   onScrollToBottom: () => void,
-  options?: { offset?: number; triggerAnywhere?: boolean }
+  options?: { offset?: number }
 ) {
   const scrollOptions = options || {
     offset: 0,
