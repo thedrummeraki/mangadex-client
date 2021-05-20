@@ -11,7 +11,6 @@ import {
 } from "types";
 import {
   noEmptyString,
-  notEmpty,
   useDebouncedValue,
   useQueryParam,
   useScrollListeners,
@@ -21,7 +20,7 @@ import { BrowseSearchFields } from "./BrowseSearchFields";
 
 export default function BrowseMangaPageContainer() {
   const defaultSearchState = useDefaultSearchState();
-  const { mangaList, data, loading, searchManga, fetchMoreManga } =
+  const { mangaList, data, loading, searchManga /*, fetchMoreManga*/ } =
     useSearchMangaList({ limit: 100 });
 
   const totalCount = data?.mangaSearchList?.total || 0;
@@ -49,7 +48,7 @@ export default function BrowseMangaPageContainer() {
 
   useEffect(() => {
     searchManga(debouncedSearchState);
-  }, [debouncedSearchState]);
+  }, [searchManga, debouncedSearchState]);
 
   useScrollListeners(null, () => {
     // TODO: fix cache to enable pagination.

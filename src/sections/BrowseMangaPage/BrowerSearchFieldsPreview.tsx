@@ -79,7 +79,7 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
     });
 
     setChipData(data.reverse());
-  }, [searchOptions]);
+  }, [searchOptions, pushToHistory]);
 
   return chipData.length > 0 ? (
     <Paper component="ul" className={classes.root}>

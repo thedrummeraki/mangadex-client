@@ -1,4 +1,3 @@
-import { chapterTitle } from "helpers";
 import { Chapter, GenericResponse, Manga } from "types";
 import CustomGrid from "./CustomGrid";
 import { ChapterThumbnail } from "./Thumbnails/ChapterThumbnail";
