@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React, { useRef } from "react";
 import { ThumbnailFeatures } from "./ThumbnailFeatures";
+import { ThumbnailIcons } from "./ThumbnailIcons";
 import { ThumbnailImage } from "./ThumbnailImage";
 import { ThumbnailWrapper } from "./ThumbnailWrapper";
 import { ThumbnailProps } from "./types";
@@ -14,6 +15,7 @@ function Thumbnail({
   url,
   follow,
   features,
+  icons,
   onClick,
 }: ThumbnailProps) {
   const classes = useThumbnailStyles();
@@ -50,6 +52,7 @@ function Thumbnail({
               img={img}
               alt={title || "No image"}
             />
+            <ThumbnailIcons icons={icons} />
           </div>
         </div>
         {hasTitle && <span className={classes.title}>{title}</span>}

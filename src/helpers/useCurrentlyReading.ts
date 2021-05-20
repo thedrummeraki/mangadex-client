@@ -44,14 +44,20 @@ export function useLocalCurrentlyReading(options?: Options) {
       (cr) => cr.mangaId === mangaId
     );
 
-    const isReading = Boolean(
-      currentlyReading.find(
-        (cr) => cr.chapterId === chapterId && cr.mangaId === mangaId
-      )
+    const currentlyReadingChapter = currentlyReading.find(
+      (cr) => cr.chapterId === chapterId && cr.mangaId === mangaId
     );
 
+    const isReadingChapter = Boolean(chapterId && currentlyReadingChapter);
+
+    const isReadingManga =
+      isReadingChapter ||
+      Boolean(currentlyReading.find((cr) => cr.mangaId === mangaId));
+
     return {
-      isReading,
+      isReading: isReadingChapter || isReadingManga,
+      isReadingChapter,
+      isReadingManga,
       latestChapterForManga,
       currentlyReading,
       setCurrentlyReading,
@@ -60,10 +66,18 @@ export function useLocalCurrentlyReading(options?: Options) {
 
   return {
     isReading: null,
+    isReadingChapter: null,
+    isReadingManga: null,
     latestChapterForManga: null,
     currentlyReading,
     setCurrentlyReading,
   };
+}
+
+export function savedPage(chapter: Chapter, defaultValue: number = 0) {
+  return parseInt(
+    localStorage.getItem(`chapter-${chapter.id}`) || String(defaultValue)
+  );
 }
 
 function idsFromOptions({ manga, chapter }: Options) {

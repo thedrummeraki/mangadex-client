@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 interface BaseProps {
   img: string;
   follow?: boolean | null;
@@ -6,6 +8,7 @@ interface BaseProps {
   title?: string | null;
   url?: string | null;
   features?: Array<string | null | undefined>;
+  icons?: AllowedIcons[];
   onClick?: VoidFunction;
 }
 
@@ -29,3 +32,8 @@ interface NotClickable extends BaseProps {
 }
 
 export type ThumbnailProps = WithOnClickProps | WithUrlProps | NotClickable;
+
+export type AllowedIcons = "play" | "done";
+export type AllowedIconsMap = {
+  [key in AllowedIcons]: Exclude<NonNullable<ReactNode>, boolean>;
+};

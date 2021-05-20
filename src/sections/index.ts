@@ -4,3 +4,4 @@ export * from "./ReadChapter";
 export { default as CustomListPage } from "./CustomListPage";
 export { default as FollowsListPage } from "./FollowsListPage";
 export { default as BrowseMangaPage } from "./BrowseMangaPage";
+export { default as ContinueReadingPage } from "./ContinueReadingPage";

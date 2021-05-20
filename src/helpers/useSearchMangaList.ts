@@ -68,7 +68,7 @@ interface InternalOptions {
   allowCache?: boolean;
 }
 
-type SearchOptions = Partial<SearchState>;
+type SearchOptions = Partial<SearchState> & { ids?: string[] };
 
 type Options = MandatoryOptions &
   InternalOptions &

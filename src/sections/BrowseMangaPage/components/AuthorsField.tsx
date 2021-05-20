@@ -17,9 +17,7 @@ export function AuthorsField({ value, onChange }: SearchFieldProps<Author[]>) {
     if (query.trim().length > 0) {
       searchAuthors({ name: query });
     }
-  }, [query]);
-
-  console.log("open", open, "loading", loading);
+  }, [searchAuthors, query]);
 
   return (
     <Autocomplete
