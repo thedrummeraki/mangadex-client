@@ -81,7 +81,7 @@ export default function useSearchMangaList({
   allowCache = true,
 }: Options) {
   const [callback, result] = useLazyQuery(query, {
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "no-cache",
     context: {
       headers: {
         "X-Allow-Cache": allowCache ? "true" : "false",
@@ -111,6 +111,8 @@ export default function useSearchMangaList({
   );
 
   const { data, loading, error, fetchMore } = result;
+
+  console.log("data?", data);
 
   const mangaList =
     (data?.mangaSearchList as PagedResultsList<Manga>) ||

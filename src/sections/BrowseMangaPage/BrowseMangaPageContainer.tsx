@@ -3,13 +3,7 @@ import { CustomGrid, Page, TitledSection } from "components";
 import { MangaThumbnail } from "components/Thumbnails";
 import { useSearchMangaList } from "helpers";
 import { useEffect, useState } from "react";
-import {
-  ContentRating,
-  GenericResponse,
-  Manga,
-  MangaStatus,
-  SearchState,
-} from "types";
+import { ContentRating, SearchState } from "types";
 import { useDebouncedValue, useQueryParam, useScrollListeners } from "utils";
 import { BrowseSearchFieldsPreview } from "./BrowerSearchFieldsPreview";
 import { BrowseSearchFields } from "./BrowseSearchFields";
@@ -22,11 +16,19 @@ export default function BrowseMangaPageContainer() {
   const totalCount = data?.mangaSearchList?.total || 0;
   const actualCount = mangaList.results?.length || 0;
   const countText =
-    totalCount > actualCount ? `${actualCount}+` : `${totalCount}`;
+    totalCount > actualCount
+      ? `showing ${actualCount} results`
+      : totalCount === 1
+      ? "1 result"
+      : `${totalCount} results`;
   const searchResultsMarkup = (
     <span>
       Search results{" "}
-      {loading ? <CircularProgress size={18} /> : `(${countText})`}
+      {loading ? (
+        <CircularProgress size={18} style={{ marginLeft: 8 }} />
+      ) : (
+        `(${countText})`
+      )}
     </span>
   );
 
@@ -39,6 +41,7 @@ export default function BrowseMangaPageContainer() {
   }, [debouncedSearchState]);
 
   useScrollListeners(null, () => {
+    // TODO: fix cache to enable pagination.
     // fetchMoreManga();
   });
 

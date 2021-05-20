@@ -21,8 +21,10 @@ const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
       Query: {
+        keyFields: [],
         fields: {
           mangaList: mangadexOffsetLimitPagination(),
+          mangaSearchList: mangadexOffsetLimitPagination(),
           followsList: mangadexOffsetLimitPagination(),
         },
       },

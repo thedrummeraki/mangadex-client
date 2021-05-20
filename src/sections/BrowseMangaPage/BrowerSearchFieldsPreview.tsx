@@ -18,14 +18,16 @@ interface ChipDescription {
 }
 
 const chipDescriptionMap: ChipDescription[] = [
-  { key: "title", description: "Title" },
+  { key: "title", description: "Title contains" },
   { key: "contentRating", description: "Rating" },
   { key: "status", description: "Status" },
 ];
 
 const getChipLabel = (key: string, entryValue: string) => {
   const description = chipDescriptionMap.find((map) => map.key === key);
-  return description ? `${description.description}: ${entryValue}` : entryValue;
+  return description
+    ? `${description.description}: "${entryValue}"`
+    : entryValue;
 };
 
 const useStyles = makeStyles((theme: Theme) =>
