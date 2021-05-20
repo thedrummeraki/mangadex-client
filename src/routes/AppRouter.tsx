@@ -19,7 +19,7 @@ export function AppRouter() {
           <AuthenticatedRoute exact path="/custom-lists">
             <CustomListPage />
           </AuthenticatedRoute>
-          <AuthenticatedRoute exact path="/follows">
+          <AuthenticatedRoute exact path="/feed">
             <FollowsListPage />
           </AuthenticatedRoute>
 

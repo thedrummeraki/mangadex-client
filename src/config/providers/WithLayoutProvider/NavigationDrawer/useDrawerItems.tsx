@@ -16,6 +16,7 @@ interface BaseDrawerItem {
   icon: ReactNode;
   content: string;
   requiresAuth?: boolean;
+  hidden?: boolean;
   onClick?: VoidFunction;
   url?: string;
 }
@@ -48,13 +49,14 @@ export default function useDrawerItems() {
       content: "Continue reading...",
       icon: <PlayArrowIcon />,
       requiresAuth: true,
+      hidden: true,
       onClick: () => history.push("/continue-reading"),
     },
     {
-      content: "Follows",
+      content: "Your feed",
       icon: <GroupIcon />,
       requiresAuth: true,
-      onClick: () => history.push("/follows"),
+      onClick: () => history.push("/feed"),
     },
     {
       content: "Browse manga",
@@ -64,6 +66,7 @@ export default function useDrawerItems() {
     {
       content: "Latest releases",
       icon: <NewReleasesIcon />,
+      hidden: true,
       onClick: () => history.push("/"),
     },
   ];
@@ -72,11 +75,13 @@ export default function useDrawerItems() {
       {
         content: "My account",
         icon: <AccountCircleIcon />,
+        hidden: true,
         onClick: () => history.push("/"),
       },
       {
         content: "Application settings",
         icon: <SettingsIcon />,
+        hidden: true,
         onClick: () => history.push("/"),
       },
       {
@@ -90,6 +95,9 @@ export default function useDrawerItems() {
   return [top, manga, user]
     .map((categoryList) => {
       return categoryList.filter((category) => {
+        if (category.hidden) {
+          return null;
+        }
         if (!category.requiresAuth) {
           return category;
         }
