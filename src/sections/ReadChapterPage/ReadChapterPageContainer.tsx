@@ -1,8 +1,8 @@
 import { useChapter } from "helpers";
 import { useParams } from "react-router";
-import { ReadChapter } from "./ReadChapter";
+import { ReadChapterPage } from "./ReadChapterPage";
 
-export function ReadChapterContainer() {
+export default function ReadChapterPageContainer() {
   const { id } = useParams<{ id: string }>();
   const { chapter, relationships } = useChapter(id);
 
@@ -14,5 +14,5 @@ export function ReadChapterContainer() {
     (relationship) => relationship.type === "manga"
   )!.id;
 
-  return <ReadChapter chapter={chapter} mangaId={mangaId} />;
+  return <ReadChapterPage chapter={chapter} mangaId={mangaId} />;
 }

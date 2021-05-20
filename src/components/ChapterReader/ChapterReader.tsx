@@ -31,6 +31,8 @@ export function ChapterReader({
   const [currentIndex, setCurrentIndices] = useState(savedPage(chapter));
   const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
 
+  console.log(currentIndex);
+
   const [canGoNext, setCanGoNext] = useState(false);
   const [canGoPrevious, setCanGoPrevious] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -74,7 +76,7 @@ export function ChapterReader({
 
   useEffect(() => {
     setCurrentPageUrl(pageUrls[currentIndex]);
-    setCanGoNext(currentIndex < pageUrls.length - 1);
+    setCanGoNext(currentIndex + 1 < pageUrls.length - 1);
     setCanGoPrevious(currentIndex > 0);
 
     localStorage.setItem(`chapter-${chapter.id}`, String(currentIndex));
@@ -101,13 +103,13 @@ export function ChapterReader({
       />
       <Slider
         marks
-        value={sliderValue}
+        value={sliderValue - 1}
         onChangeCommitted={(_, value) => {
           if (typeof value === "number") {
             setCurrentIndices(direction * value);
           }
         }}
-        valueLabelFormat={() => `${currentIndex}`}
+        valueLabelFormat={() => `${currentIndex + 1}`}
         valueLabelDisplay="auto"
         min={-pageUrls.length + 1}
         max={-1}

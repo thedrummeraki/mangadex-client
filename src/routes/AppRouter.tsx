@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {
   HomePage,
   ViewManga,
-  ReadChapter,
+  ReadChapterPage,
   CustomListPage,
   FollowsListPage,
   BrowseMangaPage,
@@ -26,7 +26,7 @@ export function AppRouter() {
 
           <Route exact path="/" component={HomePage} />
           <Route exact path="/manga/:id" component={ViewManga} />
-          <Route exact path="/manga/read/:id" component={ReadChapter} />
+          <Route exact path="/manga/read/:id" component={ReadChapterPage} />
           <Route exact path="/browse-manga" component={BrowseMangaPage} />
           <Route
             exact

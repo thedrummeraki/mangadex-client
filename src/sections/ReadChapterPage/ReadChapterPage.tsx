@@ -7,18 +7,16 @@ interface Props {
   mangaId: string;
 }
 
-export function ReadChapter({ chapter, mangaId }: Props) {
+export function ReadChapterPage({ chapter, mangaId }: Props) {
   const { setCurrentlyReading } = useLocalCurrentlyReading({ manga: mangaId });
 
   setCurrentlyReading({ chapter, manga: mangaId });
 
   const pageData = chapter.attributes.dataSaver;
-  const pageURLs = pageData.map((data, index) =>
+  const pageURLs = pageData.map((_, index) =>
     ["http://localhost:3001", "at-home", "img"]
       .join("/")
-      .concat(
-        `?chapterId=${chapter.id}&page=${index + 1}&cache=true&duration=1`
-      )
+      .concat(`?chapterId=${chapter.id}&page=${index + 1}`)
   );
 
   return (
