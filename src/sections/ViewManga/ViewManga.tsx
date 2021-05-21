@@ -1,26 +1,45 @@
-import { Button, makeStyles, Paper, Typography } from "@material-ui/core";
-import { Page, BBDescription } from "components";
+import {
+  Avatar,
+  Button,
+  Chip,
+  Grid,
+  makeStyles,
+  Paper,
+  Typography,
+} from "@material-ui/core";
+import { Page, BBDescription, TitledSection } from "components";
 import { useLocalCurrentlyReading } from "helpers";
-import { mangaDescription, preferredTitle } from "helpers/mangadex";
+import { mangaDescription, mangaTitle, preferredTitle } from "helpers/mangadex";
 import { useState } from "react";
 import { useHistory } from "react-router";
-import { Manga } from "types";
+import { GenericResponse, Manga } from "types";
 import { ChaptersList } from "./ChaptersList";
+import { MangaRelationshipsInfo } from "./MangaRelationshipsInfo";
 
 interface Props {
-  manga: Manga;
+  mangaInfo: GenericResponse<Manga>;
 }
 
 const useStyles = makeStyles((theme) => ({
   description: {
     padding: theme.spacing(),
+    maxHeight: 200,
+    overflow: "hidden",
+  },
+  moreInfo: {
+    padding: theme.spacing(),
+  },
+  authorChip: {
+    margin: theme.spacing(0.5),
   },
 }));
 
-export function ViewManga({ manga }: Props) {
+export function ViewManga({ mangaInfo }: Props) {
   const history = useHistory();
   const classes = useStyles();
   const [firstChapterId, setFirstChapterId] = useState<string | null>(null);
+
+  const { data: manga } = mangaInfo;
   const {
     attributes: { lastChapter, status, description, tags, title },
   } = manga;
@@ -37,27 +56,22 @@ export function ViewManga({ manga }: Props) {
 
   const { latestChapterForManga } = useLocalCurrentlyReading({ manga });
 
-  const primaryAction = latestChapterForManga ? (
+  const primaryAction = (
     <Button
       size="small"
       color="secondary"
       variant="contained"
-      onClick={() =>
-        history.push(`/manga/read/${latestChapterForManga.chapterId}`)
-      }
+      onClick={() => {
+        if (latestChapterForManga) {
+          history.push(`/manga/read/${latestChapterForManga.chapterId}`);
+        } else {
+          history.push(`/manga/read/${firstChapterId}`);
+        }
+      }}
     >
-      Continue
+      {latestChapterForManga ? "Continue" : "Read now"}
     </Button>
-  ) : firstChapterId ? (
-    <Button
-      size="small"
-      color="secondary"
-      variant="contained"
-      onClick={() => history.push(`/manga/read/${firstChapterId}`)}
-    >
-      Start reading
-    </Button>
-  ) : null;
+  );
 
   return (
     <Page
@@ -71,13 +85,35 @@ export function ViewManga({ manga }: Props) {
       tags={pageTags}
       primaryAction={primaryAction}
     >
-      {description.en && (
-        <Paper className={classes.description}>
-          <Typography>
-            <BBDescription description={mangaDescription(manga)} />
-          </Typography>
-        </Paper>
-      )}
+      <Grid container spacing={1}>
+        <Grid item xs={12} lg={9} xl={9} style={{ maxHeight: "100%" }}>
+          <div className={classes.description}>
+            <Typography variant="h6">Description</Typography>
+            {description.en ? (
+              <Typography variant="body2">
+                <BBDescription description={mangaDescription(manga)} />
+              </Typography>
+            ) : (
+              <Typography>
+                ~{" "}
+                <em>
+                  {mangaTitle(manga)} does not have a description for now.
+                </em>{" "}
+                ~
+              </Typography>
+            )}
+          </div>
+        </Grid>
+        <Grid item xs={12} lg={3} xl={3}>
+          <Paper>
+            <Typography variant="h6" className={classes.moreInfo}>
+              More information
+            </Typography>
+            <MangaRelationshipsInfo mangaInfo={mangaInfo} />
+          </Paper>
+        </Grid>
+      </Grid>
+
       <ChaptersList onFirstChapterReady={setFirstChapterId} manga={manga} />
     </Page>
   );

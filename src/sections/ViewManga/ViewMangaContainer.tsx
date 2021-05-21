@@ -34,5 +34,5 @@ export default function ViewMangaContainer() {
     return <Page backUrl="/" title="Loading..." />;
   }
 
-  return <ViewManga manga={data.manga.data} />;
+  return <ViewManga mangaInfo={data.manga} />;
 }

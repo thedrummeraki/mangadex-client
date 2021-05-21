@@ -9,7 +9,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 import { useHistory } from "react-router";
-import { useAuth } from "config/providers/AuthProvider";
+import { useAuth, useLoginModal } from "config/providers/AuthProvider";
 import { noEmptyArray } from "utils";
 import { useLocalCurrentlyReading } from "helpers";
 
@@ -37,6 +37,7 @@ type DrawerItem = ClickableDrawerItem | LinkableDrawerItem;
 export default function useDrawerItems() {
   const history = useHistory();
   const { currentUser, loggedIn, logout } = useAuth();
+  const { requestLoginModal } = useLoginModal();
   const { currentlyReading } = useLocalCurrentlyReading();
 
   const top: Array<DrawerItem> = [
@@ -71,27 +72,33 @@ export default function useDrawerItems() {
       onClick: () => history.push("/"),
     },
   ];
-  const user: Array<DrawerItem> =
-    (currentUser && [
-      {
-        content: "My account",
-        icon: <AccountCircleIcon />,
-        hidden: true,
-        onClick: () => history.push("/"),
-      },
-      {
-        content: "Application settings",
-        icon: <SettingsIcon />,
-        hidden: true,
-        onClick: () => history.push("/"),
-      },
-      {
-        content: "Logout",
-        icon: <ExitToAppIcon />,
-        onClick: logout,
-      },
-    ]) ||
-    [];
+  const user: Array<DrawerItem> = [
+    {
+      content: "My account",
+      icon: <AccountCircleIcon />,
+      requiresAuth: true,
+      hidden: true,
+      onClick: () => history.push("/"),
+    },
+    {
+      content: "Application settings",
+      icon: <SettingsIcon />,
+      hidden: true,
+      onClick: () => history.push("/"),
+    },
+    {
+      content: "Login",
+      icon: <ExitToAppIcon />,
+      hidden: currentUser != null,
+      onClick: requestLoginModal,
+    },
+    {
+      content: "Logout",
+      requiresAuth: true,
+      icon: <ExitToAppIcon />,
+      onClick: logout,
+    },
+  ];
 
   return [top, manga, user]
     .map((categoryList) => {

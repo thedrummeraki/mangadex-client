@@ -1,6 +1,6 @@
 import { CircularProgress, TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
-import useAuthors from "helpers/useAuthors";
+import useSearchAuthors from "helpers/useSearchAuthors";
 import { useEffect, useState } from "react";
 import { Author } from "types/authors";
 import { useDebouncedValue } from "utils";
@@ -11,7 +11,7 @@ export function AuthorsField({ value, onChange }: SearchFieldProps<Author[]>) {
   const [open, setOpen] = useState(false);
   const query = useDebouncedValue(input, 500);
 
-  const { authors, loading, searchAuthors } = useAuthors({ limit: 100 });
+  const { authors, loading, searchAuthors } = useSearchAuthors({ limit: 100 });
 
   useEffect(() => {
     if (query.trim().length > 0) {
