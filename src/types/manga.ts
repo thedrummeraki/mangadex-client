@@ -33,7 +33,7 @@ export interface MangaAttributes {
   title: Title;
   altTitles: Array<any>;
   description: Description;
-  links: Array<MangaLink>;
+  links: MangaLinks;
   lastChapter?: Maybe<string>;
   publicationDemographic?: Maybe<PublicationDemographic>;
   status?: Maybe<MangaStatus>;
@@ -53,7 +53,21 @@ export type Description = {
   [key: string]: string;
 };
 
-export type MangaLink = string | null;
+export type MangaLinks = {
+  al?: string;
+  ap?: string;
+  bw?: string;
+  mu?: string;
+  nu?: string;
+  kt?: string;
+  amz?: string;
+  ebj?: string;
+  mal?: string;
+  raw?: string;
+  engtl?: string;
+};
+
+export type MangaLinkKey = keyof MangaLinks;
 
 export interface MangaTag {
   id: string;

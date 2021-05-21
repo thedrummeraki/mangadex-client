@@ -7,12 +7,13 @@ import {
   Paper,
   Typography,
 } from "@material-ui/core";
-import { Page, BBDescription, TitledSection } from "components";
+import { Page, BBDescription, TitledSection, CustomGrid } from "components";
+import { MangaLinkButton } from "components/MangaLinkButton";
 import { useLocalCurrentlyReading } from "helpers";
 import { mangaDescription, mangaTitle, preferredTitle } from "helpers/mangadex";
 import { useState } from "react";
 import { useHistory } from "react-router";
-import { GenericResponse, Manga } from "types";
+import { GenericResponse, Manga, MangaLinkKey } from "types";
 import { ChaptersList } from "./ChaptersList";
 import { MangaRelationshipsInfo } from "./MangaRelationshipsInfo";
 
@@ -111,6 +112,23 @@ export function ViewManga({ mangaInfo }: Props) {
             </Typography>
             <MangaRelationshipsInfo mangaInfo={mangaInfo} />
           </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h6" className={classes.moreInfo}>
+            Links ({Object.entries(manga.attributes.links).length})
+          </Typography>
+          <CustomGrid>
+            {Object.entries(manga.attributes.links).map((entry) => {
+              const key = entry[0] as MangaLinkKey;
+              const url = entry[1];
+
+              console.log("entry", entry[0], key);
+
+              return url ? (
+                <MangaLinkButton key={key} linkKey={key} url={url} />
+              ) : null;
+            })}
+          </CustomGrid>
         </Grid>
       </Grid>
 

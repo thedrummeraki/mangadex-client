@@ -58,8 +58,6 @@ export function MangaRelationshipsInfo({ mangaInfo }: Props) {
     }
   }, [loading, error, authorsAndArtists, authorIds, artistIds]);
 
-  const loadingMarkup = <CircularProgress size={14} />;
-
   const authorsMarkup = loading
     ? repeat(authorIds.length, (index) => (
         <ListItem key={`author-skeleton-${index}`} alignItems="flex-start">
@@ -72,7 +70,9 @@ export function MangaRelationshipsInfo({ mangaInfo }: Props) {
     : authorsState.authors.map((author) => (
         <ListItem button={false} key={author.data.id} alignItems="flex-start">
           <ListItemAvatar>
-            <Avatar src={author.data.attributes.imageUrl || "#"} />
+            <Avatar src={author.data.attributes.imageUrl || "#"}>
+              {author.data.attributes.name.toUpperCase()[0]}
+            </Avatar>
           </ListItemAvatar>
           <ListItemText
             primary={author.data.attributes.name}
@@ -93,7 +93,9 @@ export function MangaRelationshipsInfo({ mangaInfo }: Props) {
     : authorsState.artists.map((artist) => (
         <ListItem button={false} key={artist.data.id} alignItems="flex-start">
           <ListItemAvatar>
-            <Avatar src={artist.data.attributes.imageUrl || "#"} />
+            <Avatar src={artist.data.attributes.imageUrl || "#"}>
+              {artist.data.attributes.name.toUpperCase()[0]}
+            </Avatar>
           </ListItemAvatar>
           <ListItemText
             primary={artist.data.attributes.name}
