@@ -6,7 +6,7 @@ export interface Chapter {
 
 export interface ChapterAttributes {
   title: string;
-  volume: number | null;
+  volume: string | null;
   chapter: string | null;
   translatedLanguage: string;
   hash: string;

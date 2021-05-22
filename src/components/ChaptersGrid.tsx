@@ -1,4 +1,5 @@
 import {
+  Chip,
   Table,
   TableBody,
   TableCell,
@@ -6,17 +7,28 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
-import { chapterTitle } from "helpers";
+import { chapterTitle, mangaTitle } from "helpers";
+import { DateTime } from "luxon";
+import { ReactNode } from "react";
 import { Chapter, GenericResponse, Manga } from "types";
+import { localizedDateTime } from "utils";
 import CustomGrid from "./CustomGrid";
+import { Link } from "./Link";
 import { ChapterThumbnail } from "./Thumbnails/ChapterThumbnail";
 
 interface Props {
   chaptersResponse: Array<GenericResponse<Chapter>>;
   manga?: Manga;
+  showManga?: boolean;
+  renderItem: (chapter: Chapter) => ReactNode;
 }
 
-export function ChaptersGrid({ chaptersResponse, manga }: Props) {
+export function ChaptersGrid({
+  chaptersResponse,
+  manga,
+  showManga,
+  renderItem,
+}: Props) {
   return (
     // <CustomGrid>
     //   {chaptersResponse.map((chapterInfo, index) => {
@@ -33,29 +45,18 @@ export function ChaptersGrid({ chaptersResponse, manga }: Props) {
       <Table aria-label="chapters list">
         <colgroup>
           <col style={{ width: "5%" }} />
-          <col style={{ width: "5%" }} />
-          <col style={{ width: "60%" }} />
+          <col style={{ width: "65%" }} />
           <col style={{ width: "30%" }} />
         </colgroup>
         <TableHead>
           <TableRow>
-            <TableCell>Volume</TableCell>
             <TableCell>Chapter</TableCell>
             <TableCell>Title</TableCell>
             <TableCell align="right">Date</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {chaptersResponse.map((chapterInfo) => (
-            <TableRow key={chapterInfo.data.id}>
-              <TableCell>{chapterInfo.data.attributes.volume}</TableCell>
-              <TableCell>{chapterInfo.data.attributes.chapter}</TableCell>
-              <TableCell>{chapterTitle(chapterInfo.data)}</TableCell>
-              <TableCell align="right">
-                {chapterInfo.data.attributes.publishAt}
-              </TableCell>
-            </TableRow>
-          ))}
+          {chaptersResponse.map((chapterInfo) => renderItem(chapterInfo.data))}
         </TableBody>
       </Table>
     </TableContainer>

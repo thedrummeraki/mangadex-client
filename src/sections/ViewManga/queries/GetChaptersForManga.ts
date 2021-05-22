@@ -1,11 +1,18 @@
 import { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import gql from "graphql-tag";
-import { Chapter, PagedResultsList } from "types";
+import { Chapter, Order, PagedResultsList } from "types";
 
 const query = gql`
-  query GetChaptersFormManga($mangaId: String!) {
-    chapters(manga: $mangaId, limit: 100)
-      @rest(type: "Chapter", path: "/chapter?{args}") {
+  query GetChaptersForManga(
+    $mangaId: String!
+    $orderChapter: String!
+    $orderVolume: String!
+  ) {
+    chapters(
+      manga: $mangaId
+      limit: 100
+      order: { chapter: $orderChapter, volume: $orderVolume }
+    ) @rest(type: "Chapter", path: "/chapter?{args}") {
       limit
       offset
       total
@@ -37,5 +44,5 @@ const query = gql`
 
 export default query as TypedDocumentNode<
   { chapters: PagedResultsList<Chapter> },
-  { mangaId: string }
+  { mangaId: string } & Order<"orderChapter" | "orderVolume">
 >;

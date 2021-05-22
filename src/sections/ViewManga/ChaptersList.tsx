@@ -1,9 +1,13 @@
 import { useQuery } from "@apollo/client";
-import { CircularProgress } from "@material-ui/core";
-import { ChaptersGrid, TitledSection } from "components";
+import { Chip, CircularProgress, TableCell, TableRow } from "@material-ui/core";
+import { ChaptersGrid, Link, TitledSection } from "components";
+import SplitButton from "components/SplitButton";
+import { chapterTitle, mangaTitle } from "helpers";
+import useGroupedChaptersByVolume from "helpers/useGroupedChaptersByVolume";
+import { DateTime } from "luxon";
 import { useEffect } from "react";
 import { Manga } from "types";
-import { useCurrentBreakpoint } from "utils";
+import { localizedDateTime } from "utils";
 import GetChaptersForManga from "./queries/GetChaptersForManga";
 
 interface Props {
@@ -13,7 +17,7 @@ interface Props {
 
 export function ChaptersList({ manga, onFirstChapterReady }: Props) {
   const { data, loading, error } = useQuery(GetChaptersForManga, {
-    variables: { mangaId: manga.id },
+    variables: { mangaId: manga.id, orderVolume: "asc" },
     context: {
       headers: {
         "X-Allow-Cache": "true",
@@ -21,7 +25,9 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
     },
   });
 
-  const bp = useCurrentBreakpoint();
+  const {} = useGroupedChaptersByVolume(manga, {
+    order: { chapter: "desc", volume: "desc" },
+  });
 
   useEffect(() => {
     if (data?.chapters?.results?.length) {
@@ -51,10 +57,44 @@ export function ChaptersList({ manga, onFirstChapterReady }: Props) {
 
   return (
     <>
-      <TitledSection title={`Chapters list (${data?.chapters.total}) ${bp}`} />
+      <TitledSection
+        title={`Chapters list (${data?.chapters.total})`}
+        primaryAction={
+          <SplitButton
+            options={["All", "Sort by volume", "Latest first", "Only unread"]}
+            size="small"
+          />
+        }
+      />
       <ChaptersGrid
         chaptersResponse={data?.chapters.results || []}
         manga={manga}
+        renderItem={(chapter) => (
+          <TableRow key={chapter.id}>
+            <TableCell>{chapter.attributes.chapter}</TableCell>
+            <TableCell>
+              <div>
+                <Link to={`/manga/read/${chapter.id}`}>
+                  {chapterTitle(chapter)}{" "}
+                </Link>
+                {chapter.attributes.volume && (
+                  <Chip
+                    label={`Volume ${chapter.attributes.volume}`}
+                    size="small"
+                    variant="outlined"
+                  />
+                )}
+              </div>
+              {manga && <div>{mangaTitle(manga)}</div>}
+            </TableCell>
+            <TableCell align="right">
+              {localizedDateTime(
+                chapter.attributes.publishAt,
+                DateTime.DATE_FULL
+              )}
+            </TableCell>
+          </TableRow>
+        )}
       />
     </>
   );

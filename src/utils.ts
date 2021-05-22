@@ -317,3 +317,15 @@ export function useCustomHistory() {
 
   return { ...history, pushToHistory };
 }
+
+export function localizedDateTime(
+  dateTimeISO?: string | null,
+  format: Intl.DateTimeFormatOptions = DateTime.DATETIME_FULL
+) {
+  if (!dateTimeISO) {
+    return null;
+  }
+
+  const dateTime = DateTime.fromISO(dateTimeISO);
+  return dateTime.toLocaleString(format);
+}

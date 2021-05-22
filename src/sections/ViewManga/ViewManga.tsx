@@ -117,7 +117,7 @@ export function ViewManga({ mangaInfo }: Props) {
           <Typography variant="h6" className={classes.moreInfo}>
             Links ({Object.entries(manga.attributes.links).length})
           </Typography>
-          <CustomGrid>
+          <CustomGrid tight>
             {Object.entries(manga.attributes.links).map((entry) => {
               const key = entry[0] as MangaLinkKey;
               const url = entry[1];

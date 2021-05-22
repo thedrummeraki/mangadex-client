@@ -65,6 +65,7 @@ const mangaLinkInfoMap: MangaLinkInfoMap = {
     name: "bookwalker.jp",
     transform: (slug) => `https://bookwalker.jp/${slug}`,
   },
+  cdj: { background: "", color: "", name: "CDJapan" }, // Not documented for now
   ebj: { background: "", color: "", name: "eBook Japan" },
   engtl: { background: "", color: "", name: "Official English" },
   kt: {

@@ -61,6 +61,7 @@ export type MangaLinks = {
   nu?: string;
   kt?: string;
   amz?: string;
+  cdj?: string;
   ebj?: string;
   mal?: string;
   raw?: string;
