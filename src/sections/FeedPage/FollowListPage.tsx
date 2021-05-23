@@ -9,7 +9,10 @@ export function FollowListPage({ chaptersResponse }: Props) {
   return (
     <>
       <TitledSection title="Your follows" />
-      <ChaptersGrid chaptersResponse={chaptersResponse || []} />
+      <ChaptersGrid
+        chaptersResponse={chaptersResponse || []}
+        renderItem={() => null}
+      />
     </>
   );
 }

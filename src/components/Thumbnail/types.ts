@@ -4,6 +4,7 @@ interface BaseProps {
   img: string;
   follow?: boolean | null;
   clickable?: boolean | null;
+  explicit?: boolean | null;
   raw?: boolean | null;
   title?: string | null;
   url?: string | null;

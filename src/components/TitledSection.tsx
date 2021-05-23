@@ -1,8 +1,15 @@
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { Chip } from "@material-ui/core";
 import { notEmpty } from "utils";
+import { Variant } from "@material-ui/core/styles/createTypography";
+
+interface Tag {
+  content: string;
+  icon?: ReactElement;
+  onClick?: VoidFunction;
+}
 
 type TitledSectionBadge = string | null;
 
@@ -10,7 +17,14 @@ export interface TitledSectionProps {
   title: ReactNode;
   badges?: Array<TitledSectionBadge>;
   primaryAction?: ReactNode;
+  tagsDescription?: string;
+  tags?: Array<Tag>;
+  selectedTag?: string | null;
 }
+
+type Props = TitledSectionProps & {
+  variant?: Variant;
+};
 
 const useStyles = makeStyles((theme) => ({
   titledSection: {
@@ -33,13 +47,35 @@ const useStyles = makeStyles((theme) => ({
   badge: {
     marginLeft: theme.spacing(),
   },
+  tagsContainer: {
+    width: "100%",
+    margin: theme.spacing(0.5, 0, 2, 0),
+
+    "&:first-child": {
+      marginLeft: 0,
+    },
+    "&:last-child": {
+      marginRight: 0,
+    },
+  },
+  tagsDescription: {
+    marginRight: theme.spacing(),
+    color: theme.palette.text.hint,
+  },
+  tag: {
+    marginRight: theme.spacing(0.5),
+  },
 }));
 
 export function TitledSection({
   title,
+  variant = "h6",
   badges,
   primaryAction,
-}: TitledSectionProps) {
+  tagsDescription,
+  tags,
+  selectedTag,
+}: Props) {
   const classes = useStyles();
   const badgesMarkup =
     badges &&
@@ -52,7 +88,7 @@ export function TitledSection({
       <div className={classes.titledSectionTitleContainer}>
         <>
           <Typography
-            variant="h5"
+            variant={variant}
             component="h1"
             className={classes.titledSectionTitle}
           >
@@ -62,6 +98,35 @@ export function TitledSection({
         </>
         {primaryAction}
       </div>
+      {tags && (
+        <div className={classes.tagsContainer}>
+          {tagsDescription && (
+            <Typography
+              component="span"
+              variant="subtitle2"
+              className={classes.tagsDescription}
+            >
+              {tagsDescription}
+            </Typography>
+          )}
+          {tags.map((tag, index) => {
+            const selected = selectedTag === tag.content;
+
+            return (
+              <Chip
+                key={`${tag}-${index}`}
+                variant={selected ? "default" : "outlined"}
+                color={selected ? "secondary" : "default"}
+                size="small"
+                label={tag.content}
+                icon={tag.icon}
+                onClick={tag.onClick}
+                className={classes.tag}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

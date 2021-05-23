@@ -75,9 +75,11 @@ export function useLocalCurrentlyReading(options?: Options) {
 }
 
 export function savedPage(chapter: Chapter, defaultValue: number = 0) {
-  return parseInt(
-    localStorage.getItem(`chapter-${chapter.id}`) || String(defaultValue)
-  );
+  const savedValue = localStorage.getItem(`chapter-${chapter.id}`);
+  if (!savedValue) {
+    return defaultValue;
+  }
+  return parseInt(savedValue);
 }
 
 function idsFromOptions({ manga, chapter }: Options) {

@@ -14,7 +14,7 @@ export function ReadChapterPage({ chapter, mangaId }: Props) {
 
   const pageData = chapter.attributes.dataSaver;
   const pageURLs = pageData.map((_, index) =>
-    ["http://localhost:3001", "at-home", "img"]
+    ["https://mangadex-client-proxy.herokuapp.com", "at-home", "img"]
       .join("/")
       .concat(`?chapterId=${chapter.id}&page=${index + 1}`)
   );

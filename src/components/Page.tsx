@@ -1,21 +1,20 @@
-import { Chip, Container, IconButton, makeStyles } from "@material-ui/core";
-import { PropsWithChildren } from "react";
+import { Container, Grid, IconButton, makeStyles } from "@material-ui/core";
+import { PropsWithChildren, ReactNode } from "react";
 import { TitledSection, TitledSectionProps } from "./TitledSection";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router";
 import { useQueryParam } from "utils";
-
-interface Tag {
-  content: string;
-  onClick?: VoidFunction;
-}
+import { useDocumentTitle } from "./DocumentTitle";
 
 interface Props {
   backUrl?: string;
   title: string;
   maxWitdh?: "xs" | "sm" | "md" | "lg" | "xl" | false;
-  tags?: Array<Tag>;
+  showcase?: {
+    imageUrl: string;
+    content: ReactNode;
+  };
 }
 
 type PageProps = Props & TitledSectionProps;
@@ -24,19 +23,16 @@ const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(2),
   },
-  tagsContainer: {
+  showcaseImg: {
+    display: "block",
+    maxHeight: "100%",
     width: "100%",
-    margin: theme.spacing(0.5, 0, 2, 0),
+    marginTop: theme.spacing(4),
+    objectFit: "cover",
 
-    "&:first-child": {
-      marginLeft: 0,
+    [theme.breakpoints.down("sm")]: {
+      height: "25vh",
     },
-    "&:last-child": {
-      marginRight: 0,
-    },
-  },
-  tag: {
-    marginRight: theme.spacing(0.5),
   },
 }));
 
@@ -46,12 +42,15 @@ export function Page({
   badges,
   tags,
   maxWitdh,
+  showcase,
   children,
   primaryAction,
 }: PropsWithChildren<PageProps>) {
   const classes = useStyles();
   const history = useHistory();
   const defaultBackUrl = useQueryParam("from", backUrl);
+
+  useDocumentTitle({ title });
 
   const titleMarkup = defaultBackUrl ? (
     <>
@@ -68,29 +67,45 @@ export function Page({
     title
   );
 
+  if (showcase) {
+    return (
+      <Container maxWidth={maxWitdh}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={3}>
+            <img
+              alt={`${title}-showcase`}
+              src={showcase.imageUrl}
+              className={classes.showcaseImg}
+            />
+          </Grid>
+          <Grid item xs={12} md={9}>
+            <TitledSection
+              variant="h5"
+              title={titleMarkup}
+              badges={badges}
+              primaryAction={primaryAction}
+              tags={tags}
+            />
+            {showcase.content}
+          </Grid>
+          <Grid item xs={12}>
+            <div className={classes.root}>{children}</div>
+          </Grid>
+        </Grid>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth={maxWitdh}>
       <TitledSection
+        variant="h5"
         title={titleMarkup}
         badges={badges}
         primaryAction={primaryAction}
+        tags={tags}
       />
-      <div className={classes.root}>
-        {tags && (
-          <div className={classes.tagsContainer}>
-            {tags.map((tag) => (
-              <Chip
-                variant="outlined"
-                size="small"
-                label={tag.content}
-                onClick={tag.onClick}
-                className={classes.tag}
-              />
-            ))}
-          </div>
-        )}
-        {children}
-      </div>
+      <div className={classes.root}>{children}</div>
     </Container>
   );
 }

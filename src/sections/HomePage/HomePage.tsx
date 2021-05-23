@@ -9,7 +9,7 @@ export function HomePage() {
   const { mangaList, data, loading, error, fetchMoreManga } = useMangaList({
     limit: 20,
     pageSize: 20,
-    allowCache: true,
+    allowCache: false,
   });
 
   const { currentUser } = useAuth();
@@ -45,11 +45,7 @@ export function HomePage() {
         {mangaList.results.map((mangaResult) => (
           <MangaThumbnail
             key={mangaResult.data.id}
-            chaptersCount={
-              mangaResult.relationships.filter(
-                (relationship) => relationship.type === "chapter"
-              ).length
-            }
+            showContentRating
             manga={mangaResult.data}
           />
         ))}

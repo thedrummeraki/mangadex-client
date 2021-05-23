@@ -1,5 +1,10 @@
 import { makeStyles } from "@material-ui/core";
+import clsx from "clsx";
 import { PropsWithChildren } from "react";
+
+interface Props {
+  tight?: boolean;
+}
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -8,10 +13,18 @@ const useStyles = makeStyles(() => ({
     gridTemplateColumns: "repeat(auto-fill, 185px)",
     justifyContent: "space-between",
   },
+  tight: {
+    gap: "10px 0",
+  },
 }));
 
-export default function CustomGrid({ children }: PropsWithChildren<{}>) {
+export default function CustomGrid({
+  children,
+  tight,
+}: PropsWithChildren<Props>) {
   const classes = useStyles();
 
-  return <div className={classes.root}>{children}</div>;
+  return (
+    <div className={clsx(classes.root, tight && classes.tight)}>{children}</div>
+  );
 }

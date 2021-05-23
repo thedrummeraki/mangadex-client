@@ -17,6 +17,7 @@ import {
 import { Link } from "components";
 import useAPIVersion from "helpers/useAPIVersion";
 import useDrawerItems from "./useDrawerItems";
+import { useAuth } from "config/providers/AuthProvider";
 
 const drawerWidth = 240;
 
@@ -71,6 +72,8 @@ export default function NavigationDrawer(props: PropsWithChildren<Props>) {
   const classes = useStyles();
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const { currentUser } = useAuth();
   const drawerItems = useDrawerItems();
 
   const { version } = useAPIVersion();
@@ -86,7 +89,16 @@ export default function NavigationDrawer(props: PropsWithChildren<Props>) {
           <Link to="/" variant="h6">
             Mangadex client
           </Link>
-          {version && <Typography variant="subtitle1">v{version}</Typography>}
+          {version && (
+            <Typography variant="subtitle1">
+              Based on <strong>v{version}</strong>
+            </Typography>
+          )}
+          {currentUser && (
+            <Typography variant="subtitle2">
+              Logged in as: <em>{currentUser.attributes.username}</em>
+            </Typography>
+          )}
         </div>
       </div>
       <Divider />

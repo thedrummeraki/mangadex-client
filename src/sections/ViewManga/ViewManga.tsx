@@ -1,28 +1,25 @@
-import { Button, makeStyles, Paper, Typography } from "@material-ui/core";
-import { Page, BBDescription } from "components";
+import { Button } from "@material-ui/core";
+import { Page } from "components";
 import { useLocalCurrentlyReading } from "helpers";
-import { mangaDescription, preferredTitle } from "helpers/mangadex";
-import { useState } from "react";
+import { isExplicit, preferredTitle } from "helpers/mangadex";
+import useAggregate from "helpers/useAggregate";
+import { useMemo, useState } from "react";
 import { useHistory } from "react-router";
-import { Manga } from "types";
+import { GenericResponse, Manga } from "types";
 import { ChaptersList } from "./ChaptersList";
+import { MangaDetails } from "./MangaDetails";
 
 interface Props {
-  manga: Manga;
+  mangaInfo: GenericResponse<Manga>;
 }
 
-const useStyles = makeStyles((theme) => ({
-  description: {
-    padding: theme.spacing(),
-  },
-}));
-
-export function ViewManga({ manga }: Props) {
+export function ViewManga({ mangaInfo }: Props) {
   const history = useHistory();
-  const classes = useStyles();
   const [firstChapterId, setFirstChapterId] = useState<string | null>(null);
+
+  const { data: manga } = mangaInfo;
   const {
-    attributes: { lastChapter, status, description, tags, title },
+    attributes: { lastChapter, status, tags, title },
   } = manga;
   const lastChapterBadge =
     lastChapter && parseInt(lastChapter) > 0
@@ -36,49 +33,51 @@ export function ViewManga({ manga }: Props) {
   }));
 
   const { latestChapterForManga } = useLocalCurrentlyReading({ manga });
+  const { volumesCount } = useAggregate(mangaInfo.data);
+  const volumes = useMemo(
+    () => volumesCount.map((count) => count.volume),
+    [volumesCount]
+  );
 
-  const primaryAction = latestChapterForManga ? (
+  const primaryAction = (
     <Button
       size="small"
       color="secondary"
       variant="contained"
-      onClick={() =>
-        history.push(`/manga/read/${latestChapterForManga.chapterId}`)
-      }
+      onClick={() => {
+        if (latestChapterForManga) {
+          history.push(`/manga/read/${latestChapterForManga.chapterId}`);
+        } else {
+          history.push(`/manga/read/${firstChapterId}`);
+        }
+      }}
     >
-      Continue
+      {latestChapterForManga ? "Continue" : "Read now"}
     </Button>
-  ) : firstChapterId ? (
-    <Button
-      size="small"
-      color="secondary"
-      variant="contained"
-      onClick={() => history.push(`/manga/read/${firstChapterId}`)}
-    >
-      Start reading
-    </Button>
-  ) : null;
+  );
 
   return (
     <Page
       backUrl="/"
       title={preferredTitle(title)}
       badges={[
+        isExplicit(manga) ? "EXPLICIT" : null,
         lastChapterBadge,
         statusBadge,
         manga.attributes.contentRating || null,
       ]}
       tags={pageTags}
       primaryAction={primaryAction}
+      showcase={{
+        imageUrl: "https://picsum.photos/185/265",
+        content: <MangaDetails manga={manga} />,
+      }}
     >
-      {description.en && (
-        <Paper className={classes.description}>
-          <Typography>
-            <BBDescription description={mangaDescription(manga)} />
-          </Typography>
-        </Paper>
-      )}
-      <ChaptersList onFirstChapterReady={setFirstChapterId} manga={manga} />
+      <ChaptersList
+        volumes={volumes}
+        onFirstChapterReady={setFirstChapterId}
+        manga={manga}
+      />
     </Page>
   );
 }

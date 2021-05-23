@@ -5,8 +5,10 @@ import {
   useMutation,
   useQuery,
 } from "@apollo/client";
+import { LoginModal } from "components/modals";
 import React, {
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -75,12 +77,15 @@ type AuthUser = User | null;
 
 interface AuthContextState {
   currentUser: AuthUser;
+  loginModalOpen: boolean;
   setCurrentUser: (user: AuthUser) => void;
+  setLoginModalOpen: (open: boolean) => void;
 }
 
 export function AuthProvider({ children }: PropsWithChildren<{}>) {
   const token = getToken();
   const [currentUser, setCurrentUser] = useState<AuthUser>(null);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const { data, loading } = useQuery(checkSessionQuery, {
     context: {
       headers: {
@@ -111,7 +116,13 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
   }
 
   return (
-    <AuthContext.Provider value={{ currentUser, setCurrentUser }}>
+    <AuthContext.Provider
+      value={{ currentUser, loginModalOpen, setCurrentUser, setLoginModalOpen }}
+    >
+      <LoginModal
+        open={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+      />
       {children}
     </AuthContext.Provider>
   );
@@ -119,14 +130,17 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
 
 const AuthContext = React.createContext<AuthContextState>({
   currentUser: null,
+  loginModalOpen: false,
   setCurrentUser: (_: AuthUser) => {},
+  setLoginModalOpen: (_: boolean) => {},
 });
 
 export function useAuth(options?: {
   onLogin: (response: GenericResponse<User>) => void;
 }) {
   const client = useApolloClient();
-  const { currentUser, setCurrentUser } = useContext(AuthContext);
+  const { currentUser, setCurrentUser, setLoginModalOpen } =
+    useContext(AuthContext);
   const token = useMemo(getToken, [currentUser]);
 
   const [getCurrentUserCallback, { data, loading, error }] =
@@ -159,8 +173,10 @@ export function useAuth(options?: {
         }
         if (!loading && data) {
           resolve(data as GenericResponse<User>);
+          setLoginModalOpen(false);
         } else if (!data && !error) {
           resolve(null);
+          setLoginModalOpen(false);
         }
       }
     );
@@ -189,6 +205,20 @@ export function useAuth(options?: {
   };
 
   return { currentUser, token, login, logout, loggedIn: Boolean(currentUser) };
+}
+
+// Use this to open the modal from anywhere in the app.
+export function useLoginModal() {
+  const { currentUser, loginModalOpen, setLoginModalOpen } =
+    useContext(AuthContext);
+
+  const requestLoginModal = useCallback(() => {
+    if (!currentUser && !loginModalOpen) {
+      setLoginModalOpen(true);
+    }
+  }, [currentUser, loginModalOpen, setLoginModalOpen]);
+
+  return { open: loginModalOpen, requestLoginModal };
 }
 
 export function getToken(): Token | null {

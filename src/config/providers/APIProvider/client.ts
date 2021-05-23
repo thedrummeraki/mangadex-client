@@ -15,7 +15,9 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const link = authLink.concat(new RestLink({ uri: "http://localhost:3001" }));
+const link = authLink.concat(
+  new RestLink({ uri: "https://mangadex-client-proxy.herokuapp.com" })
+);
 
 const client = new ApolloClient({
   cache: new InMemoryCache({

@@ -317,3 +317,26 @@ export function useCustomHistory() {
 
   return { ...history, pushToHistory };
 }
+
+export function localizedDateTime(
+  dateTimeISO?: string | null,
+  format: Intl.DateTimeFormatOptions = DateTime.DATETIME_FULL
+) {
+  if (!dateTimeISO) {
+    return null;
+  }
+
+  const dateTime = DateTime.fromISO(dateTimeISO);
+  return dateTime.toLocaleString(format);
+}
+
+export function getFollowUrl(targetUrl: string) {
+  const url = new URL(window.location.toString());
+  url.pathname = targetUrl;
+  url.searchParams.set(
+    "from",
+    encodeURIComponent(window.location.pathname + window.location.search)
+  );
+
+  return url.pathname + url.search;
+}

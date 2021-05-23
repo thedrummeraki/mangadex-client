@@ -3,6 +3,7 @@ import {
   OutlinedInput,
   makeStyles,
   Button,
+  FormHelperText,
 } from "@material-ui/core";
 import useLogin from "helpers/useLogin";
 import { useMemo, useState } from "react";
@@ -34,6 +35,7 @@ export default function LoginModal({ open, onClose }: Props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errored, setErrored] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
 
   const { loginUser } = useLogin({
@@ -46,7 +48,12 @@ export default function LoginModal({ open, onClose }: Props) {
   const loginNow = () => {
     if (validEntry && !loading) {
       setLoading(true);
-      loginUser({ username, password });
+      setErrored(false);
+      loginUser({ username, password }).catch((error) => {
+        console.error(error);
+        setLoading(false);
+        setErrored(true);
+      });
     }
   };
 
@@ -66,7 +73,7 @@ export default function LoginModal({ open, onClose }: Props) {
       onClose={onClose}
     >
       <form noValidate autoComplete="off" className={classes.root}>
-        <FormControl>
+        <FormControl error={errored}>
           <OutlinedInput
             id="username"
             type="username"
@@ -75,7 +82,7 @@ export default function LoginModal({ open, onClose }: Props) {
             onChange={(event) => setUsername(event.target.value)}
           />
         </FormControl>
-        <FormControl>
+        <FormControl error={errored}>
           <OutlinedInput
             id="password"
             type="password"
@@ -83,6 +90,11 @@ export default function LoginModal({ open, onClose }: Props) {
             placeholder="Your password"
             onChange={(event) => setPassword(event.target.value)}
           />
+          {errored && (
+            <FormHelperText id="component-error-text">
+              Your username or password may not be valid.
+            </FormHelperText>
+          )}
         </FormControl>
         <FormControl>
           <Button

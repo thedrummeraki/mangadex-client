@@ -8,3 +8,9 @@ export interface ChapterCount {
   chapter: number;
   count: number;
 }
+
+export interface Aggregate {
+  volumes: {
+    [key: string]: VolumeCount;
+  };
+}

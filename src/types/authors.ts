@@ -6,7 +6,7 @@ export interface Author {
 
 export interface AuthorAttributes {
   name: string;
-  imageUrl: string;
+  imageUrl: string | null;
   biography: Biography[];
   version: number;
   createdAt: string;
