@@ -176,6 +176,7 @@ export function useAuth(options?: {
           setLoginModalOpen(false);
         } else if (!data && !error) {
           resolve(null);
+          setLoginModalOpen(false);
         }
       }
     );
