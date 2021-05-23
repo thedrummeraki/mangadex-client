@@ -22,7 +22,7 @@ export function AuthorsField({ value, onChange }: SearchFieldProps<Author[]>) {
   return (
     <Autocomplete
       id="fetch-authors"
-      style={{ width: "100%" }}
+      style={{ width: 300 }}
       open={open}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -37,6 +37,13 @@ export default function SplitButton({
     initialSelection != null ? initialSelection : 0
   );
 
+  const currentOption: string | ComplexOption | undefined = useMemo(
+    () => options[selectedIndex],
+    [options, selectedIndex]
+  );
+
+  console.log("options", options);
+
   const handleMenuItemClick = useCallback(
     (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
       setSelectedIndex(index);
@@ -51,10 +58,10 @@ export default function SplitButton({
 
   useEffect(() => {
     const option = options[selectedIndex];
-    if (typeof option !== "string" && option.onSelect) {
+    if (option && typeof option !== "string" && option.onSelect) {
       option.onSelect();
     }
-  }, [selectedIndex]);
+  }, [options, selectedIndex]);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -70,6 +77,10 @@ export default function SplitButton({
 
     setOpen(false);
   };
+
+  if (!currentOption) {
+    return null;
+  }
 
   return (
     <Grid
@@ -94,7 +105,9 @@ export default function SplitButton({
             endIcon={<ArrowDropDownIcon />}
             disabled={disabled}
           >
-            {options[selectedIndex]}
+            {typeof currentOption === "string"
+              ? currentOption
+              : currentOption.content}
           </Button>
         </ButtonGroup>
         <Popper

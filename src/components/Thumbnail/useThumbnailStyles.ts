@@ -117,6 +117,9 @@ const useThumbnailStyles = makeStyles((theme) => ({
       background: theme.palette.info.light,
     },
   },
+  explicitFeature: {
+    background: `${theme.palette.error.light} !important`,
+  },
   bottomIconsContainer: {
     position: "absolute",
     bottom: 0,

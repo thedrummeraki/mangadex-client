@@ -329,3 +329,14 @@ export function localizedDateTime(
   const dateTime = DateTime.fromISO(dateTimeISO);
   return dateTime.toLocaleString(format);
 }
+
+export function getFollowUrl(targetUrl: string) {
+  const url = new URL(window.location.toString());
+  url.pathname = targetUrl;
+  url.searchParams.set(
+    "from",
+    encodeURIComponent(window.location.pathname + window.location.search)
+  );
+
+  return url.pathname + url.search;
+}

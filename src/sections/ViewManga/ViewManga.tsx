@@ -2,6 +2,7 @@ import {
   Avatar,
   Button,
   Chip,
+  Collapse,
   Grid,
   makeStyles,
   Paper,
@@ -10,10 +11,17 @@ import {
 import { Page, BBDescription, TitledSection, CustomGrid } from "components";
 import { MangaLinkButton } from "components/MangaLinkButton";
 import { useLocalCurrentlyReading } from "helpers";
-import { mangaDescription, mangaTitle, preferredTitle } from "helpers/mangadex";
-import { useState } from "react";
+import {
+  isExplicit,
+  mangaDescription,
+  mangaTitle,
+  preferredTitle,
+} from "helpers/mangadex";
+import useAggregate from "helpers/useAggregate";
+import { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { GenericResponse, Manga, MangaLinkKey } from "types";
+import { notEmpty } from "utils";
 import { ChaptersList } from "./ChaptersList";
 import { MangaRelationshipsInfo } from "./MangaRelationshipsInfo";
 
@@ -24,11 +32,7 @@ interface Props {
 const useStyles = makeStyles((theme) => ({
   description: {
     padding: theme.spacing(),
-    maxHeight: 200,
     overflow: "hidden",
-  },
-  moreInfo: {
-    padding: theme.spacing(),
   },
   authorChip: {
     margin: theme.spacing(0.5),
@@ -39,6 +43,7 @@ export function ViewManga({ mangaInfo }: Props) {
   const history = useHistory();
   const classes = useStyles();
   const [firstChapterId, setFirstChapterId] = useState<string | null>(null);
+  const [open] = useState(false);
 
   const { data: manga } = mangaInfo;
   const {
@@ -56,6 +61,11 @@ export function ViewManga({ mangaInfo }: Props) {
   }));
 
   const { latestChapterForManga } = useLocalCurrentlyReading({ manga });
+  const { volumesCount } = useAggregate(mangaInfo.data);
+  const volumes = useMemo(
+    () => volumesCount.map((count) => count.volume),
+    [volumesCount]
+  );
 
   const primaryAction = (
     <Button
@@ -74,11 +84,25 @@ export function ViewManga({ mangaInfo }: Props) {
     </Button>
   );
 
+  const links = manga.attributes.links
+    ? Object.entries(manga.attributes.links)
+        .map((entry) => {
+          const linkKey = entry[0] as MangaLinkKey;
+          const url = entry[1];
+
+          return url ? { linkKey, url } : null;
+        })
+        .filter(notEmpty)
+    : [];
+
+  console.log("links", links);
+
   return (
     <Page
       backUrl="/"
       title={preferredTitle(title)}
       badges={[
+        isExplicit(manga) ? "EXPLICIT" : null,
         lastChapterBadge,
         statusBadge,
         manga.attributes.contentRating || null,
@@ -87,13 +111,15 @@ export function ViewManga({ mangaInfo }: Props) {
       primaryAction={primaryAction}
     >
       <Grid container spacing={1}>
-        <Grid item xs={12} lg={9} xl={9} style={{ maxHeight: "100%" }}>
+        {/* <Grid item xs={12} lg={9} xl={9} style={{ maxHeight: "100%" }}>
           <div className={classes.description}>
             <Typography variant="h6">Description</Typography>
             {description.en ? (
-              <Typography variant="body2">
-                <BBDescription description={mangaDescription(manga)} />
-              </Typography>
+              <Collapse unmountOnExit collapsedHeight={200} in={open}>
+                <Typography variant="body2">
+                  <BBDescription description={mangaDescription(manga)} />
+                </Typography>
+              </Collapse>
             ) : (
               <Typography>
                 ~{" "}
@@ -112,27 +138,26 @@ export function ViewManga({ mangaInfo }: Props) {
             </Typography>
             <MangaRelationshipsInfo mangaInfo={mangaInfo} />
           </Paper>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h6" className={classes.moreInfo}>
-            Links ({Object.entries(manga.attributes.links).length})
-          </Typography>
-          <CustomGrid tight>
-            {Object.entries(manga.attributes.links).map((entry) => {
-              const key = entry[0] as MangaLinkKey;
-              const url = entry[1];
-
-              console.log("entry", entry[0], key);
-
-              return url ? (
-                <MangaLinkButton key={key} linkKey={key} url={url} />
-              ) : null;
-            })}
-          </CustomGrid>
-        </Grid>
+        </Grid> */}
+        {links.length > 0 && (
+          <Grid item xs={12}>
+            <TitledSection title={`Links (${links.length})`} />
+            <Grid container spacing={1}>
+              {links.map((link) => (
+                <Grid key={link.linkKey} item>
+                  <MangaLinkButton {...link} />
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+        )}
       </Grid>
 
-      <ChaptersList onFirstChapterReady={setFirstChapterId} manga={manga} />
+      <ChaptersList
+        volumes={volumes}
+        onFirstChapterReady={setFirstChapterId}
+        manga={manga}
+      />
     </Page>
   );
 }

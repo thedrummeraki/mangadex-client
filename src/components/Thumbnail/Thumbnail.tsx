@@ -9,6 +9,7 @@ import useThumbnailStyles from "./useThumbnailStyles";
 
 function Thumbnail({
   img,
+  explicit,
   raw,
   title,
   clickable,
@@ -39,13 +40,18 @@ function Thumbnail({
       })}
       style={{ position: "relative" }}
     >
-      <ThumbnailWrapper follow={follow} url={url} onClick={onClick}>
+      <ThumbnailWrapper
+        title={title}
+        follow={follow}
+        url={url}
+        onClick={onClick}
+      >
         <div style={{ position: "relative" }}>
           <div className={classes.holder}>
             <div ref={overlayRef} className={classes.overlay} />
           </div>
           <div className={clsx(classes.thumbnailWrapper, classes.container)}>
-            <ThumbnailFeatures features={features} />
+            <ThumbnailFeatures explicit={explicit} features={features} />
             <ThumbnailImage
               clickable={clickable}
               overlayRef={overlayRef}

@@ -28,6 +28,27 @@ const useStyles = makeStyles(() => ({
 
 export function MangaLinkButton({ linkKey, url }: Props) {
   const classes = useStyles();
+
+  // MangaDex has undocumented links, so ignore them and print a
+  // warning message.
+  if (
+    !Object.entries(mangaLinkInfoMap)
+      .map((entry) => entry[0])
+      .includes(linkKey)
+  ) {
+    console.warn("[Warning] Missing link key", linkKey);
+    return (
+      <Button
+        disabled
+        size="small"
+        variant="outlined"
+        title="Don't be alarmed! We'll get that fixed soon."
+        className={classes.root}
+      >
+        Unknown link
+      </Button>
+    );
+  }
   const { background, color, name, transform } = mangaLinkInfoMap[linkKey];
   const finalUrl = transform ? transform(url) : url;
 
@@ -47,6 +68,8 @@ export function MangaLinkButton({ linkKey, url }: Props) {
 
 const mangaLinkInfoMap: MangaLinkInfoMap = {
   al: {
+    // background: "#2b2d42",
+    // color: "#d9e6ff",
     background: "",
     color: "",
     name: "AniList",

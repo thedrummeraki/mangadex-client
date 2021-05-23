@@ -17,7 +17,12 @@ import { chapterTitle, mangaTitle, useSearchMangaList } from "helpers";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Chapter, Manga } from "types";
-import { localizedDateTime, notEmpty, useScrollListeners } from "utils";
+import {
+  getFollowUrl,
+  localizedDateTime,
+  notEmpty,
+  useScrollListeners,
+} from "utils";
 import GetFollowListsQuery from "./queries/GetFollowListsQuery";
 
 import MenuBookIcon from "@material-ui/icons/MenuBook";
@@ -31,6 +36,10 @@ const useStyles = makeStyles((theme) => ({
   description: {
     margin: theme.spacing(2, 0),
     padding: theme.spacing(),
+  },
+  mangaLink: {
+    textDecoration: "none",
+    color: theme.palette.text.disabled,
   },
 }));
 
@@ -160,7 +169,7 @@ export default function FeedPageContainer() {
               <TableCell>{chapter.attributes.chapter}</TableCell>
               <TableCell>
                 <div>
-                  <Link to={`/manga/read/${chapter.id}`}>
+                  <Link to={getFollowUrl(`/manga/read/${chapter.id}`)}>
                     {chapterTitle(chapter)}{" "}
                   </Link>
                   {chapter.attributes.volume && (
@@ -172,17 +181,19 @@ export default function FeedPageContainer() {
                   )}
                 </div>
                 {manga && (
-                  <Grid
-                    container
-                    direction="row"
-                    alignItems="center"
-                    spacing={1}
-                  >
-                    <Grid item>
-                      <MenuBookIcon fontSize="small" />
+                  <Link to={`/manga/${manga.id}`} className={classes.mangaLink}>
+                    <Grid
+                      container
+                      direction="row"
+                      alignItems="center"
+                      spacing={1}
+                    >
+                      <Grid item>
+                        <MenuBookIcon fontSize="small" />
+                      </Grid>
+                      <Grid item>{mangaTitle(manga)}</Grid>
                     </Grid>
-                    <Grid item>{mangaTitle(manga)}</Grid>
-                  </Grid>
+                  </Link>
                 )}
               </TableCell>
               <TableCell align="right">

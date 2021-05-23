@@ -7,10 +7,12 @@ const query = gql`
     $mangaId: String!
     $orderChapter: String!
     $orderVolume: String!
+    $volume: String
   ) {
     chapters(
       manga: $mangaId
       limit: 100
+      volume: $volume
       order: { chapter: $orderChapter, volume: $orderVolume }
     ) @rest(type: "Chapter", path: "/chapter?{args}") {
       limit
@@ -44,5 +46,7 @@ const query = gql`
 
 export default query as TypedDocumentNode<
   { chapters: PagedResultsList<Chapter> },
-  { mangaId: string } & Order<"orderChapter" | "orderVolume">
+  { mangaId: string; volume?: string | null } & Order<
+    "orderChapter" | "orderVolume"
+  >
 >;

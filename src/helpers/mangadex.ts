@@ -1,11 +1,38 @@
-import { Description, Manga, Title } from "types";
+import { ContentRating, Description, Manga, Title } from "types";
 import { Chapter } from "types/chapter";
 
 import DOMPurify from "dompurify";
 import { decodeHTML } from "utils";
 
+interface ExplicatEvaluatorOptions {
+  conservative?: boolean;
+  strict?: boolean;
+}
+
 export function mangaTitle(manga: Manga) {
   return preferredTitle(manga.attributes.title);
+}
+
+export function isExplicit(
+  manga: Manga,
+  options: ExplicatEvaluatorOptions = { conservative: true, strict: false }
+) {
+  // if strict, a manga is explicit if we don't know its rating.
+  if (options.strict && !manga.attributes.contentRating) {
+    return true;
+  }
+
+  const explicitContentRatings = [ContentRating.pornographic];
+
+  // A conservative approach means that we also include eroticas.
+  if (options.conservative || options.strict) {
+    explicitContentRatings.push(ContentRating.erotica);
+  }
+
+  return (
+    manga.attributes.contentRating != null &&
+    explicitContentRatings.includes(manga.attributes.contentRating)
+  );
 }
 
 export function mangaDescription(manga: Manga) {

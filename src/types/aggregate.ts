@@ -1,3 +1,5 @@
+import { PagedResultsList } from "./api";
+
 export interface VolumeCount {
   volume: string;
   count: number;
@@ -7,4 +9,10 @@ export interface VolumeCount {
 export interface ChapterCount {
   chapter: number;
   count: number;
+}
+
+export interface Aggregate {
+  volumes: {
+    [key: string]: VolumeCount;
+  };
 }

@@ -33,7 +33,7 @@ export interface MangaAttributes {
   title: Title;
   altTitles: Array<any>;
   description: Description;
-  links: MangaLinks;
+  links?: Maybe<MangaLinks>;
   lastChapter?: Maybe<string>;
   publicationDemographic?: Maybe<PublicationDemographic>;
   status?: Maybe<MangaStatus>;

@@ -1,6 +1,6 @@
 import { Thumbnail } from "components";
 import { AllowedIcons } from "components/Thumbnail/types";
-import { preferredTitle, useLocalCurrentlyReading } from "helpers";
+import { isExplicit, preferredTitle, useLocalCurrentlyReading } from "helpers";
 import { Manga } from "types";
 
 interface Props {
@@ -38,6 +38,7 @@ export function MangaThumbnail({
     <Thumbnail
       img="#"
       follow
+      explicit={isExplicit(manga)}
       title={preferredTitle(title)}
       features={[
         showReading && isReading ? "Reading" : null,
