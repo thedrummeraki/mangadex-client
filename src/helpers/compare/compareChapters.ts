@@ -1,12 +1,12 @@
 import { Chapter, GenericResponse } from "types";
 import { CompareDirection } from "./types";
 
-export default (direction: CompareDirection) => {
+export default function compareChapters(direction: CompareDirection) {
   return (a: GenericResponse<Chapter>, b: GenericResponse<Chapter>) =>
-    compareChapters(a, b, direction);
-};
+    compareChaptersWithDirection(a, b, direction);
+}
 
-function compareChapters(
+function compareChaptersWithDirection(
   a: GenericResponse<Chapter>,
   b: GenericResponse<Chapter>,
   direction: CompareDirection

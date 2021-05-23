@@ -1,10 +1,4 @@
-import {
-  Chip,
-  Container,
-  Grid,
-  IconButton,
-  makeStyles,
-} from "@material-ui/core";
+import { Container, Grid, IconButton, makeStyles } from "@material-ui/core";
 import { PropsWithChildren, ReactNode } from "react";
 import { TitledSection, TitledSectionProps } from "./TitledSection";
 

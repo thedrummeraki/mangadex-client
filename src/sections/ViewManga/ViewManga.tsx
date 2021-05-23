@@ -1,32 +1,12 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Avatar,
-  Button,
-  Chip,
-  Collapse,
-  Grid,
-  makeStyles,
-  Paper,
-  Typography,
-} from "@material-ui/core";
-import { Page, BBDescription, TitledSection, CustomGrid } from "components";
-import { MangaLinkButton } from "components/MangaLinkButton";
+import { Button } from "@material-ui/core";
+import { Page } from "components";
 import { useLocalCurrentlyReading } from "helpers";
-import {
-  isExplicit,
-  mangaDescription,
-  mangaTitle,
-  preferredTitle,
-} from "helpers/mangadex";
+import { isExplicit, preferredTitle } from "helpers/mangadex";
 import useAggregate from "helpers/useAggregate";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useHistory } from "react-router";
-import { GenericResponse, Manga, MangaLinkKey } from "types";
-import { decodeHTML, notEmpty } from "utils";
+import { GenericResponse, Manga } from "types";
 import { ChaptersList } from "./ChaptersList";
-import { MangaRelationshipsInfo } from "./MangaRelationshipsInfo";
 import { MangaDetails } from "./MangaDetails";
 
 interface Props {
@@ -36,7 +16,6 @@ interface Props {
 export function ViewManga({ mangaInfo }: Props) {
   const history = useHistory();
   const [firstChapterId, setFirstChapterId] = useState<string | null>(null);
-  const [open] = useState(false);
 
   const { data: manga } = mangaInfo;
   const {

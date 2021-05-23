@@ -1,5 +1,3 @@
-import { PagedResultsList } from "./api";
-
 export interface VolumeCount {
   volume: string;
   count: number;

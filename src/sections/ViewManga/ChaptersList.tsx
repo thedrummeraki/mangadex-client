@@ -1,23 +1,13 @@
-import classes from "*.module.css";
 import { useLazyQuery } from "@apollo/client";
-import {
-  Chip,
-  CircularProgress,
-  Grid,
-  makeStyles,
-  TableCell,
-  TableRow,
-} from "@material-ui/core";
+import { CircularProgress, makeStyles } from "@material-ui/core";
 import { Pagination } from "@material-ui/lab";
-import { ChaptersGrid, Link, TitledSection } from "components";
+import { ChaptersGrid, TitledSection } from "components";
 import SplitButton from "components/SplitButton";
-import { chapterTitle, localeName, useLocalCurrentlyReading } from "helpers";
+import { localeName } from "helpers";
 import { compareChapters } from "helpers/compare";
 import { CompareDirection } from "helpers/compare/types";
-import { DateTime } from "luxon";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chapter, GenericResponse, Manga } from "types";
-import { getFollowUrl, localizedDateTime } from "utils";
 import GetChaptersForManga from "./queries/GetChaptersForManga";
 import { ViewMangaTableRow } from "./ViewMangaTableRow";
 
@@ -120,7 +110,6 @@ export function ChaptersList({
 
   useEffect(() => {
     if (currentVolume) {
-      console.log("offset", pageSize * (page - 1));
       getChapters({
         variables: {
           limit: pageSize,
@@ -131,7 +120,7 @@ export function ChaptersList({
         },
       });
     }
-  }, [currentVolume, page]);
+  }, [currentVolume, page, manga, getChapters]);
 
   console.log(loading);
 

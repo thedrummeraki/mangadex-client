@@ -1,6 +1,5 @@
 import {
   Avatar,
-  CircularProgress,
   Grid,
   List,
   ListItem,
