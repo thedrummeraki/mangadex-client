@@ -36,7 +36,7 @@ export function MangaThumbnail({
 
   return (
     <Thumbnail
-      img="#"
+      img="https://picsum.photos/185/265"
       follow
       explicit={isExplicit(manga)}
       title={preferredTitle(title)}

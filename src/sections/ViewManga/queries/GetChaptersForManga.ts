@@ -4,6 +4,8 @@ import { Chapter, Order, PagedResultsList } from "types";
 
 const query = gql`
   query GetChaptersForManga(
+    $limit: Int!
+    $offset: Int!
     $mangaId: String!
     $orderChapter: String!
     $orderVolume: String!
@@ -11,7 +13,8 @@ const query = gql`
   ) {
     chapters(
       manga: $mangaId
-      limit: 100
+      limit: $limit
+      offset: $offset
       volume: $volume
       order: { chapter: $orderChapter, volume: $orderVolume }
     ) @rest(type: "Chapter", path: "/chapter?{args}") {
@@ -46,7 +49,10 @@ const query = gql`
 
 export default query as TypedDocumentNode<
   { chapters: PagedResultsList<Chapter> },
-  { mangaId: string; volume?: string | null } & Order<
-    "orderChapter" | "orderVolume"
-  >
+  {
+    mangaId: string;
+    limit: number;
+    offset: number;
+    volume?: string | null;
+  } & Order<"orderChapter" | "orderVolume">
 >;

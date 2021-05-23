@@ -1,9 +1,17 @@
+import classes from "*.module.css";
 import { useLazyQuery } from "@apollo/client";
-import { Chip, CircularProgress, TableCell, TableRow } from "@material-ui/core";
+import {
+  Chip,
+  CircularProgress,
+  Grid,
+  makeStyles,
+  TableCell,
+  TableRow,
+} from "@material-ui/core";
 import { Pagination } from "@material-ui/lab";
 import { ChaptersGrid, Link, TitledSection } from "components";
 import SplitButton from "components/SplitButton";
-import { chapterTitle } from "helpers";
+import { chapterTitle, localeName, useLocalCurrentlyReading } from "helpers";
 import { compareChapters } from "helpers/compare";
 import { CompareDirection } from "helpers/compare/types";
 import { DateTime } from "luxon";
@@ -11,6 +19,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Chapter, GenericResponse, Manga } from "types";
 import { getFollowUrl, localizedDateTime } from "utils";
 import GetChaptersForManga from "./queries/GetChaptersForManga";
+import { ViewMangaTableRow } from "./ViewMangaTableRow";
 
 interface Props {
   manga: Manga;
@@ -20,14 +29,28 @@ interface Props {
   onFirstChapterReady: (chapterId: string) => void;
 }
 
+const useStyles = makeStyles((theme) => ({
+  paginationRoot: {
+    display: "flex",
+    width: "100%",
+    margin: theme.spacing(2),
+    justifyContent: "center",
+  },
+}));
+
 export function ChaptersList({
   manga,
   volumes,
   currentVolume: selectedCurrentVolume,
+  defaultLocale,
   onFirstChapterReady,
 }: Props) {
+  const classes = useStyles();
   const [page, setPage] = useState(1);
-  const [currentLocale, setCurrentLocale] = useState<string | null>(null);
+  const pageSize = 50;
+  const [currentLocale, setCurrentLocale] = useState<string | null>(
+    defaultLocale || null
+  );
   const [currentVolume, setCurrentVolume] = useState<string | null>(null);
 
   const currentVolumeInitialized = useRef(selectedCurrentVolume != null);
@@ -41,6 +64,7 @@ export function ChaptersList({
   const [getChapters, { data, loading, error }] = useLazyQuery(
     GetChaptersForManga,
     {
+      // fetchPolicy: "no-cache",
       context: {
         headers: {
           "X-Allow-Cache": "true",
@@ -73,8 +97,6 @@ export function ChaptersList({
     return [];
   }, [chaptersByLocale]);
 
-  const showLocalesTags = existingLocales.length > 1;
-
   const chapters = useMemo(() => {
     if (data?.chapters.results && chaptersByLocale) {
       const result = currentLocale
@@ -87,14 +109,10 @@ export function ChaptersList({
     return [];
   }, [chaptersByLocale, data, currentLocale]);
 
-  useEffect(() => {
-    setCurrentLocale(existingLocales[0]);
-  }, [existingLocales]);
-
   const pagesCount = useMemo(() => {
     const totalResults = data?.chapters.total;
     if (totalResults) {
-      return Math.ceil(totalResults / 100);
+      return Math.ceil(totalResults / pageSize);
     }
 
     return 1;
@@ -102,15 +120,20 @@ export function ChaptersList({
 
   useEffect(() => {
     if (currentVolume) {
+      console.log("offset", pageSize * (page - 1));
       getChapters({
         variables: {
+          limit: pageSize,
+          offset: pageSize * (page - 1),
           mangaId: manga.id,
           orderChapter: "asc",
           volume: currentVolume,
         },
       });
     }
-  }, [currentVolume]);
+  }, [currentVolume, page]);
+
+  console.log(loading);
 
   useEffect(() => {
     if (data?.chapters?.results?.length) {
@@ -130,7 +153,11 @@ export function ChaptersList({
     <SplitButton
       options={volumes.map((volume) => ({
         content:
-          String(parseInt(volume)) !== "NaN" ? `Volume ${volume}` : volume,
+          String(parseInt(volume)) !== "NaN"
+            ? `Volume ${volume}`
+            : volume === "N/A"
+            ? "Other volumes"
+            : volume,
         onSelect: () => setCurrentVolume(volume),
       }))}
       initialSelection={initialSelection}
@@ -161,60 +188,33 @@ export function ChaptersList({
       <TitledSection
         title={`Chapters list (${data?.chapters.total})`}
         primaryAction={primaryAction}
-        tags={
-          showLocalesTags
-            ? existingLocales.map((locale) => ({
-                content: locale,
-                onClick: () => setCurrentLocale(locale),
-              }))
-            : []
-        }
+        tagsDescription="Filter by language"
+        tags={existingLocales.map((locale) => ({
+          content: localeName(locale),
+          onClick: () => {
+            setCurrentLocale((cl) => (cl === locale ? null : locale));
+          },
+        }))}
         selectedTag={currentLocale}
       />
       <ChaptersGrid
         chaptersResponse={chapters}
         renderItem={(chapter) => (
-          <TableRow key={chapter.id}>
-            <TableCell>{chapter.attributes.chapter || "-"}</TableCell>
-            <TableCell>
-              <div>
-                <Link to={getFollowUrl(`/manga/read/${chapter.id}`)}>
-                  {chapterTitle(chapter)}{" "}
-                </Link>
-                {!showLocalesTags && (
-                  <Chip
-                    size="small"
-                    variant="outlined"
-                    color="secondary"
-                    label={chapter.attributes.translatedLanguage}
-                  />
-                )}
-                {chapter.attributes.volume && (
-                  <Chip
-                    label={`Volume ${chapter.attributes.volume}`}
-                    size="small"
-                    variant="outlined"
-                    style={{ marginLeft: 8 }}
-                  />
-                )}
-              </div>
-            </TableCell>
-            <TableCell align="right">
-              {localizedDateTime(
-                chapter.attributes.publishAt,
-                DateTime.DATE_FULL
-              )}
-            </TableCell>
-          </TableRow>
+          <ViewMangaTableRow chapter={chapter} manga={manga} />
         )}
       />
-      <Pagination
-        showFirstButton
-        showLastButton
-        count={pagesCount}
-        page={page}
-        onChange={(_, number) => setPage(number)}
-      />
+      {pagesCount > 1 && (
+        <div className={classes.paginationRoot}>
+          <Pagination
+            disabled={loading}
+            showFirstButton
+            showLastButton
+            count={pagesCount}
+            page={page}
+            onChange={(_, number) => setPage(number)}
+          />
+        </div>
+      )}
     </>
   );
 }

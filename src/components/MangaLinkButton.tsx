@@ -4,7 +4,7 @@ import { MangaLinkKey } from "types";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { openInNewTab } from "utils";
 
-export interface Props {
+export interface MangaLinkButtonProps {
   linkKey: MangaLinkKey;
   url: string;
 }
@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export function MangaLinkButton({ linkKey, url }: Props) {
+export function MangaLinkButton({ linkKey, url }: MangaLinkButtonProps) {
   const classes = useStyles();
 
   // MangaDex has undocumented links, so ignore them and print a

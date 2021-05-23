@@ -2,6 +2,7 @@ import { ContentRating, Description, Manga, Title } from "types";
 import { Chapter } from "types/chapter";
 
 import DOMPurify from "dompurify";
+import ISO6391 from "iso-639-1";
 import { decodeHTML } from "utils";
 
 interface ExplicatEvaluatorOptions {
@@ -56,4 +57,12 @@ export function chapterTitle(chapter: Chapter) {
   }
 
   return number != null ? `Chapter ${number}` : "Chapter";
+}
+
+export function localeName(iso6391Locale: string) {
+  return (
+    ISO6391.getName(iso6391Locale) ||
+    ISO6391.getName(iso6391Locale.split("-")[0]) ||
+    iso6391Locale
+  );
 }

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { Chip } from "@material-ui/core";
@@ -7,6 +7,7 @@ import { Variant } from "@material-ui/core/styles/createTypography";
 
 interface Tag {
   content: string;
+  icon?: ReactElement;
   onClick?: VoidFunction;
 }
 
@@ -16,6 +17,7 @@ export interface TitledSectionProps {
   title: ReactNode;
   badges?: Array<TitledSectionBadge>;
   primaryAction?: ReactNode;
+  tagsDescription?: string;
   tags?: Array<Tag>;
   selectedTag?: string | null;
 }
@@ -56,6 +58,10 @@ const useStyles = makeStyles((theme) => ({
       marginRight: 0,
     },
   },
+  tagsDescription: {
+    marginRight: theme.spacing(),
+    color: theme.palette.text.hint,
+  },
   tag: {
     marginRight: theme.spacing(0.5),
   },
@@ -66,6 +72,7 @@ export function TitledSection({
   variant = "h6",
   badges,
   primaryAction,
+  tagsDescription,
   tags,
   selectedTag,
 }: Props) {
@@ -93,6 +100,15 @@ export function TitledSection({
       </div>
       {tags && (
         <div className={classes.tagsContainer}>
+          {tagsDescription && (
+            <Typography
+              component="span"
+              variant="subtitle2"
+              className={classes.tagsDescription}
+            >
+              {tagsDescription}
+            </Typography>
+          )}
           {tags.map((tag, index) => {
             const selected = selectedTag === tag.content;
 
@@ -103,6 +119,7 @@ export function TitledSection({
                 color={selected ? "secondary" : "default"}
                 size="small"
                 label={tag.content}
+                icon={tag.icon}
                 onClick={tag.onClick}
                 className={classes.tag}
               />
