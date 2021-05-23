@@ -155,6 +155,8 @@ export function ChaptersList({
     />
   );
 
+  console.log(currentLocale);
+
   if (loading) {
     return (
       <TitledSection
@@ -184,7 +186,7 @@ export function ChaptersList({
             setCurrentLocale((cl) => (cl === locale ? null : locale));
           },
         }))}
-        selectedTag={currentLocale}
+        selectedTag={currentLocale ? localeName(currentLocale) : null}
       />
       <ChaptersGrid
         chaptersResponse={chapters}
