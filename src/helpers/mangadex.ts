@@ -10,6 +10,12 @@ interface ExplicatEvaluatorOptions {
   strict?: boolean;
 }
 
+export enum DisplayCoverSize {
+  Thumb256,
+  Thumb512,
+  Original,
+}
+
 export function mangaTitle(manga: Manga) {
   return preferredTitle(manga.attributes.title);
 }
@@ -65,4 +71,26 @@ export function localeName(iso6391Locale: string) {
     ISO6391.getName(iso6391Locale.split("-")[0]) ||
     iso6391Locale
   );
+}
+
+export function getCoverUrl(
+  manga: Manga,
+  filename: string,
+  size: DisplayCoverSize = DisplayCoverSize.Original
+) {
+  const filenameSize =
+    size === DisplayCoverSize.Thumb256
+      ? ".256.jpg"
+      : size === DisplayCoverSize.Thumb512
+      ? ".512.jpg"
+      : "";
+
+  const urlParts = [
+    "https://uploads.mangadex.org",
+    "covers",
+    manga.id,
+    filename.concat(filenameSize),
+  ];
+
+  return urlParts.join("/");
 }

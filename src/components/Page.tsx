@@ -12,7 +12,7 @@ interface Props {
   title: string;
   maxWitdh?: "xs" | "sm" | "md" | "lg" | "xl" | false;
   showcase?: {
-    imageUrl: string;
+    imageUrl: string | null;
     content: ReactNode;
   };
 }
@@ -71,14 +71,16 @@ export function Page({
     return (
       <Container maxWidth={maxWitdh}>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={3}>
-            <img
-              alt={`${title}-showcase`}
-              src={showcase.imageUrl}
-              className={classes.showcaseImg}
-            />
-          </Grid>
-          <Grid item xs={12} md={9}>
+          {showcase.imageUrl && (
+            <Grid item xs={12} md={3}>
+              <img
+                alt={`${title}-showcase`}
+                src={showcase.imageUrl}
+                className={classes.showcaseImg}
+              />
+            </Grid>
+          )}
+          <Grid item xs={12} md={showcase.imageUrl ? 9 : 12}>
             <TitledSection
               variant="h5"
               title={titleMarkup}

@@ -3,8 +3,13 @@ import gql from "graphql-tag";
 import { Cover, PagedResultsList } from "types";
 
 export default gql`
-  query GetCoversForManga($mangaId: String!, $limit: Int!, $offset: Int) {
-    covers(manga: $mangaId, limit: $limit, offset: $offset)
+  query GetCoversForManga(
+    $ids: [String!]
+    $mangaIds: [String!]
+    $limit: Int!
+    $offset: Int
+  ) {
+    covers(ids: $ids, manga: $mangaIds, limit: $limit, offset: $offset)
       @rest(type: "Cover", path: "/cover?{args}") {
       results
       limit
@@ -12,4 +17,7 @@ export default gql`
       total
     }
   }
-` as TypedDocumentNode<PagedResultsList<Cover>>;
+` as TypedDocumentNode<
+  { covers: PagedResultsList<Cover> },
+  { ids?: string[]; mangaIds?: string[]; limit: number; offset?: number }
+>;
