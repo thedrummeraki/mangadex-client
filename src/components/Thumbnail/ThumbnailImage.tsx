@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useCallback, useRef } from "react";
 import { useImageLoaded } from "utils";
 import { ThumbnailSkeleton } from "./ThumbnailSkeleton";
@@ -8,9 +9,16 @@ interface Props {
   alt: string;
   overlayRef: React.RefObject<HTMLDivElement>;
   clickable?: boolean | null;
+  explicit?: boolean | null;
 }
 
-export function ThumbnailImage({ img, alt, clickable, overlayRef }: Props) {
+export function ThumbnailImage({
+  img,
+  alt,
+  clickable,
+  explicit,
+  overlayRef,
+}: Props) {
   const classes = useThumbnailStyles();
   const { loaded, error } = useImageLoaded(img);
 
@@ -22,8 +30,12 @@ export function ThumbnailImage({ img, alt, clickable, overlayRef }: Props) {
     }
     if (overlayRef.current) {
       overlayRef.current.classList.add(classes.overlayLoaded);
+
+      if (explicit) {
+        overlayRef.current.classList.add(classes.explicitImage);
+      }
     }
-  }, [classes.loaded, classes.overlayLoaded, overlayRef]);
+  }, [classes, explicit, overlayRef]);
 
   if (loaded && !error) {
     return (
@@ -31,7 +43,10 @@ export function ThumbnailImage({ img, alt, clickable, overlayRef }: Props) {
         alt={alt}
         ref={imageRef}
         onLoad={onImageLoad}
-        className={clickable ? classes.image : classes.imageNoHover}
+        className={clsx(
+          explicit && classes.explicitImage,
+          clickable ? classes.image : classes.imageNoHover
+        )}
         src={img}
       />
     );

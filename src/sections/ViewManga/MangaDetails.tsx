@@ -6,7 +6,7 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { BBDescription, TitledSection } from "components";
+import { BBDescription } from "components";
 import { MangaLinkButton } from "components/MangaLinkButton";
 import { mangaDescription } from "helpers";
 import { Manga, MangaLinkKey } from "types";

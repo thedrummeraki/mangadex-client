@@ -54,6 +54,7 @@ function Thumbnail({
             <ThumbnailFeatures explicit={explicit} features={features} />
             <ThumbnailImage
               clickable={clickable}
+              explicit={explicit}
               overlayRef={overlayRef}
               img={img}
               alt={title || "No image"}

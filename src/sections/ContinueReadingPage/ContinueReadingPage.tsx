@@ -1,6 +1,4 @@
-import { CustomGrid } from "components";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
-import { MangaThumbnail } from "components/Thumbnails";
 import { GenericResponse, Manga } from "types";
 
 interface Props {

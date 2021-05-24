@@ -2,10 +2,8 @@ import { Page } from "components";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { useAuth } from "config/providers";
 import useMangaList from "helpers/useMangaList";
-import { useState } from "react";
 
 export function HomePage() {
-  const [page, setPage] = useState(1);
   const pageSize = 50;
 
   const { mangaList, data, loading, error } = useMangaList({

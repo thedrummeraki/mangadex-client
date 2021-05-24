@@ -8,9 +8,8 @@ import {
   relationship,
 } from "helpers/mangadex";
 import useAggregate from "helpers/useAggregate";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Cover, GenericResponse, Manga } from "types";
-import { between, notEmpty } from "utils";
 import { ChaptersList } from "./ChaptersList";
 import { MangaDetails } from "./MangaDetails";
 import GetCoversForManga from "./queries/GetCoversForManga";
@@ -75,7 +74,7 @@ export function ViewManga({ mangaInfo }: Props) {
       return mainCover || null;
     }
     return null;
-  }, [covers, mangaInfo, manga]);
+  }, [covers, mangaInfo]);
 
   const coverForVolume = useMemo(() => {
     const requestedVolume = parseFloat(currentVolume || "0");
@@ -134,14 +133,14 @@ export function ViewManga({ mangaInfo }: Props) {
           DisplayCoverSize.Thumb512
         )
       : null;
-  }, [coverForVolume]);
+  }, [mainCover, manga, coverForVolume]);
 
   return (
     <Page
       backUrl="/"
       title={preferredTitle(title)}
       badges={[
-        isExplicit(manga) ? "EXPLICIT" : null,
+        isExplicit(manga, { conservative: false }) ? "EXPLICIT" : null,
         lastChapterBadge,
         statusBadge,
         manga.attributes.contentRating || null,

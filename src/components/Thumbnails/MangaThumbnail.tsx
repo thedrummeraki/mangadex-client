@@ -50,7 +50,7 @@ export function MangaThumbnail({
     <Thumbnail
       img={img}
       follow
-      explicit={isExplicit(manga)}
+      explicit={isExplicit(manga, { conservative: false })}
       title={preferredTitle(title)}
       features={[
         showReading && isReading ? "Reading" : null,

@@ -128,7 +128,7 @@ export function ChaptersList({
     if (currentVolume) {
       onVolumeChange(currentVolume);
     }
-  }, [currentVolume]);
+  }, [onVolumeChange, currentVolume]);
 
   useEffect(() => {
     if (data?.chapters?.results?.length) {

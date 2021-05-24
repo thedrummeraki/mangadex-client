@@ -1,7 +1,6 @@
 import { CircularProgress, Container } from "@material-ui/core";
-import { CustomGrid, Page, TitledSection } from "components";
+import { Page, TitledSection } from "components";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
-import { MangaThumbnail } from "components/Thumbnails";
 import { useSearchMangaList } from "helpers";
 import { useEffect, useState } from "react";
 import {
