@@ -26,8 +26,6 @@ export function useLocalCurrentlyReading(options?: Options) {
       (cr) => cr.chapterId === chapterId && cr.mangaId === mangaId
     );
 
-    console.log(currentChapterExists);
-
     state.forEach((cr) => {
       if (
         currentChapterExists &&

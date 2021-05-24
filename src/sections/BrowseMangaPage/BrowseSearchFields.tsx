@@ -7,7 +7,6 @@ import {
   StatusField,
   PublicationDemographicField,
 } from "./components";
-// import TagsField from "./components/TagsField/TagsField";
 
 interface Props {
   searchOptions: SearchState;
@@ -52,14 +51,6 @@ export function BrowseSearchFields({ searchOptions, onChange }: Props) {
           }
         />
       </Grid>
-      {/* <Grid item xs={12} md={4} lg={3}>
-        <TagsField
-          value={[]}
-          onChange={(newTags) =>
-            updateSearchOptions({ includedTags: newTags.map((t) => t.data.id) })
-          }
-        />
-      </Grid> */}
     </Grid>
   );
 }

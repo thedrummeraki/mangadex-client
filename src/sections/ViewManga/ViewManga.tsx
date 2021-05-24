@@ -67,10 +67,6 @@ export function ViewManga({ mangaInfo }: Props) {
       const mainCoverId = relationship(mangaInfo, "cover_art")?.id;
       const mainCover =
         mainCoverId && covers.find((cover) => cover.data.id === mainCoverId);
-      // if (mainCover) {
-      //   const filename = mainCover.data.attributes.fileName;
-      //   return getCoverUrl(manga, filename, DisplayCoverSize.Thumb512);
-      // }
       return mainCover || null;
     }
     return null;
@@ -78,7 +74,6 @@ export function ViewManga({ mangaInfo }: Props) {
 
   const coverForVolume = useMemo(() => {
     const requestedVolume = parseFloat(currentVolume || "0");
-    console.log("Current volume", currentVolume, "aka", requestedVolume);
     if (covers.length > 0 || String(requestedVolume) === "NaN") {
       if (!currentVolume || currentVolume === "N/A") {
         return mainCover ? mainCover : null;
@@ -91,28 +86,20 @@ export function ViewManga({ mangaInfo }: Props) {
       const maxVolumeString =
         filteredCovers.slice(-1)[0].data?.attributes?.volume;
       const maxVolume = maxVolumeString ? parseFloat(maxVolumeString) : null;
-      console.log("max for", filteredCovers, "is", maxVolume);
 
       filteredCovers.forEach((cover) => {
         const coverVolumeString = cover.data.attributes.volume;
         const coverVolume = parseFloat(coverVolumeString || "0");
         if (!foundCover || foundCoverVolume == null) {
           foundCover = cover;
-          console.log("setting", coverVolumeString);
           foundCoverVolume = coverVolume;
           return;
         }
 
-        console.log("between?", coverVolume, foundCoverVolume, maxVolume);
         if (
           foundCoverVolume < requestedVolume &&
           coverVolume <= requestedVolume
         ) {
-          console.log(
-            "hey look its",
-            coverVolume,
-            cover.data.attributes.volume
-          );
           foundCoverVolume = coverVolume;
           foundCover = cover;
         }
