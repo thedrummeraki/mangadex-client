@@ -1,23 +1,20 @@
-import { Button } from "@material-ui/core";
-import { Page, CustomGrid } from "components";
+import { Page } from "components";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
-import { MangaThumbnail } from "components/Thumbnails";
 import { useAuth } from "config/providers";
 import useMangaList from "helpers/useMangaList";
-import { useScrollListeners } from "utils";
+import { useState } from "react";
 
 export function HomePage() {
-  const { mangaList, data, loading, error, fetchMoreManga } = useMangaList({
-    limit: 20,
-    pageSize: 20,
-    allowCache: false,
+  const [page, setPage] = useState(1);
+  const pageSize = 50;
+
+  const { mangaList, data, loading, error } = useMangaList({
+    limit: pageSize,
+    allowCache: true,
+    authedRequest: true,
   });
 
   const { currentUser } = useAuth();
-
-  useScrollListeners(null, () => {
-    fetchMoreManga();
-  });
 
   if (error) {
     return <p>error</p>;
@@ -29,17 +26,11 @@ export function HomePage() {
 
   return (
     <Page
+      maxWitdh={false}
       title={
         currentUser
           ? `Welcome, ${currentUser.attributes.username}.`
-          : `Latest manga`
-      }
-      primaryAction={
-        currentUser && (
-          <Button size="small" color="secondary" variant="contained">
-            Upload
-          </Button>
-        )
+          : `Hottest manga`
       }
     >
       <MangaCustomGrid mangasInfo={mangaList.results} />

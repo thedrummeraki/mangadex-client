@@ -1,4 +1,10 @@
-import { ContentRating, Description, Manga, Title } from "types";
+import {
+  ContentRating,
+  Description,
+  GenericResponse,
+  Manga,
+  Title,
+} from "types";
 import { Chapter } from "types/chapter";
 
 import DOMPurify from "dompurify";
@@ -70,6 +76,12 @@ export function localeName(iso6391Locale: string) {
     ISO6391.getName(iso6391Locale) ||
     ISO6391.getName(iso6391Locale.split("-")[0]) ||
     iso6391Locale
+  );
+}
+
+export function relationship<T>(itemInfo: GenericResponse<T>, type: string) {
+  return itemInfo.relationships.find(
+    (relationship) => relationship.type === type
   );
 }
 

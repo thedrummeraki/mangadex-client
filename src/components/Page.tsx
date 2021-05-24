@@ -70,7 +70,7 @@ export function Page({
   if (showcase) {
     return (
       <Container maxWidth={maxWitdh}>
-        <Grid container spacing={2}>
+        <Grid container spacing={4}>
           {showcase.imageUrl && (
             <Grid item xs={12} md={3}>
               <img

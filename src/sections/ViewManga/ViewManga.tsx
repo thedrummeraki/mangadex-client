@@ -5,9 +5,10 @@ import {
   getCoverUrl,
   isExplicit,
   preferredTitle,
+  relationship,
 } from "helpers/mangadex";
 import useAggregate from "helpers/useAggregate";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { GenericResponse, Manga } from "types";
 import { ChaptersList } from "./ChaptersList";
 import { MangaDetails } from "./MangaDetails";
@@ -21,7 +22,9 @@ export function ViewManga({ mangaInfo }: Props) {
   // const history = useHistory();
   // const [firstChapterId, setFirstChapterId] = useState<string | null>(null);
 
-  const coverResult = useQuery(GetCoversForManga, {
+  console.log("originalLanguage", mangaInfo.data.attributes.originalLanguage);
+
+  const coversResult = useQuery(GetCoversForManga, {
     variables: { mangaIds: [mangaInfo.data.id], limit: 100 },
   });
 
@@ -48,13 +51,20 @@ export function ViewManga({ mangaInfo }: Props) {
   );
 
   const mainCover = useMemo(() => {
-    const covers = coverResult.data?.covers.results || [];
+    const covers = coversResult.data?.covers.results || [];
     if (covers.length > 0) {
-      const filename = covers[0].data.attributes.fileName;
-      return getCoverUrl(manga, filename, DisplayCoverSize.Original);
+      const mainCoverId = relationship(mangaInfo, "cover_art")?.id;
+      const mainCover =
+        mainCoverId && covers.find((cover) => cover.data.id === mainCoverId);
+      if (mainCover) {
+        const filename = mainCover.data.attributes.fileName;
+        return getCoverUrl(manga, filename, DisplayCoverSize.Thumb512);
+      }
     }
     return null;
-  }, [coverResult.data, manga]);
+  }, [coversResult.data, mangaInfo, manga]);
+
+  const coverForVolume = useCallback((volume: string) => {}, []);
 
   // const primaryAction = (
   //   <Button
@@ -93,6 +103,7 @@ export function ViewManga({ mangaInfo }: Props) {
         volumes={volumes}
         onFirstChapterReady={() => {}}
         manga={manga}
+        onVolumeChange={() => {}}
       />
     </Page>
   );

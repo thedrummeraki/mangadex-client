@@ -1,8 +1,12 @@
 import { Chip, Paper } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useEffect, useState } from "react";
-import { SearchState } from "types";
+import { MangaTag, SearchState } from "types";
 import { filterObject, useCustomHistory } from "utils";
+
+interface PreviewSearchState extends Omit<SearchState, "includedTags"> {
+  includedTags: MangaTag[];
+}
 
 interface Props {
   searchOptions: SearchState;

@@ -17,6 +17,7 @@ interface Props {
   currentVolume?: string | null;
   defaultLocale?: string | null;
   onFirstChapterReady: (chapterId: string) => void;
+  onVolumeChange: (volume: string) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -122,8 +123,6 @@ export function ChaptersList({
     }
   }, [currentVolume, page, manga, getChapters]);
 
-  console.log(loading);
-
   useEffect(() => {
     if (data?.chapters?.results?.length) {
       onFirstChapterReady(data?.chapters.results[0].data.id);
@@ -154,8 +153,6 @@ export function ChaptersList({
       size="small"
     />
   );
-
-  console.log(currentLocale);
 
   if (loading) {
     return (

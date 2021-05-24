@@ -83,32 +83,36 @@ export function MangaDetails({ manga }: Props) {
                 <Typography component="span" variant="subtitle2">
                   Also known as:{" "}
                 </Typography>
-                <Typography
-                  variant="caption"
-                  component="em"
-                  className={classes.altTitles}
-                >
-                  {manga.attributes.altTitles
-                    .map((title) => decodeHTML(title[Object.keys(title)[0]]))
-                    .join("・")}
+                <Typography variant="caption" className={classes.altTitles}>
+                  <em>
+                    {manga.attributes.altTitles
+                      .map((title) => decodeHTML(title[Object.keys(title)[0]]))
+                      .join("・")}
+                  </em>
                 </Typography>
               </div>
             )}
           </AccordionDetails>
         </Accordion>
-      </div>
-      {links.length > 0 && (
-        <Grid item xs={12}>
-          <TitledSection title={`Links (${links.length})`} />
-          <Grid container spacing={1}>
-            {links.map((link) => (
-              <Grid key={link.linkKey} item>
-                <MangaLinkButton {...link} />
+        <Accordion disabled={links.length === 0}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography className={classes.accordionHeading}>
+              Links ({links.length})
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid item xs={12}>
+              <Grid container spacing={1}>
+                {links.map((link) => (
+                  <Grid key={link.linkKey} item>
+                    <MangaLinkButton {...link} />
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </Grid>
-      )}
+            </Grid>
+          </AccordionDetails>
+        </Accordion>
+      </div>
     </Grid>
   );
 }

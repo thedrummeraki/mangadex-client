@@ -16,6 +16,7 @@ interface CoverMangaMapping {
 }
 
 export function MangaCustomGrid({ mangasInfo }: Props) {
+  const [allCovers, setAllCovers] = useState<GenericResponse<Cover>[]>([]);
   const [coverMangaList, setCoverMangaList] = useState<CoverMangaMapping[]>([]);
 
   const coverIdsInfo = useMemo(
@@ -40,8 +41,12 @@ export function MangaCustomGrid({ mangasInfo }: Props) {
   });
 
   useEffect(() => {
-    const covers = data?.covers.results || [];
-    if (covers.length > 0) {
+    const newCovers = data?.covers.results || [];
+    setAllCovers((allCovers) => [...allCovers, ...newCovers]);
+  }, [data]);
+
+  useEffect(() => {
+    if (allCovers.length > 0) {
       const mappings: CoverMangaMapping[] = [];
       mangasInfo.forEach((mangaInfo) => {
         const manga = mangaInfo.data;
@@ -49,19 +54,23 @@ export function MangaCustomGrid({ mangasInfo }: Props) {
           (idInfo) => manga.id === idInfo.manga.id
         )?.id;
         const cover = coverId
-          ? covers.find((cover) => cover.data.id === coverId)?.data
+          ? allCovers.find((cover) => cover.data.id === coverId)?.data
           : undefined;
 
         mappings.push({ cover, manga });
       });
       setCoverMangaList(mappings);
     }
-  }, [data, mangasInfo]);
+  }, [allCovers, coverIdsInfo, mangasInfo]);
 
   return (
     <CustomGrid>
       {coverMangaList.map((mangaWithCover) => (
-        <MangaThumbnail {...mangaWithCover} showContentRating />
+        <MangaThumbnail
+          key={mangaWithCover.manga.id}
+          {...mangaWithCover}
+          showContentRating
+        />
       ))}
     </CustomGrid>
   );

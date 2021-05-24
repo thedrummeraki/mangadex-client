@@ -40,6 +40,7 @@ export interface MangaAttributes {
   year?: Maybe<number>;
   contentRating?: Maybe<ContentRating>;
   tags: Array<MangaTag>;
+  originalLanguage: string;
   version: number;
   createdAt: string;
   updatedAt: string;

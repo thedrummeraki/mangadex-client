@@ -18,7 +18,7 @@ import { mangaDescription, mangaTitle, useSearchMangaList } from "helpers";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { ContentRating, GenericResponse, Manga } from "types";
-import { useDebouncedValue } from "utils";
+import { decodeHTML, useDebouncedValue } from "utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,9 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
   autocompleteList: {
     position: "absolute",
-    width: "50%",
-    minWidth: 340,
-    maxWidth: 700,
+    width: "100%",
     backgroundColor: theme.palette.background.paper,
     zIndex: 99,
   },
@@ -171,7 +169,7 @@ export default function JumpToMangaSearchField() {
                           variant="subtitle2"
                           className={classes.searchResultItemTitle}
                         >
-                          {mangaDescription(manga)}
+                          {decodeHTML(mangaDescription(manga))}
                         </Typography>
                       </div>
                     }
