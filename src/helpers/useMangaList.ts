@@ -1,10 +1,23 @@
 import { gql, useQuery } from "@apollo/client";
+import { useAuth } from "config/providers";
 import { defaultPagedResults, Manga, PagedResultsList } from "types";
 
 const query = gql`
   query GetMangaList($limit: Integer!, $offset: Integer!) {
     mangaList(limit: $limit, offset: $offset)
       @rest(type: "MangaResults", path: "/manga?{args}") {
+      results
+      limit
+      offset
+      total
+    }
+  }
+`;
+
+const authedQuery = gql`
+  query GetMangaList($limit: Integer!, $offset: Integer!) {
+    mangaList(limit: $limit, offset: $offset)
+      @rest(type: "MangaResults", path: "/user/follows/manga?{args}") {
       results
       limit
       offset
@@ -25,6 +38,7 @@ interface MandatoryOptions {
 interface InternalOptions {
   sliceAt?: number | null;
   allowCache?: boolean;
+  authedRequest?: boolean;
 }
 
 type Options = MandatoryOptions & InternalOptions & BasicOptions;
@@ -35,9 +49,12 @@ export default function useMangaList({
   pageSize = 10,
   sliceAt = null,
   allowCache = true,
+  authedRequest = false,
 }: Options) {
-  const result = useQuery(query, {
+  const { loggedIn } = useAuth();
+  const result = useQuery(authedRequest && loggedIn ? authedQuery : query, {
     variables: { limit, offset },
+    // fetchPolicy: "no-cache",
     context: {
       headers: {
         "X-Allow-Cache": allowCache ? "true" : "false",

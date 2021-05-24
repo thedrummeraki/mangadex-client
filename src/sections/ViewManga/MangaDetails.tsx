@@ -6,7 +6,7 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { BBDescription, TitledSection } from "components";
+import { BBDescription } from "components";
 import { MangaLinkButton } from "components/MangaLinkButton";
 import { mangaDescription } from "helpers";
 import { Manga, MangaLinkKey } from "types";
@@ -58,22 +58,6 @@ export function MangaDetails({ manga }: Props) {
 
   return (
     <Grid container spacing={1}>
-      {manga.attributes.altTitles.length > 0 && (
-        <Grid item>
-          <Typography component="span" variant="subtitle2">
-            Also known as:{" "}
-          </Typography>
-          <Typography
-            variant="caption"
-            component="em"
-            className={classes.altTitles}
-          >
-            {manga.attributes.altTitles
-              .map((title) => decodeHTML(title[Object.keys(title)[0]]))
-              .join("・")}
-          </Typography>
-        </Grid>
-      )}
       <div className={classes.accordionRoot}>
         <Accordion disabled={!Boolean(description.en)}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -87,19 +71,48 @@ export function MangaDetails({ manga }: Props) {
             </Typography>
           </AccordionDetails>
         </Accordion>
-      </div>
-      {links.length > 0 && (
-        <Grid item xs={12}>
-          <TitledSection title={`Links (${links.length})`} />
-          <Grid container spacing={1}>
-            {links.map((link) => (
-              <Grid key={link.linkKey} item>
-                <MangaLinkButton {...link} />
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography className={classes.accordionHeading}>
+              Other details
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {manga.attributes.altTitles.length > 0 && (
+              <div>
+                <Typography component="span" variant="subtitle2">
+                  Also known as:{" "}
+                </Typography>
+                <Typography variant="caption" className={classes.altTitles}>
+                  <em>
+                    {manga.attributes.altTitles
+                      .map((title) => decodeHTML(title[Object.keys(title)[0]]))
+                      .join("・")}
+                  </em>
+                </Typography>
+              </div>
+            )}
+          </AccordionDetails>
+        </Accordion>
+        <Accordion disabled={links.length === 0}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography className={classes.accordionHeading}>
+              Links ({links.length})
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid item xs={12}>
+              <Grid container spacing={1}>
+                {links.map((link) => (
+                  <Grid key={link.linkKey} item>
+                    <MangaLinkButton {...link} />
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </Grid>
-      )}
+            </Grid>
+          </AccordionDetails>
+        </Accordion>
+      </div>
     </Grid>
   );
 }

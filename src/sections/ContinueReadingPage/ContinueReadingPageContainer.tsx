@@ -3,12 +3,15 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 import { Page } from "components";
 import { useAuth } from "config/providers";
 import { useLocalCurrentlyReading, useSearchMangaList } from "helpers";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { notEmpty } from "utils";
 import { ContinueReadingPage } from "./ContinueReadingPage";
 
 export default function ContinueReadingPageContainer() {
   const { currentlyReading } = useLocalCurrentlyReading();
-  const mangaIds = currentlyReading.map((cr) => cr.mangaId);
+  const mangaIds = Array.from(
+    new Set(currentlyReading.map((cr) => cr.mangaId))
+  );
   const [warning, setWarning] = useState(showWarning());
   const { currentUser } = useAuth();
 
@@ -17,6 +20,15 @@ export default function ContinueReadingPageContainer() {
   const { mangaList, loading, error, searchManga } = useSearchMangaList({
     limit: 100,
   });
+
+  const sortedMangaList = useMemo(() => {
+    const mangasInfo = mangaList.results || [];
+
+    return mangaIds
+      .reverse()
+      .map((id) => mangasInfo.find((mangaInfo) => mangaInfo.data.id === id))
+      .filter(notEmpty);
+  }, [mangaList, mangaIds]);
 
   useEffect(() => {
     if (initialized.current || loading) {
@@ -75,7 +87,7 @@ export default function ContinueReadingPageContainer() {
           . This is <strong>not</strong> tied to your MangaDex account.
         </Alert>
       )}
-      <ContinueReadingPage mangas={mangaList.results} />
+      <ContinueReadingPage mangas={sortedMangaList} />
     </Page>
   );
 }

@@ -28,6 +28,17 @@ interface ErrorPagedResults {
 
 export type PagedResultsList<T> = SuccessPagedResults<T> & ErrorPagedResults;
 
+interface SuccessActionResult {
+  result: "ok";
+}
+
+interface ErrorActionResult {
+  result: "error";
+  errors: Array<MangaDexError>;
+}
+
+export type ActionResult = SuccessActionResult | ErrorActionResult;
+
 export interface GenericResponse<T> {
   result: "ok" | "ko";
   data: T;

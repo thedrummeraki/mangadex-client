@@ -3,6 +3,7 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import DoneIcon from "@material-ui/icons/Done";
 
 import useThumbnailStyles from "./useThumbnailStyles";
+import React from "react";
 
 const iconsMaps: AllowedIconsMap = {
   play: <PlayArrowIcon />,
@@ -22,7 +23,9 @@ export function ThumbnailIcons({ icons }: Props) {
 
   return (
     <div className={classes.bottomIconsContainer}>
-      {icons.map((iconName) => iconsMaps[iconName])}
+      {icons.map((iconName) => (
+        <React.Fragment key={iconName}>{iconsMaps[iconName]}</React.Fragment>
+      ))}
     </div>
   );
 }

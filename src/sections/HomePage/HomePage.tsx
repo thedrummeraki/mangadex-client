@@ -1,22 +1,18 @@
-import { Button } from "@material-ui/core";
-import { Page, CustomGrid } from "components";
-import { MangaThumbnail } from "components/Thumbnails";
+import { Page } from "components";
+import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { useAuth } from "config/providers";
 import useMangaList from "helpers/useMangaList";
-import { useScrollListeners } from "utils";
 
 export function HomePage() {
-  const { mangaList, data, loading, error, fetchMoreManga } = useMangaList({
-    limit: 20,
-    pageSize: 20,
-    allowCache: false,
+  const pageSize = 50;
+
+  const { mangaList, data, loading, error } = useMangaList({
+    limit: pageSize,
+    allowCache: true,
+    authedRequest: true,
   });
 
   const { currentUser } = useAuth();
-
-  useScrollListeners(null, () => {
-    fetchMoreManga();
-  });
 
   if (error) {
     return <p>error</p>;
@@ -28,28 +24,14 @@ export function HomePage() {
 
   return (
     <Page
+      maxWitdh={false}
       title={
         currentUser
           ? `Welcome, ${currentUser.attributes.username}.`
-          : `Latest manga`
-      }
-      primaryAction={
-        currentUser && (
-          <Button size="small" color="secondary" variant="contained">
-            Upload
-          </Button>
-        )
+          : `Hottest manga`
       }
     >
-      <CustomGrid>
-        {mangaList.results.map((mangaResult) => (
-          <MangaThumbnail
-            key={mangaResult.data.id}
-            showContentRating
-            manga={mangaResult.data}
-          />
-        ))}
-      </CustomGrid>
+      <MangaCustomGrid mangasInfo={mangaList.results} />
     </Page>
   );
 }

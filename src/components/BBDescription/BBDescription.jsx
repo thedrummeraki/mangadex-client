@@ -55,7 +55,7 @@ export function BBDescription({ description }) {
       <BBCode
         plugins={[reactPreset()]}
         options={{
-          onlyAllowTags: ["i", "b", "u", "hr", "url", "spoiler"],
+          onlyAllowTags: ["i", "b", "u", "hr", "url", "spoiler", "img"],
         }}
       >
         {decodeHTML(description)}

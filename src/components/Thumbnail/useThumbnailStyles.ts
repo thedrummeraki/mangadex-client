@@ -91,6 +91,9 @@ const useThumbnailStyles = makeStyles((theme) => ({
     //   height: 358,
     // },
   },
+  explicitImage: {
+    filter: "blur(4px)",
+  },
   imageNoHover: {
     height: "100%",
     width: "100%",
