@@ -83,9 +83,6 @@ export function ViewManga({ mangaInfo }: Props) {
       let foundCoverVolume: number | null = null;
       const filteredCovers =
         covers.filter((cover) => cover.data.attributes.volume != null) || [];
-      const maxVolumeString =
-        filteredCovers.slice(-1)[0].data?.attributes?.volume;
-      const maxVolume = maxVolumeString ? parseFloat(maxVolumeString) : null;
 
       filteredCovers.forEach((cover) => {
         const coverVolumeString = cover.data.attributes.volume;
