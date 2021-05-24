@@ -35,6 +35,7 @@ export function ChaptersList({
   currentVolume: selectedCurrentVolume,
   defaultLocale,
   onFirstChapterReady,
+  onVolumeChange,
 }: Props) {
   const classes = useStyles();
   const [page, setPage] = useState(1);
@@ -48,7 +49,7 @@ export function ChaptersList({
 
   useEffect(() => {
     if (!currentVolumeInitialized.current && volumes.length > 0) {
-      setCurrentVolume(volumes[0]);
+      setCurrentVolume(volumes.slice(-1)[0]);
     }
   }, [volumes]);
 
@@ -122,6 +123,12 @@ export function ChaptersList({
       });
     }
   }, [currentVolume, page, manga, getChapters]);
+
+  useEffect(() => {
+    if (currentVolume) {
+      onVolumeChange(currentVolume);
+    }
+  }, [currentVolume]);
 
   useEffect(() => {
     if (data?.chapters?.results?.length) {

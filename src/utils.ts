@@ -340,3 +340,7 @@ export function getFollowUrl(targetUrl: string) {
 
   return url.pathname + url.search;
 }
+
+export function between(x: number, min: number, max: number) {
+  return x >= min && x <= max;
+}

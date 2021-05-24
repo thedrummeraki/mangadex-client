@@ -16,6 +16,7 @@ export function useLocalCurrentlyReading(options?: Options) {
   const setCurrentlyReading = (options: Options) => {
     const { mangaId, chapterId } = idsFromOptions(options);
     const state = parse(localStorage.getItem(storageKey));
+    const newState: CurrentlyReading[] = [];
 
     if (!chapterId) {
       return;
@@ -25,12 +26,27 @@ export function useLocalCurrentlyReading(options?: Options) {
       (cr) => cr.chapterId === chapterId && cr.mangaId === mangaId
     );
 
+    console.log(currentChapterExists);
+
+    state.forEach((cr) => {
+      if (
+        currentChapterExists &&
+        cr.chapterId === currentChapterExists.chapterId &&
+        cr.mangaId === currentChapterExists.mangaId
+      ) {
+        return;
+      }
+
+      newState.push(cr);
+    });
+
     if (currentChapterExists) {
-      return null;
+      newState.push(currentChapterExists);
+    } else {
+      newState.push({ mangaId, chapterId });
     }
 
-    state.push({ mangaId, chapterId });
-    localStorage.setItem(storageKey, JSON.stringify(state));
+    localStorage.setItem(storageKey, JSON.stringify(newState));
   };
 
   const savedCurrentlyReading = localStorage.getItem(storageKey);

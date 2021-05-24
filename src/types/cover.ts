@@ -1,3 +1,5 @@
+import { Maybe } from "graphql/jsutils/Maybe";
+
 export interface Cover {
   id: string;
   type: "cover_art";
@@ -5,7 +7,7 @@ export interface Cover {
 }
 
 export interface CoverAttributes {
-  volume: string;
+  volume: Maybe<string>;
   fileName: string;
   description: string;
   version: number;

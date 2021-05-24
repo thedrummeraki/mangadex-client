@@ -8,8 +8,9 @@ import {
   relationship,
 } from "helpers/mangadex";
 import useAggregate from "helpers/useAggregate";
-import { useCallback, useMemo } from "react";
-import { GenericResponse, Manga } from "types";
+import { useCallback, useMemo, useState } from "react";
+import { Cover, GenericResponse, Manga } from "types";
+import { between, notEmpty } from "utils";
 import { ChaptersList } from "./ChaptersList";
 import { MangaDetails } from "./MangaDetails";
 import GetCoversForManga from "./queries/GetCoversForManga";
@@ -19,14 +20,10 @@ interface Props {
 }
 
 export function ViewManga({ mangaInfo }: Props) {
-  // const history = useHistory();
-  // const [firstChapterId, setFirstChapterId] = useState<string | null>(null);
-
-  console.log("originalLanguage", mangaInfo.data.attributes.originalLanguage);
-
   const coversResult = useQuery(GetCoversForManga, {
     variables: { mangaIds: [mangaInfo.data.id], limit: 100 },
   });
+  const [currentVolume, setCurrentVolume] = useState<string | null>(null);
 
   const { data: manga } = mangaInfo;
   const {
@@ -43,45 +40,101 @@ export function ViewManga({ mangaInfo }: Props) {
     content: tag.attributes.name.en,
   }));
 
-  // const { latestChapterForManga } = useLocalCurrentlyReading({ manga });
   const { volumesCount } = useAggregate(mangaInfo.data);
   const volumes = useMemo(
     () => volumesCount.map((count) => count.volume),
     [volumesCount]
   );
 
+  const covers = useMemo(() => {
+    const covers = Array.from(coversResult.data?.covers.results || []).sort(
+      (a, b) => {
+        const volA = parseInt(a.data.attributes.volume || "");
+        const volB = parseInt(b.data.attributes.volume || "");
+        if (volA < volB) {
+          return -1;
+        } else if (volA > volB) {
+          return 1;
+        }
+        return 0;
+      }
+    );
+
+    return covers;
+  }, [coversResult]);
+
   const mainCover = useMemo(() => {
-    const covers = coversResult.data?.covers.results || [];
     if (covers.length > 0) {
       const mainCoverId = relationship(mangaInfo, "cover_art")?.id;
       const mainCover =
         mainCoverId && covers.find((cover) => cover.data.id === mainCoverId);
-      if (mainCover) {
-        const filename = mainCover.data.attributes.fileName;
-        return getCoverUrl(manga, filename, DisplayCoverSize.Thumb512);
-      }
+      // if (mainCover) {
+      //   const filename = mainCover.data.attributes.fileName;
+      //   return getCoverUrl(manga, filename, DisplayCoverSize.Thumb512);
+      // }
+      return mainCover || null;
     }
     return null;
-  }, [coversResult.data, mangaInfo, manga]);
+  }, [covers, mangaInfo, manga]);
 
-  const coverForVolume = useCallback((volume: string) => {}, []);
+  const coverForVolume = useMemo(() => {
+    const requestedVolume = parseFloat(currentVolume || "0");
+    console.log("Current volume", currentVolume, "aka", requestedVolume);
+    if (covers.length > 0 || String(requestedVolume) === "NaN") {
+      if (!currentVolume || currentVolume === "N/A") {
+        return mainCover ? mainCover : null;
+      }
 
-  // const primaryAction = (
-  //   <Button
-  //     size="small"
-  //     color="secondary"
-  //     variant="contained"
-  //     onClick={() => {
-  //       if (latestChapterForManga) {
-  //         history.push(`/manga/read/${latestChapterForManga.chapterId}`);
-  //       } else {
-  //         history.push(`/manga/read/${firstChapterId}`);
-  //       }
-  //     }}
-  //   >
-  //     {latestChapterForManga ? "Continue" : "Read now"}
-  //   </Button>
-  // );
+      let foundCover: GenericResponse<Cover> | null = null;
+      let foundCoverVolume: number | null = null;
+      const filteredCovers =
+        covers.filter((cover) => cover.data.attributes.volume != null) || [];
+      const maxVolumeString =
+        filteredCovers.slice(-1)[0].data?.attributes?.volume;
+      const maxVolume = maxVolumeString ? parseFloat(maxVolumeString) : null;
+      console.log("max for", filteredCovers, "is", maxVolume);
+
+      filteredCovers.forEach((cover) => {
+        const coverVolumeString = cover.data.attributes.volume;
+        const coverVolume = parseFloat(coverVolumeString || "0");
+        if (!foundCover || foundCoverVolume == null) {
+          foundCover = cover;
+          console.log("setting", coverVolumeString);
+          foundCoverVolume = coverVolume;
+          return;
+        }
+
+        console.log("between?", coverVolume, foundCoverVolume, maxVolume);
+        if (
+          foundCoverVolume < requestedVolume &&
+          coverVolume <= requestedVolume
+        ) {
+          console.log(
+            "hey look its",
+            coverVolume,
+            cover.data.attributes.volume
+          );
+          foundCoverVolume = coverVolume;
+          foundCover = cover;
+        }
+      });
+
+      return foundCover || mainCover;
+    }
+    return null;
+  }, [covers, mainCover, currentVolume]);
+
+  const currentCoverUrl = useMemo(() => {
+    const cover = coverForVolume || mainCover;
+
+    return cover
+      ? getCoverUrl(
+          manga,
+          cover.data.attributes.fileName,
+          DisplayCoverSize.Thumb512
+        )
+      : null;
+  }, [coverForVolume]);
 
   return (
     <Page
@@ -95,7 +148,7 @@ export function ViewManga({ mangaInfo }: Props) {
       ]}
       tags={pageTags}
       showcase={{
-        imageUrl: mainCover,
+        imageUrl: currentCoverUrl,
         content: <MangaDetails manga={manga} />,
       }}
     >
@@ -103,7 +156,7 @@ export function ViewManga({ mangaInfo }: Props) {
         volumes={volumes}
         onFirstChapterReady={() => {}}
         manga={manga}
-        onVolumeChange={() => {}}
+        onVolumeChange={setCurrentVolume}
       />
     </Page>
   );
