@@ -1,5 +1,6 @@
 import { CircularProgress, Container } from "@material-ui/core";
 import { CustomGrid, Page, TitledSection } from "components";
+import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { MangaThumbnail } from "components/Thumbnails";
 import { useSearchMangaList } from "helpers";
 import { useEffect, useState } from "react";
@@ -68,12 +69,7 @@ export default function BrowseMangaPageContainer() {
       </Container>
       <Container>
         <TitledSection title={searchResultsMarkup} />
-        <CustomGrid>
-          {mangaList.results != null &&
-            mangaList.results.map((mangaResponse) => (
-              <MangaThumbnail showContentRating manga={mangaResponse.data} />
-            ))}
-        </CustomGrid>
+        <MangaCustomGrid mangasInfo={mangaList.results || []} />
       </Container>
     </Page>
   );

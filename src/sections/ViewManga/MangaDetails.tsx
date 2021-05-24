@@ -58,22 +58,6 @@ export function MangaDetails({ manga }: Props) {
 
   return (
     <Grid container spacing={1}>
-      {manga.attributes.altTitles.length > 0 && (
-        <Grid item>
-          <Typography component="span" variant="subtitle2">
-            Also known as:{" "}
-          </Typography>
-          <Typography
-            variant="caption"
-            component="em"
-            className={classes.altTitles}
-          >
-            {manga.attributes.altTitles
-              .map((title) => decodeHTML(title[Object.keys(title)[0]]))
-              .join("・")}
-          </Typography>
-        </Grid>
-      )}
       <div className={classes.accordionRoot}>
         <Accordion disabled={!Boolean(description.en)}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -85,6 +69,31 @@ export function MangaDetails({ manga }: Props) {
             <Typography variant="body2">
               <BBDescription description={mangaDescription(manga)} />
             </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography className={classes.accordionHeading}>
+              Other details
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {manga.attributes.altTitles.length > 0 && (
+              <div>
+                <Typography component="span" variant="subtitle2">
+                  Also known as:{" "}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  component="em"
+                  className={classes.altTitles}
+                >
+                  {manga.attributes.altTitles
+                    .map((title) => decodeHTML(title[Object.keys(title)[0]]))
+                    .join("・")}
+                </Typography>
+              </div>
+            )}
           </AccordionDetails>
         </Accordion>
       </div>

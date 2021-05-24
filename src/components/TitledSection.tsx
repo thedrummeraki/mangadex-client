@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tag: {
     marginRight: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.5),
   },
 }));
 

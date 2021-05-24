@@ -1,5 +1,6 @@
 import { Button } from "@material-ui/core";
 import { Page, CustomGrid } from "components";
+import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { MangaThumbnail } from "components/Thumbnails";
 import { useAuth } from "config/providers";
 import useMangaList from "helpers/useMangaList";
@@ -41,15 +42,7 @@ export function HomePage() {
         )
       }
     >
-      <CustomGrid>
-        {mangaList.results.map((mangaResult) => (
-          <MangaThumbnail
-            key={mangaResult.data.id}
-            showContentRating
-            manga={mangaResult.data}
-          />
-        ))}
-      </CustomGrid>
+      <MangaCustomGrid mangasInfo={mangaList.results} />
     </Page>
   );
 }

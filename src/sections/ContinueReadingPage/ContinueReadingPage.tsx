@@ -1,4 +1,5 @@
 import { CustomGrid } from "components";
+import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { MangaThumbnail } from "components/Thumbnails";
 import { GenericResponse, Manga } from "types";
 
@@ -7,15 +8,5 @@ interface Props {
 }
 
 export function ContinueReadingPage({ mangas }: Props) {
-  return (
-    <CustomGrid>
-      {mangas.map((mangaData) => (
-        <MangaThumbnail
-          key={mangaData.data.id}
-          showContentRating
-          manga={mangaData.data}
-        />
-      ))}
-    </CustomGrid>
-  );
+  return <MangaCustomGrid mangasInfo={mangas} />;
 }

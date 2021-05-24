@@ -82,7 +82,9 @@ export default function FeedPageContainer() {
 
   useEffect(() => {
     if (mangaIds.length) {
-      searchManga({ ids: mangaIds.map((idInfo) => idInfo.mangaId) });
+      searchManga({
+        ids: mangaIds.map((idInfo) => idInfo.mangaId).slice(-100),
+      });
     }
   }, [mangaIds, searchManga]);
 
