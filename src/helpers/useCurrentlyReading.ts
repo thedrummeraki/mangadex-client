@@ -6,7 +6,7 @@ interface Options {
   chapter?: string | Chapter;
 }
 
-interface CurrentlyReading {
+export interface CurrentlyReading {
   chapterId: string;
   mangaId: string;
 }
