@@ -1,20 +1,25 @@
 import {
   Button,
   FormControl,
+  FormControlLabel,
+  FormLabel,
   makeStyles,
   OutlinedInput,
-  Typography,
+  Radio,
+  RadioGroup,
 } from "@material-ui/core";
 import { TitledSection } from "components";
 import BasicModal from "components/modals/BasicModal";
-import { useLocalCurrentlyReading } from "helpers";
-import { useState } from "react";
+import useLocalCurrentReadingHistoryManagament from "helpers/useLocalCurrentReadingHistoryManagament";
+import { useMemo, useState } from "react";
 import { saveTextAsFile } from "utils";
 
 interface Props {
   open: boolean;
   onClose: VoidFunction;
 }
+
+type RadioOption = "no-password" | "with-password";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,34 +40,65 @@ const useStyles = makeStyles((theme) => ({
 export function ExportModal({ open, onClose }: Props) {
   const classes = useStyles();
   const [password, setPassword] = useState("");
-  const { exportHistory } = useLocalCurrentlyReading();
+  const [radioOption, setRadioOption] = useState<RadioOption>("no-password");
+  const { exportHistory } = useLocalCurrentReadingHistoryManagament();
+
+  const passwordProtected = useMemo(
+    () => radioOption === "with-password",
+    [radioOption]
+  );
 
   return (
     <BasicModal open={open} onClose={onClose}>
       <TitledSection title="Export your reading history" />
-      <Typography>
-        This will export every manga in your reading history.
-      </Typography>
-      <form noValidate autoComplete="off" className={classes.root}>
-        <FormControl>
-          <OutlinedInput
-            id="optional-password"
-            type="password"
-            value={password}
-            placeholder="Password (optional)"
-            onChange={(event) => setPassword(event.target.value)}
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Export options</FormLabel>
+        <RadioGroup
+          aria-label="gender"
+          name="gender1"
+          value={radioOption}
+          onChange={(_, value) => setRadioOption(value as RadioOption)}
+        >
+          <FormControlLabel
+            value="no-password"
+            control={<Radio />}
+            label="No password"
           />
-        </FormControl>
+          <FormControlLabel
+            value="with-password"
+            control={<Radio />}
+            label="Add a password"
+          />
+        </RadioGroup>
+      </FormControl>
+
+      <form noValidate autoComplete="off" className={classes.root}>
+        {passwordProtected && (
+          <FormControl>
+            <OutlinedInput
+              id="optional-password"
+              type="password"
+              value={password}
+              placeholder="Password (optional)"
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </FormControl>
+        )}
         <FormControl>
           <Button
             size="large"
             variant="contained"
             color="primary"
             onClick={() => {
-              if (exportHistory) {
-                const exported = exportHistory(password);
-                saveTextAsFile(exported, "mangadex-client.exported.txt");
-              }
+              const exported = exportHistory(password);
+              const timestamp = Math.floor(Date.now());
+
+              saveTextAsFile(
+                exported,
+                passwordProtected && Boolean(password)
+                  ? `mangadex-client.exported.protected.${timestamp}.txt`
+                  : `mangadex-client.exported.${timestamp}.txt`
+              );
             }}
           >
             Export now

@@ -15,6 +15,7 @@ interface Props {
   chaptersCount?: number;
   showContentRating?: boolean;
   showReading?: boolean;
+  overrideFeatures?: Array<string | null | undefined>;
 }
 
 export function MangaThumbnail({
@@ -23,6 +24,7 @@ export function MangaThumbnail({
   showContentRating,
   showReading,
   cover,
+  overrideFeatures,
 }: Props) {
   const {
     attributes: { title, year, status },
@@ -52,13 +54,15 @@ export function MangaThumbnail({
       follow
       explicit={isExplicit(manga, { conservative: false })}
       title={preferredTitle(title)}
-      features={[
-        showReading && isReading ? "Reading" : null,
-        year ? String(year) : null,
-        status,
-        chaptersCountFeature,
-        showContentRating ? manga.attributes.contentRating : null,
-      ]}
+      features={
+        overrideFeatures || [
+          showReading && isReading ? "Reading" : null,
+          year ? String(year) : null,
+          status,
+          chaptersCountFeature,
+          showContentRating ? manga.attributes.contentRating : null,
+        ]
+      }
       icons={icons}
       url={`/manga/${manga.id}`}
     />

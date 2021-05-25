@@ -28,10 +28,8 @@ export function ChapterReader({
   onPrevious,
   onNext,
 }: Props) {
-  const [currentIndex, setCurrentIndices] = useState(savedPage(chapter));
+  const [currentIndex, setCurrentIndices] = useState(savedPage(chapter.id));
   const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
-
-  console.log(currentIndex);
 
   const [canGoNext, setCanGoNext] = useState(false);
   const [canGoPrevious, setCanGoPrevious] = useState(false);

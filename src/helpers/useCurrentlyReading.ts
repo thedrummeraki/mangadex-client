@@ -1,5 +1,4 @@
 import { Chapter, Manga } from "types";
-import CryptoJS from "crypto-js";
 
 interface Options {
   manga: string | Manga;
@@ -9,6 +8,10 @@ interface Options {
 export interface CurrentlyReading {
   chapterId: string;
   mangaId: string;
+}
+
+export interface ReadingHistory extends CurrentlyReading {
+  page: number;
 }
 
 export function useLocalCurrentlyReading(options?: Options) {
@@ -70,6 +73,7 @@ export function useLocalCurrentlyReading(options?: Options) {
       Boolean(currentlyReading.find((cr) => cr.mangaId === mangaId));
 
     return {
+      storageKey,
       isReading: isReadingChapter || isReadingManga,
       isReadingChapter,
       isReadingManga,
@@ -80,37 +84,22 @@ export function useLocalCurrentlyReading(options?: Options) {
   }
 
   return {
+    storageKey,
     isReading: null,
     isReadingChapter: null,
     isReadingManga: null,
     latestChapterForManga: null,
     currentlyReading,
     setCurrentlyReading,
-    importHistory: importFromString,
-    exportHistory: (password?: string) =>
-      exportAsString(currentlyReading, password),
   };
 }
 
-export function savedPage(chapter: Chapter, defaultValue: number = 0) {
-  const savedValue = localStorage.getItem(`chapter-${chapter.id}`);
+export function savedPage(chapterId: string, defaultValue: number = 0) {
+  const savedValue = localStorage.getItem(`chapter-${chapterId}`);
   if (!savedValue) {
     return defaultValue;
   }
   return parseInt(savedValue);
-}
-
-function exportAsString(state: CurrentlyReading[], password?: string) {
-  const encryptPassword = password || "no-password";
-  const stateString = JSON.stringify(state);
-  return CryptoJS.AES.encrypt(stateString, encryptPassword).toString();
-}
-
-function importFromString(string: string, password?: string) {
-  const decryptPassword = password || "no-password";
-  const bytes = CryptoJS.AES.decrypt(string, decryptPassword);
-  const originalText = bytes.toString(CryptoJS.enc.Utf8);
-  return parse(originalText);
 }
 
 function idsFromOptions({ manga, chapter }: Options) {

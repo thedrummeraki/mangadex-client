@@ -11,7 +11,6 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { useHistory } from "react-router";
 import { useAuth, useLoginModal } from "config/providers/AuthProvider";
 import { noEmptyArray } from "utils";
-import { useLocalCurrentlyReading } from "helpers";
 
 interface BaseDrawerItem {
   icon: ReactNode;
