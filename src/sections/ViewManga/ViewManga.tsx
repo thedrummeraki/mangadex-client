@@ -1,30 +1,42 @@
 import { useQuery } from "@apollo/client";
-import { Page } from "components";
+import { Page, TitledSectionTag } from "components";
 import {
   DisplayCoverSize,
   getCoverUrl,
   isExplicit,
   preferredTitle,
   relationship,
+  relationshipIds,
 } from "helpers/mangadex";
+import { useHistory } from "react-router";
 import useAggregate from "helpers/useAggregate";
-import { useMemo, useState } from "react";
+import useAuthors from "helpers/useAuthors";
+import { useEffect, useMemo, useState } from "react";
 import { Cover, GenericResponse, Manga } from "types";
+import { Author } from "types/authors";
 import { ChaptersList } from "./ChaptersList";
 import { MangaDetails } from "./MangaDetails";
 import GetCoversForManga from "./queries/GetCoversForManga";
+import FaceIcon from "@material-ui/icons/Face";
+import BrushIcon from "@material-ui/icons/Brush";
+import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 
 interface Props {
   mangaInfo: GenericResponse<Manga>;
 }
 
 export function ViewManga({ mangaInfo }: Props) {
+  const history = useHistory();
   const coversResult = useQuery(GetCoversForManga, {
     variables: { mangaIds: [mangaInfo.data.id], limit: 100 },
   });
   const [currentVolume, setCurrentVolume] = useState<string | null>(null);
+  const [authorsState, setAuthorsStatus] = useState<{
+    authors: GenericResponse<Author>[];
+    artists: GenericResponse<Author>[];
+  }>({ authors: [], artists: [] });
 
-  const { data: manga } = mangaInfo;
+  const { data: manga, relationships } = mangaInfo;
   const {
     attributes: { lastChapter, status, tags, title },
   } = manga;
@@ -35,9 +47,68 @@ export function ViewManga({ mangaInfo }: Props) {
 
   const statusBadge = status || null;
 
-  const pageTags = tags.map((tag) => ({
-    content: tag.attributes.name.en,
-  }));
+  const pageTags = useMemo(() => {
+    const result: TitledSectionTag[] = [];
+    const { authors, artists } = authorsState;
+    if (authors.length > 0) {
+      authors.forEach((author) => {
+        result.push({
+          content: author.data.attributes.name,
+          icon: <FaceIcon />,
+          onClick: () => history.push(`/by-author/${author.data.id}`),
+        });
+      });
+    }
+    if (artists.length > 0) {
+      artists.forEach((artist) => {
+        result.push({
+          content: artist.data.attributes.name,
+          icon: <BrushIcon />,
+          onClick: () => history.push(`/by-author/${artist.data.id}`),
+        });
+      });
+    }
+
+    return result.concat(
+      tags.map((tag) => ({
+        content: tag.attributes.name.en,
+        icon: <LocalOfferIcon />,
+      }))
+    );
+  }, [authorsState, history, tags]);
+
+  const authorIds = useMemo(
+    () => relationshipIds(relationships, "author"),
+    [relationships]
+  );
+  const artistIds = useMemo(
+    () => relationshipIds(relationships, "artist"),
+    [relationships]
+  );
+
+  const {
+    authors: authorsAndArtists,
+    loading: authorsLoading,
+    error: authorsError,
+  } = useAuthors({
+    limit: 100,
+    ids: Array.from(new Set(authorIds.concat(artistIds))),
+  });
+
+  useEffect(() => {
+    if (!authorsLoading && !authorsError && authorsAndArtists.length > 0) {
+      setAuthorsStatus({
+        authors: authorsAndArtists.filter((aa) =>
+          authorIds.includes(aa.data.id)
+        ),
+        artists: authorsAndArtists.filter((aa) =>
+          artistIds.includes(aa.data.id)
+        ),
+      });
+    }
+  }, [authorsLoading, authorsError, authorsAndArtists, authorIds, artistIds]);
+
+  useEffect(() => {}, [authorsState]);
 
   const { volumesCount } = useAggregate(mangaInfo.data);
   const volumes = useMemo(

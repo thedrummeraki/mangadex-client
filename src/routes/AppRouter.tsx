@@ -8,6 +8,7 @@ import {
   FollowsListPage,
   BrowseMangaPage,
   ContinueReadingPage,
+  ByAuthorPage,
 } from "sections";
 
 import AuthenticatedRoute from "./AuthenticatedRoute";
@@ -33,6 +34,7 @@ export function AppRouter() {
             path="/continue-reading"
             component={ContinueReadingPage}
           />
+          <Route exact path="/by-author/:id" component={ByAuthorPage} />
         </WithLayoutProvider>
       </Switch>
     </BrowserRouter>

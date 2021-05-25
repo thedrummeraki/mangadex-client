@@ -13,6 +13,7 @@ interface Props {
   maxWitdh?: "xs" | "sm" | "md" | "lg" | "xl" | false;
   showcase?: {
     imageUrl: string | null;
+    imageDescription?: ReactNode;
     content: ReactNode;
   };
 }
@@ -34,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
       height: "25vh",
     },
   },
+  showcaseDescription: {
+    marginTop: theme.spacing(),
+  },
 }));
 
 export function Page({
@@ -51,6 +55,14 @@ export function Page({
   const defaultBackUrl = useQueryParam("from", backUrl);
 
   useDocumentTitle({ title });
+
+  const imageMarkup = showcase?.imageUrl && (
+    <img
+      alt={`${title}-showcase`}
+      src={showcase.imageUrl}
+      className={classes.showcaseImg}
+    />
+  );
 
   const titleMarkup = defaultBackUrl ? (
     <>
@@ -71,15 +83,12 @@ export function Page({
     return (
       <Container maxWidth={maxWitdh}>
         <Grid container spacing={4}>
-          {showcase.imageUrl && (
-            <Grid item xs={12} md={3}>
-              <img
-                alt={`${title}-showcase`}
-                src={showcase.imageUrl}
-                className={classes.showcaseImg}
-              />
-            </Grid>
-          )}
+          <Grid item xs={12} md={3}>
+            {imageMarkup}
+            <div className={classes.showcaseDescription}>
+              {showcase.imageDescription}
+            </div>
+          </Grid>
           <Grid item xs={12} md={showcase.imageUrl ? 9 : 12}>
             <TitledSection
               variant="h5"

@@ -6,6 +6,7 @@ import SplitButton from "components/SplitButton";
 import { localeName } from "helpers";
 import { compareChapters } from "helpers/compare";
 import { CompareDirection } from "helpers/compare/types";
+import usePagination from "helpers/usePagination";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chapter, GenericResponse, Manga } from "types";
 import GetChaptersForManga from "./queries/GetChaptersForManga";
@@ -38,14 +39,16 @@ export function ChaptersList({
   onVolumeChange,
 }: Props) {
   const classes = useStyles();
-  const [page, setPage] = useState(1);
-  const pageSize = 50;
   const [currentLocale, setCurrentLocale] = useState<string | null>(
     defaultLocale || null
   );
   const [currentVolume, setCurrentVolume] = useState<string | null>(null);
-
   const currentVolumeInitialized = useRef(selectedCurrentVolume != null);
+
+  const { limit, offset, page, setPage, getPagesCount } = usePagination({
+    pageSize: 50,
+    pushPageInfoToHistory: false,
+  });
 
   useEffect(() => {
     if (!currentVolumeInitialized.current && volumes.length > 0) {
@@ -101,28 +104,24 @@ export function ChaptersList({
     return [];
   }, [chaptersByLocale, data, currentLocale]);
 
-  const pagesCount = useMemo(() => {
-    const totalResults = data?.chapters.total;
-    if (totalResults) {
-      return Math.ceil(totalResults / pageSize);
-    }
-
-    return 1;
-  }, [data]);
+  const pagesCount = useMemo(
+    () => getPagesCount(data?.chapters.total),
+    [getPagesCount, data]
+  );
 
   useEffect(() => {
     if (currentVolume) {
       getChapters({
         variables: {
-          limit: pageSize,
-          offset: pageSize * (page - 1),
+          limit,
+          offset,
           mangaId: manga.id,
           orderChapter: "asc",
           volume: currentVolume,
         },
       });
     }
-  }, [currentVolume, page, manga, getChapters]);
+  }, [currentVolume, limit, offset, manga, getChapters]);
 
   useEffect(() => {
     if (currentVolume) {

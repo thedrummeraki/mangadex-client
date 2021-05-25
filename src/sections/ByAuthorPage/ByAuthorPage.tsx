@@ -2,11 +2,16 @@ import { makeStyles } from "@material-ui/core";
 import { Pagination } from "@material-ui/lab";
 import { Page } from "components";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
-import { useAuth } from "config/providers";
 import { useSearchMangaList } from "helpers";
 import usePagination from "helpers/usePagination";
 import { useEffect, useMemo } from "react";
-import { useQueryParam } from "utils";
+import { GenericResponse } from "types";
+import { Author } from "types/authors";
+
+interface Props {
+  author: GenericResponse<Author>;
+  asArtist?: boolean;
+}
 
 const useStyles = makeStyles((theme) => ({
   paginationRoot: {
@@ -17,15 +22,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function HomePage() {
+export function ByAuthorPage({ author, asArtist }: Props) {
   const classes = useStyles();
-  const firstPage = useQueryParam("page");
-  const { currentUser } = useAuth();
+
   const { limit, offset, page, setPage, getPagesCount } = usePagination({
-    pageSize: 100,
-    firstPage: firstPage ? parseInt(firstPage) : 1,
+    pageSize: 20,
   });
-  const { mangaList, data, loading, error, searchManga } = useSearchMangaList({
+  const { mangaList, loading, searchManga } = useSearchMangaList({
     limit,
     offset,
   });
@@ -36,25 +39,14 @@ export function HomePage() {
   );
 
   useEffect(() => {
-    searchManga({});
-  }, [searchManga, offset]);
-
-  if (error) {
-    return <p>error</p>;
-  }
-
-  if (loading || !data) {
-    return null;
-  }
+    const options = asArtist
+      ? { artists: [author.data.id] }
+      : { authors: [author.data.id] };
+    searchManga(options);
+  }, [page, author, asArtist, searchManga]);
 
   return (
-    <Page
-      title={
-        currentUser
-          ? `Welcome, ${currentUser.attributes.username}.`
-          : `Hottest manga`
-      }
-    >
+    <Page backUrl="/" title={author.data.attributes.name}>
       <MangaCustomGrid mangasInfo={mangaList.results || []} />
       {pagesCount > 1 && (
         <div className={classes.paginationRoot}>

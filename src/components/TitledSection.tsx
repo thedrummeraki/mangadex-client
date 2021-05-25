@@ -5,7 +5,7 @@ import { Chip } from "@material-ui/core";
 import { notEmpty } from "utils";
 import { Variant } from "@material-ui/core/styles/createTypography";
 
-interface Tag {
+export interface TitledSectionTag {
   content: string;
   icon?: ReactElement;
   onClick?: VoidFunction;
@@ -18,7 +18,7 @@ export interface TitledSectionProps {
   badges?: Array<TitledSectionBadge>;
   primaryAction?: ReactNode;
   tagsDescription?: string;
-  tags?: Array<Tag>;
+  tags?: Array<TitledSectionTag>;
   selectedTag?: string | null;
 }
 

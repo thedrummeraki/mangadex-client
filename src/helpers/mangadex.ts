@@ -3,6 +3,7 @@ import {
   Description,
   GenericResponse,
   Manga,
+  Relationship,
   Title,
 } from "types";
 import { Chapter } from "types/chapter";
@@ -83,6 +84,12 @@ export function relationship<T>(itemInfo: GenericResponse<T>, type: string) {
   return itemInfo.relationships.find(
     (relationship) => relationship.type === type
   );
+}
+
+export function relationshipIds(relationships: Relationship[], type: string) {
+  return relationships
+    .filter((relationship) => relationship.type === type)
+    .map((relationship) => relationship.id);
 }
 
 export function getCoverUrl(

@@ -59,26 +59,28 @@ export function MangaDetails({ manga }: Props) {
   return (
     <Grid container spacing={1}>
       <div className={classes.accordionRoot}>
-        <Accordion disabled={!Boolean(description.en)}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.accordionHeading}>
-              Description
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography variant="body2">
-              <BBDescription description={mangaDescription(manga)} />
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.accordionHeading}>
-              Other details
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {manga.attributes.altTitles.length > 0 && (
+        {description.en && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography className={classes.accordionHeading}>
+                Description
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                <BBDescription description={mangaDescription(manga)} />
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {manga.attributes.altTitles.length > 0 && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography className={classes.accordionHeading}>
+                Other details
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
               <div>
                 <Typography component="span" variant="subtitle2">
                   Also known as:{" "}
@@ -91,27 +93,29 @@ export function MangaDetails({ manga }: Props) {
                   </em>
                 </Typography>
               </div>
-            )}
-          </AccordionDetails>
-        </Accordion>
-        <Accordion disabled={links.length === 0}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.accordionHeading}>
-              Links ({links.length})
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Grid item xs={12}>
-              <Grid container spacing={1}>
-                {links.map((link) => (
-                  <Grid key={link.linkKey} item>
-                    <MangaLinkButton {...link} />
-                  </Grid>
-                ))}
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {links.length > 0 && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography className={classes.accordionHeading}>
+                Links ({links.length})
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid item xs={12}>
+                <Grid container spacing={1}>
+                  {links.map((link) => (
+                    <Grid key={link.linkKey} item>
+                      <MangaLinkButton {...link} />
+                    </Grid>
+                  ))}
+                </Grid>
               </Grid>
-            </Grid>
-          </AccordionDetails>
-        </Accordion>
+            </AccordionDetails>
+          </Accordion>
+        )}
       </div>
     </Grid>
   );
