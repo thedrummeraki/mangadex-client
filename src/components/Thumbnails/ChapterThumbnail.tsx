@@ -76,7 +76,8 @@ function ThumbnailWithManga({
   });
 
   const isDone =
-    savedPage(chapterInfo.data) >= chapterInfo.data.attributes.data.length - 1;
+    savedPage(chapterInfo.data.id) >=
+    chapterInfo.data.attributes.data.length - 1;
 
   const icons: AllowedIcons[] = [];
   if (isReadingChapter && !isDone) icons.push("play");

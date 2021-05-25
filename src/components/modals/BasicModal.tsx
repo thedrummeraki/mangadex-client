@@ -16,6 +16,8 @@ const useStyles = makeStyles((theme: Theme) =>
       border: "2px solid #000",
       boxShadow: theme.shadows[5],
       padding: theme.spacing(2, 4, 3),
+      width: "95%",
+      maxWidth: 500,
     },
   })
 );
@@ -25,7 +27,6 @@ interface Props {
   onClose: VoidFunction;
   title?: string | null;
   description?: string | null;
-  width?: number | string;
 }
 
 export default function BasicModal({
@@ -33,7 +34,6 @@ export default function BasicModal({
   open,
   title,
   description,
-  width,
   onClose,
 }: PropsWithChildren<Props>) {
   const classes = useStyles();
@@ -50,7 +50,6 @@ export default function BasicModal({
       BackdropProps={{
         timeout: 500,
       }}
-      style={{ width }}
     >
       <Fade in={open}>
         <div className={classes.paper}>

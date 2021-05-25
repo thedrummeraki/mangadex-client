@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function ViewMangaTableRow({ manga, chapter }: Props) {
   const classes = useStyles();
-  const currentPage = savedPage(chapter, -1) + 1;
+  const currentPage = savedPage(chapter.id, -1) + 1;
   const totalPages = chapter.attributes.data.length - 1;
   const isDone = currentPage !== 0 && currentPage >= totalPages;
 

@@ -8,6 +8,7 @@ import {
   FollowsListPage,
   BrowseMangaPage,
   ContinueReadingPage,
+  ImportReadingHistoryPage,
   ByAuthorPage,
 } from "sections";
 
@@ -33,6 +34,11 @@ export function AppRouter() {
             exact
             path="/continue-reading"
             component={ContinueReadingPage}
+          />
+          <Route
+            exact
+            path="/continue-reading/import"
+            component={ImportReadingHistoryPage}
           />
           <Route exact path="/by-author/:id" component={ByAuthorPage} />
         </WithLayoutProvider>
