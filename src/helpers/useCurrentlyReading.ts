@@ -1,4 +1,5 @@
 import { Chapter, Manga } from "types";
+import CryptoJS from "crypto-js";
 
 interface Options {
   manga: string | Manga;
@@ -85,6 +86,9 @@ export function useLocalCurrentlyReading(options?: Options) {
     latestChapterForManga: null,
     currentlyReading,
     setCurrentlyReading,
+    importHistory: importFromString,
+    exportHistory: (password?: string) =>
+      exportAsString(currentlyReading, password),
   };
 }
 
@@ -94,6 +98,19 @@ export function savedPage(chapter: Chapter, defaultValue: number = 0) {
     return defaultValue;
   }
   return parseInt(savedValue);
+}
+
+function exportAsString(state: CurrentlyReading[], password?: string) {
+  const encryptPassword = password || "no-password";
+  const stateString = JSON.stringify(state);
+  return CryptoJS.AES.encrypt(stateString, encryptPassword).toString();
+}
+
+function importFromString(string: string, password?: string) {
+  const decryptPassword = password || "no-password";
+  const bytes = CryptoJS.AES.decrypt(string, decryptPassword);
+  const originalText = bytes.toString(CryptoJS.enc.Utf8);
+  return parse(originalText);
 }
 
 function idsFromOptions({ manga, chapter }: Options) {

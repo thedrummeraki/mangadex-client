@@ -25,6 +25,7 @@ interface Props {
   onClose: VoidFunction;
   title?: string | null;
   description?: string | null;
+  width?: number | string;
 }
 
 export default function BasicModal({
@@ -32,6 +33,7 @@ export default function BasicModal({
   open,
   title,
   description,
+  width,
   onClose,
 }: PropsWithChildren<Props>) {
   const classes = useStyles();
@@ -48,6 +50,7 @@ export default function BasicModal({
       BackdropProps={{
         timeout: 500,
       }}
+      style={{ width }}
     >
       <Fade in={open}>
         <div className={classes.paper}>

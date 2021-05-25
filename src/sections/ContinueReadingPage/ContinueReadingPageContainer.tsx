@@ -7,16 +7,23 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { notEmpty } from "utils";
 import { ContinueReadingPage } from "./ContinueReadingPage";
 
+import ImportIcon from "@material-ui/icons/CloudUpload";
+import ExportIcon from "@material-ui/icons/CloudDownload";
+import { ExportModal } from "./ExportModal";
+import { ImportModal } from "./ImportModal";
+
 export default function ContinueReadingPageContainer() {
   const { currentlyReading } = useLocalCurrentlyReading();
   const mangaIds = Array.from(
     new Set(currentlyReading.map((cr) => cr.mangaId))
   );
   const [warning, setWarning] = useState(showWarning());
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+
   const { currentUser } = useAuth();
 
   const initialized = useRef(false);
-
   const { mangaList, loading, error, searchManga } = useSearchMangaList({
     limit: 100,
   });
@@ -64,7 +71,21 @@ export default function ContinueReadingPageContainer() {
   }
 
   return (
-    <Page title="Reading history">
+    <Page
+      title="Reading history"
+      tags={[
+        {
+          content: "Import...",
+          icon: <ImportIcon />,
+          onClick: () => setImportModalOpen(true),
+        },
+        {
+          content: "Export...",
+          icon: <ExportIcon />,
+          onClick: () => setExportModalOpen(true),
+        },
+      ]}
+    >
       {warning && (
         <Alert
           color="warning"
@@ -88,6 +109,14 @@ export default function ContinueReadingPageContainer() {
         </Alert>
       )}
       <ContinueReadingPage mangas={sortedMangaList} />
+      <ExportModal
+        open={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+      />
+      <ImportModal
+        open={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+      />
     </Page>
   );
 }
