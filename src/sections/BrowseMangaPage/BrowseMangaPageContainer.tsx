@@ -2,10 +2,13 @@ import { CircularProgress, Container } from "@material-ui/core";
 import { Page, TitledSection } from "components";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { useSearchMangaList } from "helpers";
-import { useEffect, useState } from "react";
+import useTags from "helpers/useTags";
+import { useEffect, useMemo, useState } from "react";
 import {
   ContentRating,
+  MangaSearchOptions,
   MangaStatus,
+  MangaTag,
   PublicationDemographic,
   SearchState,
 } from "types";
@@ -43,7 +46,7 @@ export default function BrowseMangaPageContainer() {
   );
 
   const [searchState, setSearchState] =
-    useState<SearchState>(defaultSearchState);
+    useState<MangaSearchOptions>(defaultSearchState);
   const debouncedSearchState = useDebouncedValue(searchState, 500);
 
   useEffect(() => {
@@ -85,13 +88,23 @@ function useDefaultSearchState() {
     "publicationDemographic"
   );
 
-  const defaultSearchState: SearchState = {
+  const { tags } = useTags();
+  const includedTagIds = useTypedQueryParams<string>("includedTags");
+  const includedTags = useMemo(
+    () =>
+      tags
+        .filter((tag) => includedTagIds.includes(tag.data.id))
+        .map((tagInfo) => tagInfo.data),
+    [tags, includedTagIds]
+  );
+
+  const defaultSearchState: MangaSearchOptions = {
     artists: [],
     authors: [],
     createdAtSince: "",
     excludedTags: [],
     excludedTagsMode: [],
-    includedTags: [],
+    includedTags,
     includedTagsMode: [],
     order: {},
     originalLanguage: [],
@@ -102,6 +115,8 @@ function useDefaultSearchState() {
     contentRating,
     title: decodeURIComponent(title),
   };
+
+  console.log(includedTagIds, tags, includedTags);
 
   return defaultSearchState;
 }

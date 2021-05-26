@@ -3,7 +3,9 @@ import {
   Description,
   GenericResponse,
   Manga,
+  MangaSearchOptions,
   Relationship,
+  SearchState,
   Title,
 } from "types";
 import { Chapter } from "types/chapter";
@@ -112,4 +114,37 @@ export function getCoverUrl(
   ];
 
   return urlParts.join("/");
+}
+
+export function toSearchState(options: Partial<MangaSearchOptions>) {
+  const searchState: Partial<SearchState> = {
+    ...options,
+    authors: options.authors?.map((author) => author.id),
+    artists: options.artists?.map((artist) => artist.id),
+    includedTags: options.includedTags?.map((tag) => tag.id),
+    excludedTags: options.excludedTags?.map((tag) => tag.id),
+  };
+  return searchState;
+}
+
+export function toPreviewableSearchState(options: Partial<MangaSearchOptions>) {
+  const searchState: Partial<SearchState> = {
+    ...options,
+    authors: options.authors?.map((author) => author.attributes.name),
+    artists: options.artists?.map((artist) => artist.attributes.name),
+    includedTags: options.includedTags?.map((tag) => tag.attributes.name.en),
+    excludedTags: options.excludedTags?.map((tag) => tag.attributes.name.en),
+  };
+  return searchState;
+}
+
+export function queryFriendlySearchState(options: Partial<MangaSearchOptions>) {
+  const searchState: Partial<SearchState> = {
+    ...options,
+    authors: options.authors?.map((author) => author.id),
+    artists: options.artists?.map((artist) => artist.id),
+    includedTags: options.includedTags?.map((tag) => tag.id),
+    excludedTags: options.excludedTags?.map((tag) => tag.id),
+  };
+  return searchState;
 }

@@ -4,14 +4,15 @@ import useTags from "helpers/useTags";
 import { GenericResponse, MangaTag } from "types";
 import { SearchFieldProps } from "../types";
 
-interface Option extends GenericResponse<MangaTag> {
+interface Option extends MangaTag {
   firstLetter: string;
 }
 
 export default function TagsField({
+  title,
   value,
   onChange,
-}: SearchFieldProps<GenericResponse<MangaTag>[]>) {
+}: SearchFieldProps<MangaTag[], { title: string }>) {
   const { loading, tags } = useTags();
 
   return (
@@ -21,7 +22,7 @@ export default function TagsField({
       disableCloseOnSelect
       limitTags={1}
       value={asOptions(value)}
-      options={asOptions(tags).sort(
+      options={asOptions(tags.map((tag) => tag.data)).sort(
         (a, b) => -b.firstLetter.localeCompare(a.firstLetter)
       )}
       onChange={(_, newValue) => {
@@ -29,15 +30,15 @@ export default function TagsField({
       }}
       disabled={loading}
       groupBy={(option) => option.firstLetter}
-      getOptionLabel={(option) => option.data.attributes.name.en}
-      renderInput={(params) => <TextField {...params} label="Tags" />}
+      getOptionLabel={(option) => option.attributes.name.en}
+      renderInput={(params) => <TextField {...params} label={title} />}
     />
   );
 }
 
-function asOptions(values: GenericResponse<MangaTag>[]) {
+function asOptions(values: MangaTag[]) {
   const options: Option[] = values.map((option) => {
-    const title = option.data.attributes.name;
+    const title = option.attributes.name;
     const defaultLocale = Object.entries(title)[0][0];
     const firstLetter = title[defaultLocale][0].toUpperCase();
 

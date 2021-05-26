@@ -1,21 +1,22 @@
 import { Grid } from "@material-ui/core";
 import { useCallback } from "react";
-import { SearchState } from "types";
+import { MangaSearchOptions } from "types";
 import {
   ContentRatingField,
   TitleField,
   StatusField,
   PublicationDemographicField,
 } from "./components";
+import TagsField from "./components/TagsField/TagsField";
 
 interface Props {
-  searchOptions: SearchState;
-  onChange: (options: SearchState) => void;
+  searchOptions: MangaSearchOptions;
+  onChange: (options: MangaSearchOptions) => void;
 }
 
 export function BrowseSearchFields({ searchOptions, onChange }: Props) {
   const updateSearchOptions = useCallback(
-    (record: Partial<SearchState>) => {
+    (record: Partial<MangaSearchOptions>) => {
       onChange({ ...searchOptions, ...record });
     },
     [searchOptions, onChange]
@@ -49,6 +50,20 @@ export function BrowseSearchFields({ searchOptions, onChange }: Props) {
           onChange={(publicationDemographic) =>
             updateSearchOptions({ publicationDemographic })
           }
+        />
+      </Grid>
+      <Grid item xs={12} md={4} lg={3}>
+        <TagsField
+          title="Include tags"
+          value={searchOptions.includedTags}
+          onChange={(includedTags) => updateSearchOptions({ includedTags })}
+        />
+      </Grid>
+      <Grid item xs={12} md={4} lg={3}>
+        <TagsField
+          title="Exclude tags"
+          value={searchOptions.excludedTags}
+          onChange={(excludedTags) => updateSearchOptions({ excludedTags })}
         />
       </Grid>
     </Grid>

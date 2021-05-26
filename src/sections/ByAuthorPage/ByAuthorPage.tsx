@@ -40,8 +40,8 @@ export function ByAuthorPage({ author, asArtist }: Props) {
 
   useEffect(() => {
     const options = asArtist
-      ? { artists: [author.data.id] }
-      : { authors: [author.data.id] };
+      ? { artists: [author.data] }
+      : { authors: [author.data] };
     searchManga(options);
   }, [page, author, asArtist, searchManga]);
 

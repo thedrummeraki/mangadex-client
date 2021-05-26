@@ -3,10 +3,11 @@ import { useCallback } from "react";
 import {
   defaultPagedResults,
   Manga,
+  MangaSearchOptions,
   PagedResultsList,
-  SearchState,
 } from "types";
 import { filterObject } from "utils";
+import { toSearchState } from "./mangadex";
 
 const query = gql`
   query GetMangaList(
@@ -68,7 +69,7 @@ interface InternalOptions {
   allowCache?: boolean;
 }
 
-type SearchOptions = Partial<SearchState> & { ids?: string[] };
+type SearchOptions = Partial<MangaSearchOptions> & { ids?: string[] };
 
 type Options = MandatoryOptions &
   InternalOptions &
@@ -92,7 +93,7 @@ export default function useSearchMangaList({
 
   const searchManga = useCallback(
     (options: SearchOptions) => {
-      const filteredOptions = filterObject(options);
+      const filteredOptions = toSearchState(filterObject(options));
 
       callback({
         variables: {

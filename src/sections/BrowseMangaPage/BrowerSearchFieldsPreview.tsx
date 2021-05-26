@@ -1,11 +1,12 @@
 import { Chip, Paper } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { queryFriendlySearchState, toPreviewableSearchState } from "helpers";
 import { useEffect, useState } from "react";
-import { SearchState } from "types";
+import { MangaSearchOptions } from "types";
 import { filterObject, useCustomHistory } from "utils";
 
 interface Props {
-  searchOptions: SearchState;
+  searchOptions: MangaSearchOptions;
 }
 
 interface ChipData {
@@ -14,7 +15,7 @@ interface ChipData {
 }
 
 interface ChipDescription {
-  key: keyof SearchState;
+  key: keyof MangaSearchOptions;
   description: string;
 }
 
@@ -22,6 +23,8 @@ const chipDescriptionMap: ChipDescription[] = [
   { key: "title", description: "Title contains" },
   { key: "contentRating", description: "Rating" },
   { key: "status", description: "Status" },
+  { key: "includedTags", description: "With tags" },
+  { key: "excludedTags", description: "Without tags" },
 ];
 
 const getChipLabel = (key: string, entryValue: string) => {
@@ -52,8 +55,9 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
   const [chipData, setChipData] = useState<ChipData[]>([]);
 
   useEffect(() => {
-    const filteredOptions = filterObject(searchOptions);
-    pushToHistory(filteredOptions);
+    const filteredSearchOptions = filterObject(searchOptions);
+    const filteredOptions = toPreviewableSearchState(filteredSearchOptions);
+    pushToHistory(queryFriendlySearchState(filteredSearchOptions));
 
     const data: ChipData[] = [];
     Object.entries(filteredOptions).forEach((entry) => {
@@ -69,12 +73,11 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
       } else if (typeof entryValue === "string") {
         data.push({ key, label: getChipLabel(key, entryValue) });
       } else if (typeof entryValue === "object") {
-        Object.entries(entryValue).forEach((value) => {
-          const key = `${value[0]}-${value[1]}`;
-          const label = `${value[0]}: ${value[1]}`;
-
-          data.push({ key, label });
-        });
+        // Object.entries(entryValue).forEach((value) => {
+        //   const key = `${value[0]}-${value[1]}`;
+        //   const label = `${value[0]}: ${value[1]}`;
+        //   data.push({ key, label });
+        // });
       }
     });
 

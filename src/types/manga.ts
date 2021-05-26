@@ -1,5 +1,6 @@
 import { Maybe } from "graphql/jsutils/Maybe";
 import { Order } from "./api";
+import { Author } from "./authors";
 
 export enum MangaStatus {
   ongoing = "ongoing",
@@ -95,6 +96,24 @@ export interface SearchState {
   includedTags: string[];
   includedTagsMode: TagMode[];
   excludedTags: string[];
+  excludedTagsMode: TagMode[];
+  status: MangaStatus[];
+  originalLanguage: string[];
+  publicationDemographic: PublicationDemographic[];
+  createdAtSince: string;
+  updatedAtSince: string;
+  contentRating: ContentRating[];
+  order: Order<"createdAt" | "updatedAt">;
+}
+
+export interface MangaSearchOptions {
+  title: string;
+  artists: Author[];
+  authors: Author[];
+  year: Maybe<number>;
+  includedTags: MangaTag[];
+  includedTagsMode: TagMode[];
+  excludedTags: MangaTag[];
   excludedTagsMode: TagMode[];
   status: MangaStatus[];
   originalLanguage: string[];
