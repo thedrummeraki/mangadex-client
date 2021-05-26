@@ -5,9 +5,13 @@ interface Options {
   chapter?: string | Chapter;
 }
 
-interface CurrentlyReading {
+export interface CurrentlyReading {
   chapterId: string;
   mangaId: string;
+}
+
+export interface ReadingHistory extends CurrentlyReading {
+  page: number;
 }
 
 export function useLocalCurrentlyReading(options?: Options) {
@@ -69,6 +73,7 @@ export function useLocalCurrentlyReading(options?: Options) {
       Boolean(currentlyReading.find((cr) => cr.mangaId === mangaId));
 
     return {
+      storageKey,
       isReading: isReadingChapter || isReadingManga,
       isReadingChapter,
       isReadingManga,
@@ -79,6 +84,7 @@ export function useLocalCurrentlyReading(options?: Options) {
   }
 
   return {
+    storageKey,
     isReading: null,
     isReadingChapter: null,
     isReadingManga: null,
@@ -88,8 +94,8 @@ export function useLocalCurrentlyReading(options?: Options) {
   };
 }
 
-export function savedPage(chapter: Chapter, defaultValue: number = 0) {
-  const savedValue = localStorage.getItem(`chapter-${chapter.id}`);
+export function savedPage(chapterId: string, defaultValue: number = 0) {
+  const savedValue = localStorage.getItem(`chapter-${chapterId}`);
   if (!savedValue) {
     return defaultValue;
   }

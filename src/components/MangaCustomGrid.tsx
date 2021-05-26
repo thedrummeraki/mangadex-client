@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Cover, GenericResponse, Manga } from "types";
 import CustomGrid from "./CustomGrid";
 import { MangaThumbnail } from "./Thumbnails";
@@ -8,6 +8,9 @@ import { notEmpty } from "utils";
 
 interface Props {
   mangasInfo: GenericResponse<Manga>[];
+  overrideFeatures?: (
+    manga: GenericResponse<Manga>
+  ) => Array<string | null | undefined>;
 }
 
 interface CoverMangaMapping {
@@ -15,7 +18,7 @@ interface CoverMangaMapping {
   manga: Manga;
 }
 
-export function MangaCustomGrid({ mangasInfo }: Props) {
+export function MangaCustomGrid({ mangasInfo, overrideFeatures }: Props) {
   const [allCovers, setAllCovers] = useState<GenericResponse<Cover>[]>([]);
   const [coverMangaList, setCoverMangaList] = useState<CoverMangaMapping[]>([]);
 
@@ -39,6 +42,19 @@ export function MangaCustomGrid({ mangasInfo }: Props) {
       limit: 100,
     },
   });
+
+  const getOverrideFeatures = useCallback(
+    (manga: Manga) => {
+      const mangaInfo = mangasInfo.find(
+        (mangaInfo) => mangaInfo.data.id === manga.id
+      );
+
+      return mangaInfo && overrideFeatures
+        ? overrideFeatures(mangaInfo)
+        : undefined;
+    },
+    [mangasInfo, overrideFeatures]
+  );
 
   useEffect(() => {
     const newCovers = data?.covers.results || [];
@@ -70,6 +86,7 @@ export function MangaCustomGrid({ mangasInfo }: Props) {
           key={mangaWithCover.manga.id}
           {...mangaWithCover}
           showContentRating
+          overrideFeatures={getOverrideFeatures(mangaWithCover.manga)}
         />
       ))}
     </CustomGrid>

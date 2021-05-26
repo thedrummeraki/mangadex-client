@@ -344,3 +344,15 @@ export function getFollowUrl(targetUrl: string) {
 export function between(x: number, min: number, max: number) {
   return x >= min && x <= max;
 }
+
+export function saveTextAsFile(string: string, filename: string) {
+  const blob = new Blob([string], { type: "text/plain" });
+  const url = window.URL.createObjectURL(new Blob([blob]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", filename);
+
+  document.body.appendChild(link);
+  link.click();
+  link.parentNode?.removeChild(link);
+}

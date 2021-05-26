@@ -11,7 +11,6 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { useHistory } from "react-router";
 import { useAuth, useLoginModal } from "config/providers/AuthProvider";
 import { noEmptyArray } from "utils";
-import { useLocalCurrentlyReading } from "helpers";
 
 interface BaseDrawerItem {
   icon: ReactNode;
@@ -38,7 +37,6 @@ export default function useDrawerItems() {
   const history = useHistory();
   const { currentUser, loggedIn, logout } = useAuth();
   const { requestLoginModal } = useLoginModal();
-  const { currentlyReading } = useLocalCurrentlyReading();
 
   const top: Array<DrawerItem> = [
     {
@@ -51,7 +49,6 @@ export default function useDrawerItems() {
     {
       content: "Reading history",
       icon: <PlayArrowIcon />,
-      hidden: currentlyReading.length === 0,
       onClick: () => history.push("/continue-reading"),
     },
     {
