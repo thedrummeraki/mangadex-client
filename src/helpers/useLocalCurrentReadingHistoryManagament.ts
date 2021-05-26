@@ -26,7 +26,7 @@ export default function useLocalCurrentReadingHistoryManagament() {
       }
       contentToSave.forEach((rh) => {
         if (rh.page) {
-          localStorage.setItem(`chapter-${rh.chapterId}`, String(rh.page - 1));
+          localStorage.setItem(`chapter-${rh.chapterId}`, String(rh.page));
         }
       });
 
@@ -51,6 +51,11 @@ async function importFromString(string: string, password?: string) {
 
 function clearHistory(storageKey: string) {
   localStorage.removeItem(storageKey);
+  Object.entries(localStorage)
+    .filter((entry) => entry[0].startsWith("chapter-"))
+    .forEach((entry) => {
+      localStorage.removeItem(entry[0]);
+    });
 }
 
 function parse(value: string | null) {

@@ -2,6 +2,7 @@ import {
   Button,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   FormLabel,
   makeStyles,
   OutlinedInput,
@@ -13,7 +14,7 @@ import { FileButton } from "components/FileButton";
 import BasicModal from "components/modals/BasicModal";
 import { ReadingHistory } from "helpers/useCurrentlyReading";
 import useLocalCurrentReadingHistoryManagament from "helpers/useLocalCurrentReadingHistoryManagament";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PreviewReadingHistoryImport } from "./PreviewReadingHistoryImport";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,6 +44,7 @@ export default function ImportReadingHistoryPage() {
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [passwordRequired, setPasswordRequired] =
     useState<"true" | "false">("false");
+  const [importError, setImportError] = useState(false);
   const [password, setPassword] = useState("");
 
   const { importHistory } = useLocalCurrentReadingHistoryManagament();
@@ -56,6 +58,10 @@ export default function ImportReadingHistoryPage() {
     setErrorModalOpen(false);
     setErrorReason("");
   };
+
+  useEffect(() => {
+    setImportError(false);
+  }, [passwordRequired]);
 
   return importedReadingHistory == null ? (
     <Page backUrl="/continue-reading" title="Import your reading history...">
@@ -125,7 +131,7 @@ export default function ImportReadingHistoryPage() {
             className={classes.passwordModalRoot}
           >
             {passwordRequired === "true" && (
-              <FormControl>
+              <FormControl error={importError}>
                 <OutlinedInput
                   id="optional-password"
                   type="password"
@@ -133,6 +139,11 @@ export default function ImportReadingHistoryPage() {
                   placeholder="Password (optional)"
                   onChange={(event) => setPassword(event.target.value)}
                 />
+                {importError && (
+                  <FormHelperText>
+                    The password may not be valid.
+                  </FormHelperText>
+                )}
               </FormControl>
             )}
             <FormControl>
@@ -141,6 +152,7 @@ export default function ImportReadingHistoryPage() {
                 variant="contained"
                 color="primary"
                 onClick={() => {
+                  setImportError(false);
                   importHistory(encryptedHistory, password)
                     .then((readingHistory) => {
                       setPasswordModalOpen(false);
@@ -148,8 +160,9 @@ export default function ImportReadingHistoryPage() {
                       setEncryptedHistory("");
                       setImportantReadingHistory(readingHistory);
                     })
-                    .catch((e) => {
-                      console.error("That import did not work. Try again!", e);
+                    .catch(() => {
+                      setPasswordRequired("true");
+                      setImportError(true);
                     })
                     .finally(() => setPassword(""));
                 }}
