@@ -4,8 +4,6 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { CustomAppBar } from "./CustomAppBar";
-import Body from "./Body";
 import NavigationDrawer from "./NavigationDrawer";
 
 export function WithLayoutProvider({ children }: PropsWithChildren<{}>) {
@@ -13,10 +11,7 @@ export function WithLayoutProvider({ children }: PropsWithChildren<{}>) {
 
   return (
     <NavigationBarContext.Provider value={{ visible, setVisible }}>
-      <NavigationDrawer>
-        <CustomAppBar />
-        <Body>{children}</Body>
-      </NavigationDrawer>
+      <NavigationDrawer>{children}</NavigationDrawer>
     </NavigationBarContext.Provider>
   );
 }

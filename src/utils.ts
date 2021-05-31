@@ -2,7 +2,7 @@ import { useTheme } from "@material-ui/core";
 import { BreakpointValues } from "@material-ui/core/styles/createBreakpoints";
 import { useCallback, useEffect, useState } from "react";
 import { DateTime } from "luxon";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 
 export const noop = () => {};
 
@@ -294,25 +294,30 @@ export function filterObject(object: object) {
 
 export function useCustomHistory() {
   const history = useHistory();
+  const location = useLocation();
 
   const pushToHistory = useCallback(
-    (object: object) => {
-      const pairs: string[][] = [];
+    (object: object, append: boolean = false) => {
+      const pairs: string[][] = append
+        ? Object.entries(
+            Object.fromEntries(new URLSearchParams(location.search))
+          )
+        : [];
       Object.entries(object).forEach((pair) => {
         const key = pair[0];
         const value = pair[1];
 
         if (Array.isArray(value) && value.length > 0) {
           pairs.push([key, value.map((v) => encodeURIComponent(v)).join(",")]);
-        } else if (typeof value === "string") {
-          pairs.push([key, encodeURIComponent(value)]);
+        } else if (["string", "number", "boolean"].includes(typeof value)) {
+          pairs.push([key, encodeURIComponent(String(value))]);
         }
       });
 
       const newParams = new URLSearchParams(pairs).toString();
       history.replace({ search: `?${newParams}` });
     },
-    [history]
+    [history, location.search]
   );
 
   return { ...history, pushToHistory };

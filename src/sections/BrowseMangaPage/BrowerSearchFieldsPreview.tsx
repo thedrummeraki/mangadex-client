@@ -1,4 +1,4 @@
-import { Chip, Paper } from "@material-ui/core";
+import { Chip } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useEffect, useState } from "react";
 import { SearchState } from "types";
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: "wrap",
       listStyle: "none",
       padding: theme.spacing(0.5),
-      margin: theme.spacing(2, 0),
+      margin: theme.spacing(1, -1, 0),
     },
     chip: {
       margin: theme.spacing(0.5),
@@ -53,7 +53,7 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
 
   useEffect(() => {
     const filteredOptions = filterObject(searchOptions);
-    pushToHistory(filteredOptions);
+    // pushToHistory(filteredOptions);
 
     const data: ChipData[] = [];
     Object.entries(filteredOptions).forEach((entry) => {
@@ -82,7 +82,7 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
   }, [searchOptions, pushToHistory]);
 
   return chipData.length > 0 ? (
-    <Paper component="ul" className={classes.root}>
+    <ul className={classes.root}>
       {chipData.map((data) => (
         <li key={data.key}>
           <Chip
@@ -92,6 +92,6 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
           />
         </li>
       ))}
-    </Paper>
+    </ul>
   ) : null;
 }

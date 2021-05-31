@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     maxHeight: "100%",
     width: "100%",
-    marginTop: theme.spacing(4),
     objectFit: "cover",
 
     [theme.breakpoints.down("sm")]: {

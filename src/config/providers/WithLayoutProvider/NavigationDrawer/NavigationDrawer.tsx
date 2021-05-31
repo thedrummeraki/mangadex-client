@@ -56,6 +56,9 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       padding: theme.spacing(3),
     },
+    versionLink: {
+      color: theme.palette.text.hint,
+    },
   })
 );
 
@@ -87,13 +90,18 @@ export default function NavigationDrawer(props: PropsWithChildren<Props>) {
       <div className={classes.toolbar}>
         <div className={classes.toolbarContainer}>
           <Link to="/" variant="h6">
-            Mangadex client
+            <strong>Unofficial</strong> MangaDex
           </Link>
-          {version && (
-            <Typography variant="subtitle1">
-              Based on <strong>v{version}</strong>
-            </Typography>
-          )}
+
+          <Typography variant="subtitle1">
+            <Link
+              external
+              to="https://api.mangadex.org"
+              className={classes.versionLink}
+            >
+              MangaDex {version && <strong>v{version}</strong>}
+            </Link>
+          </Typography>
           {currentUser && (
             <Typography variant="subtitle2">
               Logged in as: <em>{currentUser.attributes.username}</em>

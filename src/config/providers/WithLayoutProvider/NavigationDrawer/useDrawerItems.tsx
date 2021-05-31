@@ -60,6 +60,7 @@ export default function useDrawerItems() {
     {
       content: "Browse all manga",
       icon: <MenuBookIcon />,
+      hidden: true,
       onClick: () => history.push("/browse-manga"),
     },
     {

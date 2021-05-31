@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useHistory } from "react-router";
-import { useQueryParam } from "utils";
+import { useCustomHistory, useQueryParam } from "utils";
 
 interface Options {
   firstPage?: number;
@@ -18,7 +17,7 @@ export default function usePagination(
     pushPageInfoToHistory: true,
   }
 ) {
-  const history = useHistory();
+  const { pushToHistory } = useCustomHistory();
   const requestedFirstPage = parseInt(useQueryParam("page"));
   const firstPage = useMemo(() => {
     if (String(requestedFirstPage) !== "NaN") {
@@ -32,7 +31,10 @@ export default function usePagination(
     [options]
   );
   const pushPageInfoToHistory = useMemo(
-    () => options.pushPageInfoToHistory || true,
+    () =>
+      options.pushPageInfoToHistory != null
+        ? options.pushPageInfoToHistory
+        : true,
     [options]
   );
 
@@ -52,9 +54,9 @@ export default function usePagination(
 
   useEffect(() => {
     if (pushPageInfoToHistory) {
-      history.replace({ search: `?page=${page}` });
+      pushToHistory({ page }, true);
     }
-  }, [pushPageInfoToHistory, history, page]);
+  }, [pushPageInfoToHistory, pushToHistory, page]);
 
   return {
     pageSize,

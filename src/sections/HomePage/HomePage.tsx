@@ -4,8 +4,10 @@ import { Page } from "components";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { useAuth } from "config/providers";
 import { useSearchMangaList } from "helpers";
+import useBrowseSearchFields from "helpers/useBrowseSearchFields";
 import usePagination from "helpers/usePagination";
 import { useEffect, useMemo } from "react";
+import { BrowseSearchFields } from "sections/BrowseMangaPage/BrowseSearchFields";
 import { useQueryParam } from "utils";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,10 +27,12 @@ export function HomePage() {
     pageSize: 100,
     firstPage: firstPage ? parseInt(firstPage) : 1,
   });
-  const { mangaList, data, loading, error, searchManga } = useSearchMangaList({
+  const { mangaList, loading, error, searchManga } = useSearchMangaList({
     limit,
     offset,
   });
+  const { searchState, setSearchState, debouncedSearchState } =
+    useBrowseSearchFields();
 
   const pagesCount = useMemo(
     () => getPagesCount(mangaList.total),
@@ -36,25 +40,27 @@ export function HomePage() {
   );
 
   useEffect(() => {
-    searchManga({});
-  }, [searchManga, offset]);
+    searchManga(debouncedSearchState);
+  }, [searchManga, debouncedSearchState]);
 
   if (error) {
     return <p>error</p>;
   }
 
-  if (loading || !data) {
-    return null;
-  }
-
   return (
     <Page
       title={
-        currentUser
+        loading
+          ? "Please wait..."
+          : currentUser
           ? `Welcome, ${currentUser.attributes.username}.`
           : `Hottest manga`
       }
     >
+      <BrowseSearchFields
+        searchOptions={searchState}
+        onChange={setSearchState}
+      />
       <MangaCustomGrid mangasInfo={mangaList.results || []} />
       {pagesCount > 1 && (
         <div className={classes.paginationRoot}>

@@ -5,7 +5,6 @@ import { useAuth } from "config/providers";
 import { useLocalCurrentlyReading, useSearchMangaList } from "helpers";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { notEmpty } from "utils";
-import { ContinueReadingPage } from "./ContinueReadingPage";
 
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import ImportIcon from "@material-ui/icons/CloudUpload";
@@ -14,6 +13,10 @@ import { ExportModal } from "./ExportModal";
 import { useHistory } from "react-router";
 import BasicModal from "components/modals/BasicModal";
 import useLocalCurrentReadingHistoryManagament from "helpers/useLocalCurrentReadingHistoryManagament";
+import { MangaCustomGrid } from "components/MangaCustomGrid";
+import { ContentRating } from "types";
+import useBrowseSearchFields from "helpers/useBrowseSearchFields";
+import { BrowseSearchFields } from "sections/BrowseMangaPage/BrowseSearchFields";
 
 const useStyles = makeStyles((theme) => ({
   formRoot: {
@@ -28,12 +31,17 @@ export default function ContinueReadingPageContainer() {
   const classes = useStyles();
   const history = useHistory();
   const { currentlyReading } = useLocalCurrentlyReading();
-  const mangaIds = Array.from(
-    new Set(currentlyReading.map((cr) => cr.mangaId))
+  const mangaIds = useMemo(
+    () => Array.from(new Set(currentlyReading.map((cr) => cr.mangaId))),
+    [currentlyReading]
   );
   const [warning, setWarning] = useState(showWarning());
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { searchState, setSearchState, debouncedSearchState } =
+    useBrowseSearchFields({
+      searchState: { contentRating: Object.values(ContentRating) },
+    });
 
   const { currentUser } = useAuth();
 
@@ -53,23 +61,26 @@ export default function ContinueReadingPageContainer() {
   }, [mangaList, mangaIds]);
 
   useEffect(() => {
+    initialized.current = false;
+  }, [debouncedSearchState]);
+
+  useEffect(() => {
     if (initialized.current || loading) {
       return;
     }
 
-    searchManga({ ids: mangaIds });
+    searchManga({
+      ...debouncedSearchState,
+      ids: mangaIds,
+    });
     initialized.current = true;
-  }, [searchManga, loading, mangaIds]);
+  }, [searchManga, debouncedSearchState, loading, mangaIds]);
 
   useEffect(() => {
     if (showWarning() && !warning) {
       hideWarningNow();
     }
   }, [warning]);
-
-  if (loading) {
-    return <Page backUrl="/" title="Loading" />;
-  }
 
   if (error || mangaList.results == null) {
     return (
@@ -126,7 +137,11 @@ export default function ContinueReadingPageContainer() {
           . This is <strong>not</strong> tied to your MangaDex account.
         </Alert>
       )}
-      <ContinueReadingPage mangas={sortedMangaList} />
+      <BrowseSearchFields
+        searchOptions={searchState}
+        onChange={setSearchState}
+      />
+      <MangaCustomGrid mangasInfo={sortedMangaList} />
       <BasicModal
         title="Delete reading history?"
         open={deleteModalOpen}

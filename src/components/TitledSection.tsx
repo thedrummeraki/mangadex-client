@@ -28,7 +28,6 @@ type Props = TitledSectionProps & {
 
 const useStyles = makeStyles((theme) => ({
   titledSection: {
-    marginTop: theme.spacing(4),
     marginBottom: theme.spacing(3),
     width: "100%",
   },

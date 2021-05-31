@@ -182,7 +182,6 @@ export function ChaptersList({
       <TitledSection
         title={`Chapters list (${data?.chapters.total})`}
         primaryAction={primaryAction}
-        tagsDescription="Filter by language"
         tags={existingLocales.map((locale) => ({
           content: localeName(locale),
           onClick: () => {

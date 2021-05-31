@@ -20,6 +20,7 @@ import GetCoversForManga from "./queries/GetCoversForManga";
 import FaceIcon from "@material-ui/icons/Face";
 import BrushIcon from "@material-ui/icons/Brush";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
+import { getFollowUrl } from "utils";
 
 interface Props {
   mangaInfo: GenericResponse<Manga>;
@@ -55,7 +56,8 @@ export function ViewManga({ mangaInfo }: Props) {
         result.push({
           content: author.data.attributes.name,
           icon: <FaceIcon />,
-          onClick: () => history.push(`/by-author/${author.data.id}`),
+          onClick: () =>
+            history.push(getFollowUrl(`/by-author/${author.data.id}`)),
         });
       });
     }
@@ -64,7 +66,8 @@ export function ViewManga({ mangaInfo }: Props) {
         result.push({
           content: artist.data.attributes.name,
           icon: <BrushIcon />,
-          onClick: () => history.push(`/by-author/${artist.data.id}`),
+          onClick: () =>
+            history.push(getFollowUrl(`/by-author/${artist.data.id}`)),
         });
       });
     }
@@ -107,8 +110,6 @@ export function ViewManga({ mangaInfo }: Props) {
       });
     }
   }, [authorsLoading, authorsError, authorsAndArtists, authorIds, artistIds]);
-
-  useEffect(() => {}, [authorsState]);
 
   const { volumesCount } = useAggregate(mangaInfo.data);
   const volumes = useMemo(
