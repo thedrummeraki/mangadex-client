@@ -6,6 +6,10 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router";
 import { useQueryParam } from "utils";
 import { useDocumentTitle } from "./DocumentTitle";
+import {
+  BrowseSearchFieldsProps,
+  BrowseSearchFields,
+} from "sections/BrowseMangaPage/BrowseSearchFields";
 
 interface Props {
   backUrl?: string;
@@ -18,17 +22,21 @@ interface Props {
   };
 }
 
-type PageProps = Props & TitledSectionProps;
+type PageProps = Props &
+  TitledSectionProps & { searchFields?: BrowseSearchFieldsProps };
 
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(2),
   },
   showcaseImg: {
+    ...theme.custom.withPrettyBoxShadow,
     display: "block",
     maxHeight: "100%",
     width: "100%",
     objectFit: "cover",
+    borderRadius: 10,
+    transition: "all .7s ease-in-out;",
 
     [theme.breakpoints.down("sm")]: {
       height: "25vh",
@@ -48,6 +56,7 @@ export function Page({
   showcase,
   children,
   primaryAction,
+  searchFields,
 }: PropsWithChildren<PageProps>) {
   const classes = useStyles();
   const history = useHistory();
@@ -78,9 +87,14 @@ export function Page({
     title
   );
 
+  const searchFieldsMarkup = searchFields && (
+    <BrowseSearchFields {...searchFields} />
+  );
+
   if (showcase) {
     return (
       <Container maxWidth={maxWitdh}>
+        {searchFieldsMarkup}
         <Grid container spacing={4}>
           <Grid item xs={12} md={3}>
             {imageMarkup}
@@ -108,6 +122,7 @@ export function Page({
 
   return (
     <Container maxWidth={maxWitdh}>
+      {searchFieldsMarkup}
       <TitledSection
         variant="h5"
         title={titleMarkup}

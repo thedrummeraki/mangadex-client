@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCustomHistory, useQueryParam } from "utils";
 
 interface Options {
   firstPage?: number;
   pageSize?: number;
   pushPageInfoToHistory?: boolean;
+  scrollToTopOnPageChange?: boolean;
 }
 
 const DEFAULT_PAGE_SIZE = 50;
@@ -15,9 +16,11 @@ export default function usePagination(
     firstPage: DEFAULT_FIRST_PAGE,
     pageSize: DEFAULT_PAGE_SIZE,
     pushPageInfoToHistory: true,
+    scrollToTopOnPageChange: false,
   }
 ) {
   const { pushToHistory } = useCustomHistory();
+  const pageInitialized = useRef(false);
   const requestedFirstPage = parseInt(useQueryParam("page"));
   const firstPage = useMemo(() => {
     if (String(requestedFirstPage) !== "NaN") {
@@ -57,6 +60,13 @@ export default function usePagination(
       pushToHistory({ page }, true);
     }
   }, [pushPageInfoToHistory, pushToHistory, page]);
+
+  useEffect(() => {
+    if (pageInitialized.current && options.scrollToTopOnPageChange) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    pageInitialized.current = true;
+  }, [page]);
 
   return {
     pageSize,

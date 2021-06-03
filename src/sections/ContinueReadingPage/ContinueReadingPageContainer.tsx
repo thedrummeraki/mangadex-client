@@ -114,7 +114,11 @@ export default function ContinueReadingPageContainer() {
   }
 
   return (
-    <Page title="Reading history" tags={tags}>
+    <Page
+      title="Reading history"
+      tags={tags}
+      searchFields={{ searchOptions: searchState, onChange: setSearchState }}
+    >
       {warning && (
         <Alert
           color="warning"
@@ -137,10 +141,6 @@ export default function ContinueReadingPageContainer() {
           . This is <strong>not</strong> tied to your MangaDex account.
         </Alert>
       )}
-      <BrowseSearchFields
-        searchOptions={searchState}
-        onChange={setSearchState}
-      />
       <MangaCustomGrid mangasInfo={sortedMangaList} />
       <BasicModal
         title="Delete reading history?"

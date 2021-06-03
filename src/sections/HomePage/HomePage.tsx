@@ -1,14 +1,17 @@
 import { makeStyles } from "@material-ui/core";
 import { Pagination } from "@material-ui/lab";
-import { Page } from "components";
+import { CustomGrid, Page } from "components";
+import { MangaCategory } from "components/MangaCategory";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
+import { ThumbnailSkeleton } from "components/Thumbnail/ThumbnailSkeleton";
 import { useAuth } from "config/providers";
 import { useSearchMangaList } from "helpers";
 import useBrowseSearchFields from "helpers/useBrowseSearchFields";
 import usePagination from "helpers/usePagination";
 import { useEffect, useMemo } from "react";
 import { BrowseSearchFields } from "sections/BrowseMangaPage/BrowseSearchFields";
-import { useQueryParam } from "utils";
+import { ContentRating, MangaStatus, PublicationDemographic } from "types";
+import { repeat, useQueryParam } from "utils";
 
 const useStyles = makeStyles((theme) => ({
   paginationRoot: {
@@ -26,6 +29,7 @@ export function HomePage() {
   const { limit, offset, page, setPage, getPagesCount } = usePagination({
     pageSize: 100,
     firstPage: firstPage ? parseInt(firstPage) : 1,
+    scrollToTopOnPageChange: true,
   });
   const { mangaList, loading, error, searchManga } = useSearchMangaList({
     limit,
@@ -50,28 +54,30 @@ export function HomePage() {
   return (
     <Page
       title={
-        loading
-          ? "Please wait..."
-          : currentUser
+        currentUser
           ? `Welcome, ${currentUser.attributes.username}.`
           : `Hottest manga`
       }
     >
-      <BrowseSearchFields
-        searchOptions={searchState}
-        onChange={setSearchState}
+      <MangaCategory
+        title="Top ongoing manga"
+        url="/top/ongoing"
+        searchOptions={{ status: [MangaStatus.ongoing] }}
       />
-      <MangaCustomGrid mangasInfo={mangaList.results || []} />
-      {pagesCount > 1 && (
-        <div className={classes.paginationRoot}>
-          <Pagination
-            disabled={loading}
-            count={pagesCount}
-            page={page}
-            onChange={(_, number) => setPage(number)}
-          />
-        </div>
-      )}
+
+      <MangaCategory
+        title="Top complete manga"
+        url="/top/complete"
+        searchOptions={{ status: [MangaStatus.completed] }}
+      />
+
+      <MangaCategory
+        title="Top shounen manga"
+        url="/top/shounen"
+        searchOptions={{
+          publicationDemographic: [PublicationDemographic.shonen],
+        }}
+      />
     </Page>
   );
 }

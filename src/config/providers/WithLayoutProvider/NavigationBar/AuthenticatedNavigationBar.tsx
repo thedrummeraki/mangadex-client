@@ -19,6 +19,10 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import MailIcon from "@material-ui/icons/Mail";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
+import { useAuth } from "config/providers/AuthProvider";
+import HomeIcon from "@material-ui/icons/Home";
+import useAPIVersion from "helpers/useAPIVersion";
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -87,12 +91,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function AuthenticatedNavigationBar() {
+  const { version } = useAPIVersion();
   const classes = useStyles();
+  const history = useHistory();
+  const { logout } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [
-    mobileMoreAnchorEl,
-    setMobileMoreAnchorEl,
-  ] = React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+    React.useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -125,8 +130,16 @@ export default function AuthenticatedNavigationBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      {/* <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>My account</MenuItem> */}
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          logout();
+        }}
+      >
+        Logout
+      </MenuItem>
     </Menu>
   );
 
@@ -180,28 +193,16 @@ export default function AuthenticatedNavigationBar() {
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
+            onClick={() => history.push("/")}
           >
-            <MenuIcon />
+            <HomeIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            Mangadex Client {version && <small>v{version}</small>}
           </Typography>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ "aria-label": "search" }}
-            />
-          </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton aria-label="show 4 new mails" color="inherit">
+            {/* <IconButton aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="secondary">
                 <MailIcon />
               </Badge>
@@ -210,7 +211,7 @@ export default function AuthenticatedNavigationBar() {
               <Badge badgeContent={17} color="secondary">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
               edge="end"
               aria-label="account of current user"

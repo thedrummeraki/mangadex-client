@@ -3,7 +3,9 @@ import { PropsWithChildren } from "react";
 import { useNavigationBarVisible } from "./WithLayoutProvider";
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {
+    marginTop: theme.spacing(6),
+  },
 }));
 
 export default function Body({ children }: PropsWithChildren<{}>) {

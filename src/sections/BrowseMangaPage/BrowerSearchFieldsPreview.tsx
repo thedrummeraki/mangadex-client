@@ -1,11 +1,12 @@
 import { Chip } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useEffect, useState } from "react";
-import { SearchState } from "types";
+import { MangaSearchOptions, MangaTag } from "types";
 import { filterObject, useCustomHistory } from "utils";
 
 interface Props {
-  searchOptions: SearchState;
+  searchOptions: Partial<MangaSearchOptions>;
+  tags: MangaTag[];
 }
 
 interface ChipData {
@@ -14,7 +15,7 @@ interface ChipData {
 }
 
 interface ChipDescription {
-  key: keyof SearchState;
+  key: keyof MangaSearchOptions;
   description: string;
 }
 
@@ -22,6 +23,7 @@ const chipDescriptionMap: ChipDescription[] = [
   { key: "title", description: "Title contains" },
   { key: "contentRating", description: "Rating" },
   { key: "status", description: "Status" },
+  { key: "includedTags", description: "Tag" },
 ];
 
 const getChipLabel = (key: string, entryValue: string) => {
@@ -46,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
+export function BrowseSearchFieldsPreview({ searchOptions, tags }: Props) {
   const classes = useStyles();
   const { pushToHistory } = useCustomHistory();
   const [chipData, setChipData] = useState<ChipData[]>([]);
@@ -64,8 +66,14 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
         // entryValue.forEach((value) => {
         //   data.push({ key: `${key}-${value}`, label: value });
         // });
-        const finalEntryValue = entryValue.join(", ");
-        data.push({ key, label: getChipLabel(key, finalEntryValue) });
+        entryValue.forEach((value) => {
+          if (key === "includedTags" || key === "excludedTags") {
+            const tagName = (value as MangaTag).attributes.name.en;
+            data.push({ key, label: getChipLabel(key, tagName) });
+          } else {
+            data.push({ key, label: getChipLabel(key, String(value)) });
+          }
+        });
       } else if (typeof entryValue === "string") {
         data.push({ key, label: getChipLabel(key, entryValue) });
       } else if (typeof entryValue === "object") {
@@ -79,7 +87,7 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
     });
 
     setChipData(data.reverse());
-  }, [searchOptions, pushToHistory]);
+  }, [searchOptions, pushToHistory, tags]);
 
   return chipData.length > 0 ? (
     <ul className={classes.root}>
@@ -87,6 +95,7 @@ export function BrowseSearchFieldsPreview({ searchOptions }: Props) {
         <li key={data.key}>
           <Chip
             label={data.label}
+            size="small"
             // onDelete={data.label === 'React' ? undefined : handleDelete(data)}
             className={classes.chip}
           />

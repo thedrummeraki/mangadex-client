@@ -1,5 +1,6 @@
+import { Popover, Typography, useTheme } from "@material-ui/core";
 import clsx from "clsx";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { ThumbnailFeatures } from "./ThumbnailFeatures";
 import { ThumbnailIcons } from "./ThumbnailIcons";
 import { ThumbnailImage } from "./ThumbnailImage";
@@ -20,8 +21,10 @@ function Thumbnail({
   onClick,
 }: ThumbnailProps) {
   const classes = useThumbnailStyles();
+  const theme = useTheme();
   const hasTitle = Boolean(title);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState(false);
 
   if (raw) {
     return (
@@ -39,6 +42,8 @@ function Thumbnail({
         [classes.thumbnail]: hasTitle && clickable,
       })}
       style={{ position: "relative" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <ThumbnailWrapper
         title={title}
@@ -46,7 +51,14 @@ function Thumbnail({
         url={url}
         onClick={onClick}
       >
-        <div style={{ position: "relative" }}>
+        <div
+          style={{
+            ...theme.custom.withPrettyBoxShadow,
+            position: "relative",
+            borderRadius: 5,
+            overflow: "hidden",
+          }}
+        >
           <div className={classes.holder}>
             <div ref={overlayRef} className={classes.overlay} />
           </div>
@@ -62,7 +74,14 @@ function Thumbnail({
             <ThumbnailIcons icons={icons} />
           </div>
         </div>
-        {hasTitle && <span className={classes.title}>{title}</span>}
+        {hasTitle && (
+          <small
+            style={{ color: hovered ? "black" : undefined }}
+            className={classes.title}
+          >
+            {title}
+          </small>
+        )}
       </ThumbnailWrapper>
     </div>
   );

@@ -6,12 +6,24 @@ interface Props {
   tight?: boolean;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "grid",
     gap: "28px 30px",
     gridTemplateColumns: "repeat(auto-fill, 185px)",
     justifyContent: "space-between",
+
+    [theme.breakpoints.down(1540)]: {
+      gap: "25px 20px",
+    },
+    [theme.breakpoints.down(1065)]: {
+      gap: "25px 14px",
+    },
+    [theme.breakpoints.down(1040)]: {
+      padding: "0 20px",
+      gridTemplateColumns: "repeat(auto-fill, minmax(125px, 1fr))",
+      justifyContent: "center",
+    },
   },
   tight: {
     gap: "10px 0",

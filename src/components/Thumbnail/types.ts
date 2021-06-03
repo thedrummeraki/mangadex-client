@@ -10,6 +10,7 @@ interface BaseProps {
   url?: string | null;
   features?: Array<string | null | undefined>;
   icons?: AllowedIcons[];
+  popoverContents?: ReactNode;
   onClick?: VoidFunction;
 }
 

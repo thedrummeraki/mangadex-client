@@ -18,30 +18,24 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <Switch>
-        <WithLayoutProvider>
-          <AuthenticatedRoute exact path="/custom-lists">
-            <CustomListPage />
-          </AuthenticatedRoute>
-          <AuthenticatedRoute exact path="/feed">
-            <FollowsListPage />
-          </AuthenticatedRoute>
+        <AuthenticatedRoute exact path="/custom-lists">
+          <CustomListPage />
+        </AuthenticatedRoute>
+        <AuthenticatedRoute exact path="/feed">
+          <FollowsListPage />
+        </AuthenticatedRoute>
 
-          <Route exact path="/" component={HomePage} />
-          <Route exact path="/manga/:id" component={ViewManga} />
-          <Route exact path="/manga/read/:id" component={ReadChapterPage} />
-          <Route exact path="/browse-manga" component={BrowseMangaPage} />
-          <Route
-            exact
-            path="/continue-reading"
-            component={ContinueReadingPage}
-          />
-          <Route
-            exact
-            path="/continue-reading/import"
-            component={ImportReadingHistoryPage}
-          />
-          <Route exact path="/by-author/:id" component={ByAuthorPage} />
-        </WithLayoutProvider>
+        <Route exact path="/" component={HomePage} />
+        <Route exact path="/manga/:id" component={ViewManga} />
+        <Route exact path="/browse-manga" component={BrowseMangaPage} />
+        <Route exact path="/continue-reading" component={ContinueReadingPage} />
+        <Route
+          exact
+          path="/continue-reading/import"
+          component={ImportReadingHistoryPage}
+        />
+        <Route exact path="/by-author/:id" component={ByAuthorPage} />
+        <Route exact path="/manga/read/:id" component={ReadChapterPage} />
       </Switch>
     </BrowserRouter>
   );

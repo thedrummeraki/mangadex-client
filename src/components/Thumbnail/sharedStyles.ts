@@ -20,6 +20,7 @@ export const sharedStyles = (theme: Theme) =>
     title: {
       marginTop: theme.spacing(1.5),
       color: theme.palette.text.secondary,
+      fontWeight: "bold",
       width: 185,
       overflow: "hidden",
       textOverflow: "ellipsis",
@@ -30,5 +31,9 @@ export const sharedStyles = (theme: Theme) =>
       // [theme.breakpoints.up("xl")]: {
       //   width: 250,
       // },
+
+      "&:hover": {
+        color: "black",
+      },
     },
   });

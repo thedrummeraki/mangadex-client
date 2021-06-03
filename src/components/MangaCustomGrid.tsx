@@ -4,7 +4,9 @@ import CustomGrid from "./CustomGrid";
 import { MangaThumbnail } from "./Thumbnails";
 import GetCoversForManga from "sections/ViewManga/queries/GetCoversForManga";
 import { useQuery } from "@apollo/client";
-import { notEmpty } from "utils";
+import { notEmpty, repeat } from "utils";
+import { ThumbnailSkeleton } from "./Thumbnail/ThumbnailSkeleton";
+import { mangaTitle } from "helpers";
 
 interface Props {
   mangasInfo: GenericResponse<Manga>[];
@@ -36,7 +38,7 @@ export function MangaCustomGrid({ mangasInfo, overrideFeatures }: Props) {
     [mangasInfo]
   );
 
-  const { data } = useQuery(GetCoversForManga, {
+  const { data, loading } = useQuery(GetCoversForManga, {
     variables: {
       ids: coverIdsInfo.map((idInfo) => idInfo.id).slice(-100),
       limit: 100,
@@ -78,6 +80,19 @@ export function MangaCustomGrid({ mangasInfo, overrideFeatures }: Props) {
       setCoverMangaList(mappings);
     }
   }, [allCovers, coverIdsInfo, mangasInfo]);
+
+  if (loading) {
+    return (
+      <CustomGrid>
+        {mangasInfo.map((mangaInfo) => (
+          <ThumbnailSkeleton
+            key={`${mangaInfo.data.id}-skeleton`}
+            title={mangaTitle(mangaInfo.data)}
+          />
+        ))}
+      </CustomGrid>
+    );
+  }
 
   return (
     <CustomGrid>

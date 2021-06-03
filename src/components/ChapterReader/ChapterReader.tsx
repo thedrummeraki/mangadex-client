@@ -99,7 +99,7 @@ export function ChapterReader({
         onClickRight={handleRightClick}
         onLoaded={() => setLoaded(true)}
       />
-      <Slider
+      {/* <Slider
         marks
         value={sliderValue - 1}
         onChangeCommitted={(_, value) => {
@@ -113,7 +113,7 @@ export function ChapterReader({
         max={-1}
         scale={(x) => -x}
         track="inverted"
-      />
+      /> */}
     </>
   );
 }

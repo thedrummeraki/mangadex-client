@@ -1,6 +1,11 @@
-import { Grid, Paper } from "@material-ui/core";
-import { useCallback } from "react";
-import { SearchState } from "types";
+import { Grid } from "@material-ui/core";
+import { useCallback, useEffect, useState } from "react";
+import {
+  GenericResponse,
+  MangaSearchOptions,
+  MangaTag,
+  SearchState,
+} from "types";
 import {
   ContentRatingField,
   TitleField,
@@ -8,13 +13,19 @@ import {
   PublicationDemographicField,
 } from "./components";
 import { BrowseSearchFieldsPreview } from "./BrowerSearchFieldsPreview";
+import TagsField from "./components/TagsField/TagsField";
+import useTags from "helpers/useTags";
 
-interface Props {
+export interface BrowseSearchFieldsProps {
   searchOptions: SearchState;
   onChange: (options: SearchState) => void;
 }
 
-export function BrowseSearchFields({ searchOptions, onChange }: Props) {
+export function BrowseSearchFields({
+  searchOptions,
+  onChange,
+}: BrowseSearchFieldsProps) {
+  const { tags } = useTags();
   const updateSearchOptions = useCallback(
     (record: Partial<SearchState>) => {
       onChange({ ...searchOptions, ...record });
@@ -22,16 +33,33 @@ export function BrowseSearchFields({ searchOptions, onChange }: Props) {
     [searchOptions, onChange]
   );
 
+  const [includedTags, setIncludedTags] = useState<GenericResponse<MangaTag>[]>(
+    []
+  );
+
+  useEffect(() => {
+    updateSearchOptions({
+      includedTags: includedTags.map((tag) => tag.data.id),
+    });
+  }, [includedTags]);
+
   return (
-    <Paper style={{ padding: 8, marginBottom: 24, marginTop: -16 }}>
+    <div
+      style={{
+        paddingTop: 8,
+        paddingBottom: 8,
+        marginBottom: 24,
+        marginTop: -16,
+      }}
+    >
       <Grid container spacing={1}>
-        <Grid item xs={12} md={12} lg={3}>
+        <Grid item xs={12} md style={{ maxWidth: "20%" }}>
           <TitleField
             value={searchOptions.title}
             onChange={(title) => updateSearchOptions({ title })}
           />
         </Grid>
-        <Grid item xs={12} md={4} lg={3}>
+        <Grid item xs={12} md style={{ maxWidth: "20%" }}>
           <ContentRatingField
             value={searchOptions.contentRating}
             onChange={(newContentRatings) =>
@@ -39,13 +67,13 @@ export function BrowseSearchFields({ searchOptions, onChange }: Props) {
             }
           />
         </Grid>
-        <Grid item xs={12} md={4} lg={3}>
+        <Grid item xs={12} md style={{ maxWidth: "20%" }}>
           <StatusField
             value={searchOptions.status}
             onChange={(status) => updateSearchOptions({ status })}
           />
         </Grid>
-        <Grid item xs={12} md={4} lg={3}>
+        <Grid item xs={12} md style={{ maxWidth: "20%" }}>
           <PublicationDemographicField
             value={searchOptions.publicationDemographic}
             onChange={(publicationDemographic) =>
@@ -53,8 +81,35 @@ export function BrowseSearchFields({ searchOptions, onChange }: Props) {
             }
           />
         </Grid>
+        <Grid item xs={12} md style={{ maxWidth: "20%" }}>
+          <TagsField
+            value={includedTags}
+            onChange={setIncludedTags}
+            tags={tags}
+          />
+        </Grid>
       </Grid>
-      <BrowseSearchFieldsPreview searchOptions={searchOptions} />
-    </Paper>
+      <BrowseSearchFieldsPreview
+        searchOptions={toPreviewableSearchState(
+          searchOptions,
+          tags.map((tag) => tag.data)
+        )}
+        tags={tags.map((tag) => tag.data)}
+      />
+    </div>
   );
+}
+
+function toPreviewableSearchState(
+  options: Partial<SearchState>,
+  tags: MangaTag[]
+) {
+  const searchState: Partial<MangaSearchOptions> = {
+    ...options,
+    includedTags: tags.filter((tag) => options.includedTags?.includes(tag.id)),
+    excludedTags: tags.filter((tag) => options.excludedTags?.includes(tag.id)),
+    authors: [],
+    artists: [],
+  };
+  return searchState;
 }
