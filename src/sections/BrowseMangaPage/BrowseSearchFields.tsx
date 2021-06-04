@@ -17,11 +17,13 @@ import TagsField from "./components/TagsField/TagsField";
 import useTags from "helpers/useTags";
 
 export interface BrowseSearchFieldsProps {
+  searchOnly?: boolean;
   searchOptions: SearchState;
   onChange: (options: SearchState) => void;
 }
 
 export function BrowseSearchFields({
+  searchOnly,
   searchOptions,
   onChange,
 }: BrowseSearchFieldsProps) {
@@ -42,6 +44,17 @@ export function BrowseSearchFields({
       includedTags: includedTags.map((tag) => tag.data.id),
     });
   }, [includedTags]);
+
+  if (searchOnly) {
+    return (
+      <div>
+        <TitleField
+          value={searchOptions.title}
+          onChange={(title) => updateSearchOptions({ title })}
+        />
+      </div>
+    );
+  }
 
   return (
     <div
