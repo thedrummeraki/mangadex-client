@@ -66,7 +66,7 @@ export default function usePagination(
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     pageInitialized.current = true;
-  }, [page]);
+  }, [page, options.scrollToTopOnPageChange]);
 
   return {
     pageSize,

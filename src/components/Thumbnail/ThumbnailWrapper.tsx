@@ -1,4 +1,3 @@
-import { useTheme } from "@material-ui/core";
 import { Link } from "components/Link";
 import { PropsWithChildren } from "react";
 import { getFollowUrl } from "utils";
@@ -18,7 +17,6 @@ export function ThumbnailWrapper({
   title,
   onClick,
 }: PropsWithChildren<Props>) {
-  const theme = useTheme();
   const classes = useThumbnailStyles();
 
   if (onClick) {

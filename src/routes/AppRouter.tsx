@@ -1,4 +1,3 @@
-import { WithLayoutProvider } from "config/providers";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {
   HomePage,

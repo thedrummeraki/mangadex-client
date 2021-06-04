@@ -43,7 +43,7 @@ export function BrowseSearchFields({
     updateSearchOptions({
       includedTags: includedTags.map((tag) => tag.data.id),
     });
-  }, [includedTags]);
+  }, [updateSearchOptions, includedTags]);
 
   if (searchOnly) {
     return (

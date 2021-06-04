@@ -1,10 +1,6 @@
 import { Chapter } from "types/chapter";
-import { Page, ChapterReader } from "components";
-import {
-  chapterTitle,
-  useLocalCurrentlyReading,
-  useSearchMangaList,
-} from "helpers";
+import { ChapterReader } from "components";
+import { useLocalCurrentlyReading, useSearchMangaList } from "helpers";
 import { useEffect, useMemo } from "react";
 
 interface Props {

@@ -4,7 +4,7 @@ import CustomGrid from "./CustomGrid";
 import { MangaThumbnail } from "./Thumbnails";
 import GetCoversForManga from "sections/ViewManga/queries/GetCoversForManga";
 import { useQuery } from "@apollo/client";
-import { notEmpty, repeat } from "utils";
+import { notEmpty } from "utils";
 import { ThumbnailSkeleton } from "./Thumbnail/ThumbnailSkeleton";
 import { mangaTitle } from "helpers";
 

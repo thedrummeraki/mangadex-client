@@ -16,7 +16,6 @@ import useLocalCurrentReadingHistoryManagament from "helpers/useLocalCurrentRead
 import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { ContentRating } from "types";
 import useBrowseSearchFields from "helpers/useBrowseSearchFields";
-import { BrowseSearchFields } from "sections/BrowseMangaPage/BrowseSearchFields";
 
 const useStyles = makeStyles((theme) => ({
   formRoot: {

@@ -1,6 +1,5 @@
 import { TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
-import useTags from "helpers/useTags";
 import { GenericResponse, MangaTag } from "types";
 import { SearchFieldProps } from "../types";
 

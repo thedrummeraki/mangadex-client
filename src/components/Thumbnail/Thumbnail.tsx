@@ -1,4 +1,4 @@
-import { Popover, Typography, useTheme } from "@material-ui/core";
+import { useTheme } from "@material-ui/core";
 import clsx from "clsx";
 import React, { useRef, useState } from "react";
 import { ThumbnailFeatures } from "./ThumbnailFeatures";

@@ -1,4 +1,3 @@
-import { makeStyles } from "@material-ui/core";
 import { CustomGrid } from "components";
 import { useSearchMangaList } from "helpers";
 import { useEffect } from "react";
@@ -14,10 +13,6 @@ interface Props {
   url: string;
   searchOptions: Partial<SearchState>;
 }
-
-const useStyles = makeStyles(() => ({
-  titleSection: {},
-}));
 
 export function MangaCategory({ title, url, searchOptions }: Props) {
   const limit = 6;

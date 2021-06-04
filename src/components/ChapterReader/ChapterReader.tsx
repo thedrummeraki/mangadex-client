@@ -6,16 +6,11 @@ import {
   ListItemIcon,
   ListItemText,
   makeStyles,
-  Paper,
-  Slider,
 } from "@material-ui/core";
 import { TitledSection } from "components/TitledSection";
-import JumpToMangaSearchField from "config/providers/WithLayoutProvider/JumpToMangaSearchField";
 import { chapterTitle, mangaTitle } from "helpers";
-import useBrowseSearchFields from "helpers/useBrowseSearchFields";
 import { savedPage } from "helpers/useCurrentlyReading";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { BrowseSearchFields } from "sections/BrowseMangaPage/BrowseSearchFields";
 import { Manga } from "types";
 import { Chapter } from "types/chapter";
 import { DesktopReaderPage } from "./DesktopReaderPage";
@@ -84,11 +79,6 @@ export function ChapterReader({
   const [canGoPrevious, setCanGoPrevious] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const sliderValue = useMemo(
-    () => direction * currentIndex,
-    [direction, currentIndex]
-  );
-
   const titleMarkup = (
     <>
       <IconButton
@@ -103,7 +93,7 @@ export function ChapterReader({
   );
 
   const requestNextPage = useCallback(() => {
-    if (currentIndex + 1 >= pageUrls.length - 1) {
+    if (currentIndex >= pageUrls.length) {
       console.log("cannot go next");
       return;
     }
@@ -120,7 +110,7 @@ export function ChapterReader({
     console.log("prev");
     setCurrentIndices((currentIndex) => currentIndex - 1);
     onPrevious();
-  }, [canGoPrevious, onPrevious]);
+  }, [currentIndex, onPrevious]);
 
   const handleLeftClick = useCallback(() => {
     if (direction === Direction.RightToLeft) {
