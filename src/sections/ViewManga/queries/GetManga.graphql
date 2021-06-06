@@ -88,6 +88,7 @@ query GetManga(
     chapters {
       id
       type
+      mangaId
       attributes {
         chapter
         version

@@ -1,0 +1,22 @@
+query GetChapter($id: String!) {
+  chapter(id: $id) {
+    id
+    type
+    mangaId
+    attributes {
+      title
+      translatedLanguage
+      chapterHash
+      data
+      dataSaver
+      version
+      createdAt
+      updatedAt
+      publishAt
+    }
+    pages {
+      url
+      expiresAt
+    }
+  }
+}

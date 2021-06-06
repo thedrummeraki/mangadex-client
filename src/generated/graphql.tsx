@@ -21,6 +21,7 @@ export type Chapter = {
   __typename?: 'Chapter';
   attributes: ChapterAttributes;
   id: Scalars['ID'];
+  mangaId: Scalars['ID'];
   type: Scalars['String'];
 };
 
@@ -226,6 +227,7 @@ export type SingleChapter = {
   __typename?: 'SingleChapter';
   attributes: ChapterAttributes;
   id: Scalars['ID'];
+  mangaId: Scalars['ID'];
   pages: Array<ChapterPage>;
   type: Scalars['String'];
 };
@@ -385,6 +387,26 @@ export type GetSearchMangaQuery = (
   )> }
 );
 
+export type GetChapterQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type GetChapterQuery = (
+  { __typename?: 'Query' }
+  & { chapter?: Maybe<(
+    { __typename?: 'SingleChapter' }
+    & Pick<SingleChapter, 'id' | 'type' | 'mangaId'>
+    & { attributes: (
+      { __typename?: 'ChapterAttributes' }
+      & Pick<ChapterAttributes, 'title' | 'translatedLanguage' | 'chapterHash' | 'data' | 'dataSaver' | 'version' | 'createdAt' | 'updatedAt' | 'publishAt'>
+    ), pages: Array<(
+      { __typename?: 'ChapterPage' }
+      & Pick<ChapterPage, 'url' | 'expiresAt'>
+    )> }
+  )> }
+);
+
 export type GetMangaQueryVariables = Exact<{
   id: Scalars['String'];
   chapterLimit?: Maybe<Scalars['Int']>;
@@ -434,7 +456,7 @@ export type GetMangaQuery = (
       ) }
     )>>, chapters: Array<(
       { __typename?: 'Chapter' }
-      & Pick<Chapter, 'id' | 'type'>
+      & Pick<Chapter, 'id' | 'type' | 'mangaId'>
       & { attributes: (
         { __typename?: 'ChapterAttributes' }
         & Pick<ChapterAttributes, 'chapter' | 'version' | 'chapterHash' | 'data' | 'dataSaver' | 'title' | 'translatedLanguage' | 'uploader' | 'volume' | 'createdAt' | 'updatedAt' | 'publishAt'>
@@ -687,6 +709,58 @@ export function useGetSearchMangaLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetSearchMangaQueryHookResult = ReturnType<typeof useGetSearchMangaQuery>;
 export type GetSearchMangaLazyQueryHookResult = ReturnType<typeof useGetSearchMangaLazyQuery>;
 export type GetSearchMangaQueryResult = Apollo.QueryResult<GetSearchMangaQuery, GetSearchMangaQueryVariables>;
+export const GetChapterDocument = gql`
+    query GetChapter($id: String!) {
+  chapter(id: $id) {
+    id
+    type
+    mangaId
+    attributes {
+      title
+      translatedLanguage
+      chapterHash
+      data
+      dataSaver
+      version
+      createdAt
+      updatedAt
+      publishAt
+    }
+    pages {
+      url
+      expiresAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetChapterQuery__
+ *
+ * To run a query within a React component, call `useGetChapterQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChapterQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChapterQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetChapterQuery(baseOptions: Apollo.QueryHookOptions<GetChapterQuery, GetChapterQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChapterQuery, GetChapterQueryVariables>(GetChapterDocument, options);
+      }
+export function useGetChapterLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChapterQuery, GetChapterQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChapterQuery, GetChapterQueryVariables>(GetChapterDocument, options);
+        }
+export type GetChapterQueryHookResult = ReturnType<typeof useGetChapterQuery>;
+export type GetChapterLazyQueryHookResult = ReturnType<typeof useGetChapterLazyQuery>;
+export type GetChapterQueryResult = Apollo.QueryResult<GetChapterQuery, GetChapterQueryVariables>;
 export const GetMangaDocument = gql`
     query GetManga($id: String!, $chapterLimit: Int, $chapterOffset: Int, $translatedLanguage: [String!]) {
   manga(
@@ -771,6 +845,7 @@ export const GetMangaDocument = gql`
     chapters {
       id
       type
+      mangaId
       attributes {
         chapter
         version
