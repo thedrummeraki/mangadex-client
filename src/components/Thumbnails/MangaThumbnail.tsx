@@ -44,15 +44,15 @@ export function MangaThumbnail({
   const icons: AllowedIcons[] = [];
   if (isReading) icons.push("play");
 
-  const img = cover
-    ? getCoverUrl(manga, cover.attributes.fileName, DisplayCoverSize.Thumb256)
-    : "";
+  // const img = cover
+  //   ? getCoverUrl(manga, cover.attributes.fileName, DisplayCoverSize.Thumb256)
+  //   : "";
 
   return (
     <Thumbnail
-      img={img}
+      img={"#"}
       follow
-      explicit={isExplicit(manga, { conservative: false })}
+      // explicit={isExplicit(manga, { conservative: false })}
       title={preferredTitle(title)}
       features={
         overrideFeatures || [

@@ -45,6 +45,7 @@ export interface MangaAttributes {
   version: number;
   createdAt: string;
   updatedAt: string;
+  isLocked?: boolean;
 }
 
 export type Title = {

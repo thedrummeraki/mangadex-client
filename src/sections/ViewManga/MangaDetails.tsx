@@ -9,13 +9,14 @@ import {
 import { BBDescription } from "components";
 import { MangaLinkButton } from "components/MangaLinkButton";
 import { mangaDescription } from "helpers";
-import { Manga, MangaLinkKey } from "types";
+import { MangaLinkKey } from "types";
 import { decodeHTML, notEmpty } from "utils";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { SingleManga } from "generated/graphql";
 
 export interface Props {
-  manga: Manga;
+  manga: SingleManga;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -59,7 +60,7 @@ export function MangaDetails({ manga }: Props) {
   return (
     <Grid container spacing={1}>
       <div className={classes.accordionRoot}>
-        {description.en && (
+        {description?.en && (
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography className={classes.accordionHeading}>
@@ -68,7 +69,7 @@ export function MangaDetails({ manga }: Props) {
             </AccordionSummary>
             <AccordionDetails>
               <Typography variant="body2">
-                <BBDescription description={mangaDescription(manga)} />
+                <BBDescription description={description.en} />
               </Typography>
             </AccordionDetails>
           </Accordion>
@@ -88,7 +89,7 @@ export function MangaDetails({ manga }: Props) {
                 <Typography variant="caption" className={classes.altTitles}>
                   <em>
                     {manga.attributes.altTitles
-                      .map((title) => decodeHTML(title[Object.keys(title)[0]]))
+                      .map((title) => decodeHTML(title.en || ""))
                       .join("・")}
                   </em>
                 </Typography>

@@ -6,6 +6,10 @@ import {
   Relationship,
   Title,
 } from "types";
+import {
+  SingleManga as GraphqlSingleManga,
+  ContentRating as GraphqlContentRating,
+} from "generated/graphql";
 import { Chapter } from "types/chapter";
 
 import DOMPurify from "dompurify";
@@ -28,7 +32,7 @@ export function mangaTitle(manga: Manga) {
 }
 
 export function isExplicit(
-  manga: Manga,
+  manga: GraphqlSingleManga,
   options: ExplicatEvaluatorOptions = { conservative: true, strict: false }
 ) {
   // if strict, a manga is explicit if we don't know its rating.
@@ -36,11 +40,11 @@ export function isExplicit(
     return true;
   }
 
-  const explicitContentRatings = [ContentRating.pornographic];
+  const explicitContentRatings = [GraphqlContentRating.Hentai];
 
   // A conservative approach means that we also include eroticas.
   if (options.conservative || options.strict) {
-    explicitContentRatings.push(ContentRating.erotica);
+    explicitContentRatings.push(GraphqlContentRating.Erotica);
   }
 
   return (
@@ -93,7 +97,7 @@ export function relationshipIds(relationships: Relationship[], type: string) {
 }
 
 export function getCoverUrl(
-  manga: Manga,
+  manga: GraphqlSingleManga,
   filename: string,
   size: DisplayCoverSize = DisplayCoverSize.Original
 ) {

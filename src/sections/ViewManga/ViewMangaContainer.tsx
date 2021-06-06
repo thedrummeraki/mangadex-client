@@ -4,22 +4,14 @@ import { Page } from "components";
 import { useParams } from "react-router";
 import { ViewManga } from "./ViewManga";
 import ViewMangaQuery from "./queries/ViewMangaQuery";
+import { useGetMangaQuery } from "generated/graphql";
 
 export default function ViewMangaContainer() {
   const { id } = useParams<{ id: string }>();
-  const { data, loading, error } = useQuery(ViewMangaQuery, {
-    variables: { id },
-    context: {
-      headers: {
-        "X-Allow-Cache": "true",
-      },
-    },
-  });
+  const { data, loading, error } = useGetMangaQuery({ variables: { id } });
 
-  const errored =
-    (!data && !loading) || Boolean(error) || data?.manga?.result === "ko";
-
-  if (errored || (!loading && !data?.manga?.data)) {
+  if (error || (!loading && !data?.manga)) {
+    if (error) console.error(error);
     return (
       <Page backUrl="/" title="Uh oh...">
         <Typography>
@@ -34,5 +26,5 @@ export default function ViewMangaContainer() {
     return <Page backUrl="/" title="Loading..." />;
   }
 
-  return <ViewManga mangaInfo={data.manga} />;
+  return <ViewManga manga={data.manga} />;
 }
