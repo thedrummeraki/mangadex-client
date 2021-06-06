@@ -1,5 +1,4 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
-import { RestLink } from "apollo-link-rest";
 import { setContext } from "@apollo/client/link/context";
 import { mangadexOffsetLimitPagination } from "./utilities";
 import { getToken } from "../AuthProvider";
@@ -20,7 +19,7 @@ const uri = "http://localhost:3001/graphql";
 
 const link = createHttpLink({
   uri,
-});
+}).concat(authLink);
 
 // const link = authLink.concat(
 //   new RestLink({ uri: "https://mangadex-client-proxy.herokuapp.com" })
@@ -33,6 +32,7 @@ const client = new ApolloClient({
         keyFields: [],
         fields: {
           mangas: offsetLimitPagination(),
+          chapters: offsetLimitPagination(),
           mangaList: mangadexOffsetLimitPagination(),
           mangaSearchList: mangadexOffsetLimitPagination(),
           followsList: mangadexOffsetLimitPagination(),

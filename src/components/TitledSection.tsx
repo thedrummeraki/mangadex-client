@@ -8,6 +8,7 @@ import { Variant } from "@material-ui/core/styles/createTypography";
 export interface TitledSectionTag {
   content: string;
   icon?: ReactElement;
+  disabled?: boolean;
   onClick?: VoidFunction;
 }
 
@@ -118,6 +119,7 @@ export function TitledSection({
                 variant={selected ? "default" : "outlined"}
                 color={selected ? "secondary" : "default"}
                 size="small"
+                disabled={tag.disabled}
                 label={tag.content}
                 icon={tag.icon}
                 onClick={tag.onClick}

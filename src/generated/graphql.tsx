@@ -40,6 +40,18 @@ export type ChapterAttributes = {
   volume?: Maybe<Scalars['String']>;
 };
 
+/** Attributes for chapter parameters with fetching from manga. */
+export type ChapterOptions = {
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  title?: Maybe<Scalars['String']>;
+  groups?: Maybe<Array<Scalars['String']>>;
+  uploader?: Maybe<Scalars['String']>;
+  volume?: Maybe<Scalars['String']>;
+  chapter?: Maybe<Scalars['String']>;
+  translatedLanguage?: Maybe<Array<Scalars['String']>>;
+};
+
 /** Data relevant to a chapter page (expiration date, url, etc.). */
 export type ChapterPage = {
   __typename?: 'ChapterPage';
@@ -113,7 +125,7 @@ export type MangaAttributes = {
   isLocked: Scalars['Boolean'];
   lastChapter?: Maybe<Scalars['String']>;
   lastVolume?: Maybe<Scalars['String']>;
-  links: MangaLinksData;
+  links?: Maybe<MangaLinksData>;
   originalLanguage?: Maybe<Scalars['String']>;
   publicationDemographic?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
@@ -187,6 +199,7 @@ export type QueryMangaArgs = {
   coverParams?: Maybe<CoverOptions>;
   coverSize?: Maybe<CoverSize>;
   translatedLanguage?: Maybe<Array<Scalars['String']>>;
+  chapterParams?: Maybe<ChapterOptions>;
 };
 
 
@@ -228,23 +241,11 @@ export type SingleManga = {
   __typename?: 'SingleManga';
   attributes: MangaAttributes;
   chapters: Array<Chapter>;
+  chaptersCount: Scalars['Int'];
   covers?: Maybe<Array<Cover>>;
   id: Scalars['ID'];
   type: Scalars['String'];
   volumes?: Maybe<Array<Scalars['String']>>;
-};
-
-
-/** An instance of a single manga. Used when fetching a manga by ID. */
-export type SingleMangaChaptersArgs = {
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  title?: Maybe<Scalars['String']>;
-  groups?: Maybe<Array<Scalars['String']>>;
-  uploader?: Maybe<Scalars['String']>;
-  volume?: Maybe<Scalars['String']>;
-  chapter?: Maybe<Scalars['String']>;
-  translatedLanguage?: Maybe<Array<Scalars['String']>>;
 };
 
 export enum Status {
@@ -315,10 +316,10 @@ export type GetHomePageQuery = (
       ), description?: Maybe<(
         { __typename?: 'LocalizedString' }
         & Pick<LocalizedString, 'en'>
-      )>, links: (
+      )>, links?: Maybe<(
         { __typename?: 'MangaLinksData' }
         & Pick<MangaLinksData, 'al' | 'nu' | 'raw' | 'amz' | 'ap' | 'bw' | 'cdj' | 'ebj' | 'engl' | 'kt' | 'mal' | 'mu'>
-      ) }
+      )> }
     ) }
   )> }
 );
@@ -376,16 +377,19 @@ export type GetSearchMangaQuery = (
       ), description?: Maybe<(
         { __typename?: 'LocalizedString' }
         & Pick<LocalizedString, 'en'>
-      )>, links: (
+      )>, links?: Maybe<(
         { __typename?: 'MangaLinksData' }
         & Pick<MangaLinksData, 'al' | 'nu' | 'raw' | 'amz' | 'ap' | 'bw' | 'cdj' | 'ebj' | 'engl' | 'kt' | 'mal' | 'mu'>
-      ) }
+      )> }
     ) }
   )> }
 );
 
 export type GetMangaQueryVariables = Exact<{
   id: Scalars['String'];
+  chapterLimit?: Maybe<Scalars['Int']>;
+  chapterOffset?: Maybe<Scalars['Int']>;
+  translatedLanguage?: Maybe<Array<Scalars['String']> | Scalars['String']>;
 }>;
 
 
@@ -393,7 +397,7 @@ export type GetMangaQuery = (
   { __typename?: 'Query' }
   & { manga?: Maybe<(
     { __typename?: 'SingleManga' }
-    & Pick<SingleManga, 'id' | 'type'>
+    & Pick<SingleManga, 'id' | 'type' | 'chaptersCount'>
     & { attributes: (
       { __typename?: 'MangaAttributes' }
       & Pick<MangaAttributes, 'status' | 'updatedAt' | 'version' | 'year' | 'contentRating' | 'createdAt' | 'isLocked' | 'lastChapter' | 'lastVolume' | 'originalLanguage' | 'publicationDemographic'>
@@ -417,10 +421,10 @@ export type GetMangaQuery = (
       ), description?: Maybe<(
         { __typename?: 'LocalizedString' }
         & Pick<LocalizedString, 'en'>
-      )>, links: (
+      )>, links?: Maybe<(
         { __typename?: 'MangaLinksData' }
         & Pick<MangaLinksData, 'al' | 'nu' | 'raw' | 'amz' | 'ap' | 'bw' | 'cdj' | 'ebj' | 'engl' | 'kt' | 'mal' | 'mu'>
-      ) }
+      )> }
     ), covers?: Maybe<Array<(
       { __typename?: 'Cover' }
       & Pick<Cover, 'id' | 'url' | 'type'>
@@ -684,8 +688,12 @@ export type GetSearchMangaQueryHookResult = ReturnType<typeof useGetSearchMangaQ
 export type GetSearchMangaLazyQueryHookResult = ReturnType<typeof useGetSearchMangaLazyQuery>;
 export type GetSearchMangaQueryResult = Apollo.QueryResult<GetSearchMangaQuery, GetSearchMangaQueryVariables>;
 export const GetMangaDocument = gql`
-    query GetManga($id: String!) {
-  manga(id: $id, coverSize: original) {
+    query GetManga($id: String!, $chapterLimit: Int, $chapterOffset: Int, $translatedLanguage: [String!]) {
+  manga(
+    id: $id
+    coverSize: thumb512
+    chapterParams: {limit: $chapterLimit, offset: $chapterOffset, translatedLanguage: $translatedLanguage}
+  ) {
     id
     attributes {
       altTitles {
@@ -759,6 +767,7 @@ export const GetMangaDocument = gql`
         updatedAt
       }
     }
+    chaptersCount
     chapters {
       id
       type
@@ -794,6 +803,9 @@ export const GetMangaDocument = gql`
  * const { data, loading, error } = useGetMangaQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      chapterLimit: // value for 'chapterLimit'
+ *      chapterOffset: // value for 'chapterOffset'
+ *      translatedLanguage: // value for 'translatedLanguage'
  *   },
  * });
  */

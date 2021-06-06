@@ -1,5 +1,11 @@
 import { useQuery } from "@apollo/client";
-import { Page, TitledSectionTag } from "components";
+import {
+  CustomGrid,
+  Page,
+  Thumbnail,
+  TitledSection,
+  TitledSectionTag,
+} from "components";
 import {
   DisplayCoverSize,
   getCoverUrl,
@@ -22,13 +28,44 @@ import BrushIcon from "@material-ui/icons/Brush";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 import { getFollowUrl, noEmptyString, notEmpty } from "utils";
 import { SingleManga } from "generated/graphql";
+import LanguageSelector from "components/LanguageSelector";
+import ISO6391 from "iso-639-1";
+import usePagination from "helpers/usePagination";
+import { Pagination } from "@material-ui/lab";
+import { makeStyles } from "@material-ui/core";
+
+import ImageIcon from "@material-ui/icons/Image";
+// import ListIcon from "@material-ui/icons/List";
+import GridOnIcon from "@material-ui/icons/GridOn";
 
 interface Props {
   manga: SingleManga;
+  page: number;
+  pagesCount: number;
+  requestedLocales: string[];
+  onLocaleChange: (locale: string[]) => void;
+  onPageChange: (page: number) => void;
 }
 
-export function ViewManga({ manga }: Props) {
+const useStyles = makeStyles((theme) => ({
+  paginationRoot: {
+    display: "flex",
+    width: "100%",
+    margin: theme.spacing(2),
+    justifyContent: "center",
+  },
+}));
+
+export function ViewManga({
+  manga,
+  requestedLocales,
+  page,
+  pagesCount,
+  onLocaleChange,
+  onPageChange,
+}: Props) {
   const history = useHistory();
+  const classes = useStyles();
 
   const [currentVolume, setCurrentVolume] = useState<string | null>(null);
   const [authorsState, setAuthorsStatus] = useState<{
@@ -53,22 +90,75 @@ export function ViewManga({ manga }: Props) {
         isExplicit(manga, { conservative: false }) ? "EXPLICIT" : null,
         manga.attributes.contentRating || null,
       ]}
-      tags={manga.attributes.tags
-        .map((tag) => {
-          const name = tag.attributes.name.en;
-          return name
-            ? {
-                content: name,
-                icon: <LocalOfferIcon />,
-              }
-            : null;
-        })
-        .filter(notEmpty)}
+      tags={[]}
       showcase={{
         imageUrl: currentCoverUrl,
         content: <MangaDetails manga={manga} />,
       }}
     >
+      <TitledSection
+        title="Chapters list"
+        variant="h6"
+        tags={[
+          { content: "Image", icon: <ImageIcon />, onClick: () => {} },
+          { content: "Grid", icon: <GridOnIcon />, disabled: true },
+        ]}
+        selectedTag="Image"
+        tagsDescription="Preview style"
+        primaryAction={
+          <div style={{ width: 300 }}>
+            <LanguageSelector
+              defaultLocale={"en"}
+              onLocaleChange={onLocaleChange}
+            />
+          </div>
+        }
+      />
+
+      <CustomGrid>
+        {manga.chapters.map((chapter) => {
+          const {
+            dataSaver,
+            chapterHash,
+            title,
+            translatedLanguage,
+            chapter: number,
+            volume,
+          } = chapter.attributes;
+          const filename = dataSaver[0];
+          const img = [
+            "https://uploads.mangadex.org",
+            "data-saver",
+            chapterHash,
+            filename,
+          ].join("/");
+
+          const pagesCount =
+            dataSaver.length === 1 ? "1 page" : `${dataSaver.length} pages`;
+
+          return (
+            <Thumbnail
+              features={[
+                volume ? `Vol. ${volume}` : null,
+                ISO6391.getName(translatedLanguage.split("-")[0]),
+                pagesCount,
+              ]}
+              img={img}
+              url={getFollowUrl(`/manga/read/${chapter.id}`)}
+              title={`${number}) ${title || `Chapter ${number}`}`}
+            />
+          );
+        })}
+      </CustomGrid>
+      {pagesCount > 1 && (
+        <div className={classes.paginationRoot}>
+          <Pagination
+            count={pagesCount}
+            page={page}
+            onChange={(_, number) => onPageChange(number)}
+          />
+        </div>
+      )}
       {/* <ChaptersList
         volumes={volumes}
         onFirstChapterReady={() => {}}

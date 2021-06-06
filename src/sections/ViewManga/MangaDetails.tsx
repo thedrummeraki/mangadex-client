@@ -2,6 +2,8 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Button,
+  Chip,
   Grid,
   makeStyles,
   Typography,
@@ -14,6 +16,7 @@ import { decodeHTML, notEmpty } from "utils";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { SingleManga } from "generated/graphql";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 
 export interface Props {
   manga: SingleManga;
@@ -38,6 +41,33 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
+  readNowButton: {
+    marginBottom: theme.spacing(4),
+    width: "37em",
+
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
+  },
+  tagsContainer: {
+    width: "100%",
+    marginTop: theme.spacing(0.5),
+
+    "&:first-child": {
+      marginLeft: 0,
+    },
+    "&:last-child": {
+      marginRight: 0,
+    },
+  },
+  tagsDescription: {
+    marginRight: theme.spacing(),
+    color: theme.palette.text.hint,
+  },
+  tag: {
+    marginRight: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.5),
+  },
 }));
 
 export function MangaDetails({ manga }: Props) {
@@ -57,8 +87,65 @@ export function MangaDetails({ manga }: Props) {
         .filter(notEmpty)
     : [];
 
+  const tagGroups = [
+    {
+      name: "Genre",
+      tags: manga.attributes.tags.filter(
+        (tag) => tag.attributes.group === "genre"
+      ),
+    },
+    {
+      name: "Theme",
+      tags: manga.attributes.tags.filter(
+        (tag) => tag.attributes.group === "theme"
+      ),
+    },
+    {
+      name: "Category",
+      tags: manga.attributes.tags.filter(
+        (tag) => tag.attributes.group === "content"
+      ),
+    },
+  ];
+
   return (
     <Grid container spacing={1}>
+      <Button
+        size="large"
+        color="primary"
+        variant="contained"
+        startIcon={<PlayArrowIcon />}
+        className={classes.readNowButton}
+      >
+        Read now
+      </Button>
+
+      {tagGroups.map(
+        (tagGroup) =>
+          tagGroup.tags.length > 0 && (
+            <div className={classes.tagsContainer}>
+              <Typography
+                component="span"
+                variant="subtitle2"
+                className={classes.tagsDescription}
+              >
+                {tagGroup.name}
+              </Typography>
+              {tagGroup.tags.map((tag, index) => {
+                return (
+                  <Chip
+                    key={`${tag}-${index}`}
+                    variant={"outlined"}
+                    color={"default"}
+                    size="small"
+                    label={tag.attributes.name.en}
+                    className={classes.tag}
+                  />
+                );
+              })}
+            </div>
+          )
+      )}
       <div className={classes.accordionRoot}>
         {description?.en && (
           <Accordion>

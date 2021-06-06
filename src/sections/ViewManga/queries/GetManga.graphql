@@ -1,5 +1,18 @@
-query GetManga($id: String!) {
-  manga(id: $id, coverSize: original) {
+query GetManga(
+  $id: String!
+  $chapterLimit: Int
+  $chapterOffset: Int
+  $translatedLanguage: [String!]
+) {
+  manga(
+    id: $id
+    coverSize: thumb512
+    chapterParams: {
+      limit: $chapterLimit
+      offset: $chapterOffset
+      translatedLanguage: $translatedLanguage
+    }
+  ) {
     id
     attributes {
       altTitles {
@@ -71,6 +84,7 @@ query GetManga($id: String!) {
         updatedAt
       }
     }
+    chaptersCount
     chapters {
       id
       type
