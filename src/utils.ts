@@ -75,7 +75,9 @@ export function useScrollListeners(
         scrollTop + window.innerHeight + (scrollOffset > 0 ? scrollOffset : 0);
       const scrolledToBottom = hasScrolledHeight + 1 >= scrollHeight;
 
-      if (scrolledToBottom) {
+      const scrollable = document.body.clientHeight > window.innerHeight;
+
+      if (scrolledToBottom && scrollable) {
         onScrollToBottom();
       }
       return;

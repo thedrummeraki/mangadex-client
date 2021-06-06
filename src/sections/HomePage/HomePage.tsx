@@ -1,6 +1,8 @@
-import { Page } from "components";
+import { CustomGrid, Page, Thumbnail } from "components";
 import { MangaCategory } from "components/MangaCategory";
+import { MangaThumbnail } from "components/Thumbnails";
 import { useAuth } from "config/providers";
+import { useGetHomePageQuery } from "generated/graphql";
 import { useSearchMangaList } from "helpers";
 import useBrowseSearchFields from "helpers/useBrowseSearchFields";
 import usePagination from "helpers/usePagination";
@@ -11,24 +13,16 @@ import { useQueryParam } from "utils";
 export function HomePage() {
   const firstPage = useQueryParam("page");
   const { currentUser } = useAuth();
-  const { limit, offset } = usePagination({
-    pageSize: 100,
-    firstPage: firstPage ? parseInt(firstPage) : 1,
-    scrollToTopOnPageChange: true,
-  });
-  const { error, searchManga } = useSearchMangaList({
-    limit,
-    offset,
-  });
-  const { debouncedSearchState } = useBrowseSearchFields();
 
-  useEffect(() => {
-    searchManga(debouncedSearchState);
-  }, [searchManga, debouncedSearchState]);
+  const { data, error, loading, fetchMore } = useGetHomePageQuery({
+    variables: { limit: 100, offset: 0 },
+  });
 
   if (error) {
     return <p>error</p>;
   }
+
+  const mangas = data?.mangas || [];
 
   return (
     <Page
@@ -37,26 +31,25 @@ export function HomePage() {
           ? `Welcome, ${currentUser.attributes.username}.`
           : `Hottest manga`
       }
+      onScrolledToBottom={() => {
+        if (loading) {
+          return;
+        }
+
+        fetchMore({ variables: { offset: mangas.length } });
+      }}
     >
-      <MangaCategory
-        title="Top ongoing manga"
-        url="/top/ongoing"
-        searchOptions={{ status: [MangaStatus.ongoing] }}
-      />
-
-      <MangaCategory
-        title="Top complete manga"
-        url="/top/complete"
-        searchOptions={{ status: [MangaStatus.completed] }}
-      />
-
-      <MangaCategory
-        title="Top shounen manga"
-        url="/top/shounen"
-        searchOptions={{
-          publicationDemographic: [PublicationDemographic.shonen],
-        }}
-      />
+      <CustomGrid>
+        {mangas.map((manga) => (
+          <Thumbnail
+            key={manga.id}
+            features={[manga.attributes.status]}
+            title={manga.attributes.title.en}
+            img={manga.covers ? manga.covers[0].url : "#"}
+            url={`/manga/${manga.id}`}
+          />
+        ))}
+      </CustomGrid>
     </Page>
   );
 }

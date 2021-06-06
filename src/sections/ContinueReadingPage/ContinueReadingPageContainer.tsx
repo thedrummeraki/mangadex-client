@@ -1,6 +1,6 @@
 import { Button, FormControl, makeStyles, Typography } from "@material-ui/core";
 import { Alert, AlertTitle } from "@material-ui/lab";
-import { Page } from "components";
+import { CustomGrid, Page, Thumbnail } from "components";
 import { useAuth } from "config/providers";
 import { useLocalCurrentlyReading, useSearchMangaList } from "helpers";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -16,6 +16,7 @@ import useLocalCurrentReadingHistoryManagament from "helpers/useLocalCurrentRead
 import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { ContentRating } from "types";
 import useBrowseSearchFields from "helpers/useBrowseSearchFields";
+import { useGetSearchMangaQuery } from "generated/graphql";
 
 const useStyles = makeStyles((theme) => ({
   formRoot: {
@@ -37,43 +38,27 @@ export default function ContinueReadingPageContainer() {
   const [warning, setWarning] = useState(showWarning());
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const { searchState, setSearchState, debouncedSearchState } =
-    useBrowseSearchFields({
-      searchState: { contentRating: Object.values(ContentRating) },
-    });
+  // const { searchState, setSearchState, debouncedSearchState } =
+  //   useBrowseSearchFields({
+  //     searchState: { contentRating: Object.values(ContentRating) },
+  //   });
 
   const { currentUser } = useAuth();
 
-  const initialized = useRef(false);
-  const { mangaList, loading, error, searchManga } = useSearchMangaList({
-    limit: 100,
+  const { data, loading, error } = useGetSearchMangaQuery({
+    variables: { limit: 100, offset: 0, ids: mangaIds },
   });
+
   const { clearHistory } = useLocalCurrentReadingHistoryManagament();
 
-  const sortedMangaList = useMemo(() => {
-    const mangasInfo = mangaList.results || [];
+  const mangaList = useMemo(() => data?.mangas || [], [data]);
 
+  const sortedMangaList = useMemo(() => {
     return mangaIds
       .reverse()
-      .map((id) => mangasInfo.find((mangaInfo) => mangaInfo.data.id === id))
+      .map((id) => mangaList.find((manga) => manga.id === id))
       .filter(notEmpty);
   }, [mangaList, mangaIds]);
-
-  useEffect(() => {
-    initialized.current = false;
-  }, [debouncedSearchState]);
-
-  useEffect(() => {
-    if (initialized.current || loading) {
-      return;
-    }
-
-    searchManga({
-      ...debouncedSearchState,
-      ids: mangaIds,
-    });
-    initialized.current = true;
-  }, [searchManga, debouncedSearchState, loading, mangaIds]);
 
   useEffect(() => {
     if (showWarning() && !warning) {
@@ -81,7 +66,7 @@ export default function ContinueReadingPageContainer() {
     }
   }, [warning]);
 
-  if (error || mangaList.results == null) {
+  if (error || (!loading && !data?.mangas)) {
     return (
       <Page backUrl="/" title="Uh oh">
         <Typography>
@@ -116,7 +101,7 @@ export default function ContinueReadingPageContainer() {
     <Page
       title="Reading history"
       tags={tags}
-      searchFields={{ searchOptions: searchState, onChange: setSearchState }}
+      // searchFields={{ searchOptions: searchState, onChange: setSearchState }}
     >
       {warning && (
         <Alert
@@ -140,7 +125,17 @@ export default function ContinueReadingPageContainer() {
           . This is <strong>not</strong> tied to your MangaDex account.
         </Alert>
       )}
-      <MangaCustomGrid mangasInfo={sortedMangaList} />
+      <CustomGrid>
+        {mangaList.map((manga) => (
+          <Thumbnail
+            key={manga.id}
+            features={[manga.attributes.status]}
+            title={manga.attributes.title.en}
+            img={manga.covers ? manga.covers[0].url : "#"}
+            url={`/manga/${manga.id}`}
+          />
+        ))}
+      </CustomGrid>
       <BasicModal
         title="Delete reading history?"
         open={deleteModalOpen}

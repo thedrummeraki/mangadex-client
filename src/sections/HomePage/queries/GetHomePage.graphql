@@ -1,6 +1,21 @@
-query GetManga($id: String!) {
-  manga(id: $id, coverSize: original) {
+query GetHomePage($limit: Int!, $offset: Int!) {
+  mangas(limit: $limit, offset: $offset) {
     id
+    type
+    covers {
+      id
+      type
+      url
+      attributes {
+        volume
+        fileName
+        description
+        version
+        createdAt
+        updatedAt
+      }
+    }
+
     attributes {
       altTitles {
         en
@@ -55,38 +70,6 @@ query GetManga($id: String!) {
           }
           version
         }
-      }
-    }
-    type
-    covers {
-      id
-      url
-      type
-      attributes {
-        volume
-        fileName
-        description
-        version
-        createdAt
-        updatedAt
-      }
-    }
-    chapters {
-      id
-      type
-      attributes {
-        chapter
-        version
-        chapterHash
-        data
-        dataSaver
-        title
-        translatedLanguage
-        uploader
-        volume
-        createdAt
-        updatedAt
-        publishAt
       }
     }
   }

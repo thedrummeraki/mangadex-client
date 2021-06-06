@@ -3,6 +3,7 @@ import { RestLink } from "apollo-link-rest";
 import { setContext } from "@apollo/client/link/context";
 import { mangadexOffsetLimitPagination } from "./utilities";
 import { getToken } from "../AuthProvider";
+import { offsetLimitPagination } from "@apollo/client/utilities";
 
 const authLink = setContext((_, { headers }) => {
   const token = getToken()?.session || "";
@@ -31,6 +32,7 @@ const client = new ApolloClient({
       Query: {
         keyFields: [],
         fields: {
+          mangas: offsetLimitPagination(),
           mangaList: mangadexOffsetLimitPagination(),
           mangaSearchList: mangadexOffsetLimitPagination(),
           followsList: mangadexOffsetLimitPagination(),

@@ -81,6 +81,13 @@ export type CoverOptions = {
   uploaders?: Maybe<Array<Scalars['String']>>;
 };
 
+/** Possible sizes for covers */
+export enum CoverSize {
+  Thumb256 = 'thumb256',
+  Thumb512 = 'thumb512',
+  Original = 'original'
+}
+
 
 export type LocalizedString = {
   __typename?: 'LocalizedString';
@@ -178,6 +185,7 @@ export type QueryChapterArgs = {
 export type QueryMangaArgs = {
   id: Scalars['String'];
   coverParams?: Maybe<CoverOptions>;
+  coverSize?: Maybe<CoverSize>;
   translatedLanguage?: Maybe<Array<Scalars['String']>>;
 };
 
@@ -266,6 +274,116 @@ export enum TagMode {
   Or = 'OR'
 }
 
+export type GetHomePageQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+}>;
+
+
+export type GetHomePageQuery = (
+  { __typename?: 'Query' }
+  & { mangas: Array<(
+    { __typename?: 'Manga' }
+    & Pick<Manga, 'id' | 'type'>
+    & { covers?: Maybe<Array<(
+      { __typename?: 'Cover' }
+      & Pick<Cover, 'id' | 'type' | 'url'>
+      & { attributes: (
+        { __typename?: 'CoverAttributes' }
+        & Pick<CoverAttributes, 'volume' | 'fileName' | 'description' | 'version' | 'createdAt' | 'updatedAt'>
+      ) }
+    )>>, attributes: (
+      { __typename?: 'MangaAttributes' }
+      & Pick<MangaAttributes, 'status' | 'updatedAt' | 'version' | 'year' | 'contentRating' | 'createdAt' | 'isLocked' | 'lastChapter' | 'lastVolume' | 'originalLanguage' | 'publicationDemographic'>
+      & { altTitles: Array<(
+        { __typename?: 'LocalizedString' }
+        & Pick<LocalizedString, 'en'>
+      )>, tags: Array<(
+        { __typename?: 'Tag' }
+        & Pick<Tag, 'id' | 'type'>
+        & { attributes: (
+          { __typename?: 'TagAttributes' }
+          & Pick<TagAttributes, 'group' | 'version'>
+          & { name: (
+            { __typename?: 'LocalizedString' }
+            & Pick<LocalizedString, 'en'>
+          ) }
+        ) }
+      )>, title: (
+        { __typename?: 'LocalizedString' }
+        & Pick<LocalizedString, 'en'>
+      ), description?: Maybe<(
+        { __typename?: 'LocalizedString' }
+        & Pick<LocalizedString, 'en'>
+      )>, links: (
+        { __typename?: 'MangaLinksData' }
+        & Pick<MangaLinksData, 'al' | 'nu' | 'raw' | 'amz' | 'ap' | 'bw' | 'cdj' | 'ebj' | 'engl' | 'kt' | 'mal' | 'mu'>
+      ) }
+    ) }
+  )> }
+);
+
+export type GetSearchMangaQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+  title?: Maybe<Scalars['String']>;
+  authors?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  artists?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  year?: Maybe<Scalars['Int']>;
+  includedTags?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  includedTagsMode?: Maybe<TagMode>;
+  excludedTags?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  excludedTagsMode?: Maybe<TagMode>;
+  status?: Maybe<Array<Status> | Status>;
+  originalLanguage?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  ids?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  contentRating?: Maybe<Array<ContentRating> | ContentRating>;
+}>;
+
+
+export type GetSearchMangaQuery = (
+  { __typename?: 'Query' }
+  & { mangas: Array<(
+    { __typename?: 'Manga' }
+    & Pick<Manga, 'id' | 'type'>
+    & { covers?: Maybe<Array<(
+      { __typename?: 'Cover' }
+      & Pick<Cover, 'id' | 'type' | 'url'>
+      & { attributes: (
+        { __typename?: 'CoverAttributes' }
+        & Pick<CoverAttributes, 'volume' | 'fileName' | 'description' | 'version' | 'createdAt' | 'updatedAt'>
+      ) }
+    )>>, attributes: (
+      { __typename?: 'MangaAttributes' }
+      & Pick<MangaAttributes, 'status' | 'updatedAt' | 'version' | 'year' | 'contentRating' | 'createdAt' | 'isLocked' | 'lastChapter' | 'lastVolume' | 'originalLanguage' | 'publicationDemographic'>
+      & { altTitles: Array<(
+        { __typename?: 'LocalizedString' }
+        & Pick<LocalizedString, 'en'>
+      )>, tags: Array<(
+        { __typename?: 'Tag' }
+        & Pick<Tag, 'id' | 'type'>
+        & { attributes: (
+          { __typename?: 'TagAttributes' }
+          & Pick<TagAttributes, 'group' | 'version'>
+          & { name: (
+            { __typename?: 'LocalizedString' }
+            & Pick<LocalizedString, 'en'>
+          ) }
+        ) }
+      )>, title: (
+        { __typename?: 'LocalizedString' }
+        & Pick<LocalizedString, 'en'>
+      ), description?: Maybe<(
+        { __typename?: 'LocalizedString' }
+        & Pick<LocalizedString, 'en'>
+      )>, links: (
+        { __typename?: 'MangaLinksData' }
+        & Pick<MangaLinksData, 'al' | 'nu' | 'raw' | 'amz' | 'ap' | 'bw' | 'cdj' | 'ebj' | 'engl' | 'kt' | 'mal' | 'mu'>
+      ) }
+    ) }
+  )> }
+);
+
 export type GetMangaQueryVariables = Exact<{
   id: Scalars['String'];
 }>;
@@ -322,9 +440,252 @@ export type GetMangaQuery = (
 );
 
 
+export const GetHomePageDocument = gql`
+    query GetHomePage($limit: Int!, $offset: Int!) {
+  mangas(limit: $limit, offset: $offset) {
+    id
+    type
+    covers {
+      id
+      type
+      url
+      attributes {
+        volume
+        fileName
+        description
+        version
+        createdAt
+        updatedAt
+      }
+    }
+    attributes {
+      altTitles {
+        en
+      }
+      status
+      tags {
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+        id
+        type
+      }
+      title {
+        en
+      }
+      updatedAt
+      version
+      year
+      contentRating
+      createdAt
+      description {
+        en
+      }
+      isLocked
+      lastChapter
+      lastVolume
+      links {
+        al
+        nu
+        raw
+        amz
+        ap
+        bw
+        cdj
+        ebj
+        engl
+        kt
+        mal
+        mu
+      }
+      originalLanguage
+      publicationDemographic
+      tags {
+        id
+        type
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetHomePageQuery__
+ *
+ * To run a query within a React component, call `useGetHomePageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetHomePageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetHomePageQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useGetHomePageQuery(baseOptions: Apollo.QueryHookOptions<GetHomePageQuery, GetHomePageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetHomePageQuery, GetHomePageQueryVariables>(GetHomePageDocument, options);
+      }
+export function useGetHomePageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetHomePageQuery, GetHomePageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetHomePageQuery, GetHomePageQueryVariables>(GetHomePageDocument, options);
+        }
+export type GetHomePageQueryHookResult = ReturnType<typeof useGetHomePageQuery>;
+export type GetHomePageLazyQueryHookResult = ReturnType<typeof useGetHomePageLazyQuery>;
+export type GetHomePageQueryResult = Apollo.QueryResult<GetHomePageQuery, GetHomePageQueryVariables>;
+export const GetSearchMangaDocument = gql`
+    query GetSearchManga($limit: Int!, $offset: Int!, $title: String, $authors: [String!], $artists: [String!], $year: Int, $includedTags: [String!], $includedTagsMode: TagMode, $excludedTags: [String!], $excludedTagsMode: TagMode, $status: [Status!], $originalLanguage: [String!], $ids: [String!], $contentRating: [ContentRating!]) {
+  mangas(
+    limit: $limit
+    offset: $offset
+    title: $title
+    authors: $authors
+    artists: $artists
+    year: $year
+    includedTags: $includedTags
+    includedTagsMode: $includedTagsMode
+    excludedTags: $excludedTags
+    excludedTagsMode: $excludedTagsMode
+    status: $status
+    originalLanguage: $originalLanguage
+    ids: $ids
+    contentRating: $contentRating
+  ) {
+    id
+    type
+    covers {
+      id
+      type
+      url
+      attributes {
+        volume
+        fileName
+        description
+        version
+        createdAt
+        updatedAt
+      }
+    }
+    attributes {
+      altTitles {
+        en
+      }
+      status
+      tags {
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+        id
+        type
+      }
+      title {
+        en
+      }
+      updatedAt
+      version
+      year
+      contentRating
+      createdAt
+      description {
+        en
+      }
+      isLocked
+      lastChapter
+      lastVolume
+      links {
+        al
+        nu
+        raw
+        amz
+        ap
+        bw
+        cdj
+        ebj
+        engl
+        kt
+        mal
+        mu
+      }
+      originalLanguage
+      publicationDemographic
+      tags {
+        id
+        type
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetSearchMangaQuery__
+ *
+ * To run a query within a React component, call `useGetSearchMangaQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSearchMangaQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSearchMangaQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      title: // value for 'title'
+ *      authors: // value for 'authors'
+ *      artists: // value for 'artists'
+ *      year: // value for 'year'
+ *      includedTags: // value for 'includedTags'
+ *      includedTagsMode: // value for 'includedTagsMode'
+ *      excludedTags: // value for 'excludedTags'
+ *      excludedTagsMode: // value for 'excludedTagsMode'
+ *      status: // value for 'status'
+ *      originalLanguage: // value for 'originalLanguage'
+ *      ids: // value for 'ids'
+ *      contentRating: // value for 'contentRating'
+ *   },
+ * });
+ */
+export function useGetSearchMangaQuery(baseOptions: Apollo.QueryHookOptions<GetSearchMangaQuery, GetSearchMangaQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSearchMangaQuery, GetSearchMangaQueryVariables>(GetSearchMangaDocument, options);
+      }
+export function useGetSearchMangaLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSearchMangaQuery, GetSearchMangaQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSearchMangaQuery, GetSearchMangaQueryVariables>(GetSearchMangaDocument, options);
+        }
+export type GetSearchMangaQueryHookResult = ReturnType<typeof useGetSearchMangaQuery>;
+export type GetSearchMangaLazyQueryHookResult = ReturnType<typeof useGetSearchMangaLazyQuery>;
+export type GetSearchMangaQueryResult = Apollo.QueryResult<GetSearchMangaQuery, GetSearchMangaQueryVariables>;
 export const GetMangaDocument = gql`
     query GetManga($id: String!) {
-  manga(id: $id) {
+  manga(id: $id, coverSize: original) {
     id
     attributes {
       altTitles {

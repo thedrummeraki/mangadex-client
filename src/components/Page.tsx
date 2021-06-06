@@ -1,10 +1,10 @@
 import { Container, Grid, IconButton, makeStyles } from "@material-ui/core";
-import { PropsWithChildren, ReactNode } from "react";
+import { PropsWithChildren, ReactNode, useRef } from "react";
 import { TitledSection, TitledSectionProps } from "./TitledSection";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router";
-import { useQueryParam } from "utils";
+import { useQueryParam, useScrollListeners } from "utils";
 import { useDocumentTitle } from "./DocumentTitle";
 import {
   BrowseSearchFieldsProps,
@@ -20,6 +20,7 @@ interface Props {
     imageDescription?: ReactNode;
     content: ReactNode;
   };
+  onScrolledToBottom?: VoidFunction;
 }
 
 type PageProps = Props &
@@ -57,12 +58,19 @@ export function Page({
   children,
   primaryAction,
   searchFields,
+  onScrolledToBottom,
 }: PropsWithChildren<PageProps>) {
   const classes = useStyles();
   const history = useHistory();
   const defaultBackUrl = useQueryParam("from", backUrl);
 
   useDocumentTitle({ title });
+
+  useScrollListeners(null, () => {
+    if (onScrolledToBottom) {
+      onScrolledToBottom();
+    }
+  });
 
   const imageMarkup = showcase?.imageUrl && (
     <img

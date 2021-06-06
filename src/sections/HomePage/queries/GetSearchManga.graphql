@@ -1,0 +1,106 @@
+query GetSearchManga(
+  $limit: Int!
+  $offset: Int!
+  $title: String
+  $authors: [String!]
+  $artists: [String!]
+  $year: Int
+  $includedTags: [String!]
+  $includedTagsMode: TagMode
+  $excludedTags: [String!]
+  $excludedTagsMode: TagMode
+  $status: [Status!]
+  $originalLanguage: [String!]
+  $ids: [String!]
+  $contentRating: [ContentRating!]
+) {
+  mangas(
+    limit: $limit
+    offset: $offset
+    title: $title
+    authors: $authors
+    artists: $artists
+    year: $year
+    includedTags: $includedTags
+    includedTagsMode: $includedTagsMode
+    excludedTags: $excludedTags
+    excludedTagsMode: $excludedTagsMode
+    status: $status
+    originalLanguage: $originalLanguage
+    ids: $ids
+    contentRating: $contentRating
+  ) {
+    id
+    type
+    covers {
+      id
+      type
+      url
+      attributes {
+        volume
+        fileName
+        description
+        version
+        createdAt
+        updatedAt
+      }
+    }
+
+    attributes {
+      altTitles {
+        en
+      }
+      status
+      tags {
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+      }
+      title {
+        en
+      }
+      updatedAt
+      version
+      year
+      contentRating
+      createdAt
+      description {
+        en
+      }
+      isLocked
+      lastChapter
+      lastVolume
+      links {
+        al
+        nu
+        raw
+        amz
+        ap
+        bw
+        cdj
+        ebj
+        engl
+        kt
+        mal
+        mu
+      }
+      originalLanguage
+      publicationDemographic
+      tags {
+        id
+        type
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+      }
+    }
+  }
+}
