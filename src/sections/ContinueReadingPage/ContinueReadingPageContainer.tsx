@@ -50,6 +50,7 @@ export default function ContinueReadingPageContainer() {
       ids: mangaIds,
       contentRating: Object.values(ContentRating),
     },
+    fetchPolicy: "no-cache",
   });
 
   const { clearHistory } = useLocalCurrentReadingHistoryManagament();

@@ -16,6 +16,8 @@ import { decodeHTML, notEmpty } from "utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { SingleManga } from "generated/graphql";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
+import { useHistory } from "react-router";
 
 export interface Props {
   manga: SingleManga;
@@ -70,10 +72,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function MangaDetails({ manga }: Props) {
+  const history = useHistory();
   const classes = useStyles();
   const {
     attributes: { description },
   } = manga;
+
+  const readNowChapter = manga.chapters[0];
 
   const links = manga.attributes.links
     ? Object.entries(manga.attributes.links)
@@ -113,11 +118,16 @@ export function MangaDetails({ manga }: Props) {
         size="large"
         color="primary"
         variant="contained"
-        startIcon={<PlayArrowIcon />}
-        disabled={manga.chapters.length === 0}
+        startIcon={readNowChapter ? <PlayArrowIcon /> : <ErrorOutlineIcon />}
+        disabled={!readNowChapter}
+        onClick={() =>
+          readNowChapter && history.push(`/manga/read/${readNowChapter.id}`)
+        }
         className={classes.readNowButton}
       >
-        Read Chapter {manga.chapters[0].attributes.chapter} now
+        {readNowChapter
+          ? `Read Chapter ${readNowChapter.attributes.chapter} now`
+          : "No chapters uploaded... yet!"}
       </Button>
 
       <div className={classes.accordionRoot}>

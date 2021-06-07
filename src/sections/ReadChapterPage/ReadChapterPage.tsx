@@ -1,6 +1,6 @@
 import { SingleChapter, useGetMangaQuery } from "generated/graphql";
 import { bindKeyboard } from "react-swipeable-views-utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import SwipeableViews from "react-swipeable-views";
 import { createStyles } from "@material-ui/styles";
@@ -63,11 +63,10 @@ const useStyles = makeStyles((theme) =>
     },
     content: {
       flexGrow: 1,
-      marginLeft: drawerWidth + 100,
+      marginLeft: drawerWidth,
     },
     zoomedOut: {
       height: `calc(100vh - 66px)`,
-      width: "100vw",
       objectFit: "contain",
     },
     zoomedIn: {
@@ -81,7 +80,7 @@ export function ReadChapterPage({ chapter }: Props) {
   const history = useHistory();
   const classes = useStyles();
   const [index, setIndex] = useState(0);
-  const [zoomed, setZoomed] = useState(false);
+  const [zoomed, setZoomed] = useState(true);
   const { data } = useGetMangaQuery({
     variables: {
       id: chapter.mangaId,
@@ -97,6 +96,10 @@ export function ReadChapterPage({ chapter }: Props) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [index]);
 
   const manga = data?.manga;
 
@@ -196,8 +199,18 @@ export function ReadChapterPage({ chapter }: Props) {
         <BindKeyboardSwipeableViews
           enableMouseEvents
           resistance
+          ignoreNativeScroll
           index={index}
-          onChangeIndex={setIndex}
+          onChangeIndex={(newIndex) => {
+            console.log(newIndex, index, chapter.pages.length);
+            if (newIndex === chapter.pages.length - 1 && index === 0) {
+              return;
+            }
+            if (newIndex === 0 && index === chapter.pages.length - 1) {
+              return;
+            }
+            setIndex(newIndex);
+          }}
         >
           {chapter.pages.map((page, index) => (
             <img

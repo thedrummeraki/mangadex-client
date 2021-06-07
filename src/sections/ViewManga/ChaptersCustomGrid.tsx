@@ -3,6 +3,7 @@ import { Chapter } from "generated/graphql";
 import { getFollowUrl, repeat } from "utils";
 import ISO6391 from "iso-639-1";
 import { ThumbnailSkeleton } from "components/Thumbnail/ThumbnailSkeleton";
+import { chapterTitle } from "helpers";
 
 interface Props {
   refetching: boolean;
@@ -23,14 +24,8 @@ export function ChapterCustomGrid({ refetching, chapters }: Props) {
   return (
     <CustomGrid>
       {chapters.map((chapter) => {
-        const {
-          dataSaver,
-          chapterHash,
-          title,
-          translatedLanguage,
-          chapter: number,
-          volume,
-        } = chapter.attributes;
+        const { dataSaver, chapterHash, translatedLanguage, volume } =
+          chapter.attributes;
         const filename = dataSaver[0];
         const img = [
           "https://uploads.mangadex.org",
@@ -51,7 +46,7 @@ export function ChapterCustomGrid({ refetching, chapters }: Props) {
             ]}
             img={img}
             url={getFollowUrl(`/manga/read/${chapter.id}`)}
-            title={`${number}) ${title || `Chapter ${number}`}`}
+            title={chapterTitle(chapter, true)}
           />
         );
       })}
