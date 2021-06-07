@@ -2,8 +2,8 @@ import { Button, FormControl, makeStyles, Typography } from "@material-ui/core";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { CustomGrid, Page, Thumbnail } from "components";
 import { useAuth } from "config/providers";
-import { useLocalCurrentlyReading, useSearchMangaList } from "helpers";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocalCurrentlyReading } from "helpers";
+import { useEffect, useMemo, useState } from "react";
 import { notEmpty } from "utils";
 
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
@@ -13,10 +13,7 @@ import { ExportModal } from "./ExportModal";
 import { useHistory } from "react-router";
 import BasicModal from "components/modals/BasicModal";
 import useLocalCurrentReadingHistoryManagament from "helpers/useLocalCurrentReadingHistoryManagament";
-import { MangaCustomGrid } from "components/MangaCustomGrid";
-import useBrowseSearchFields from "helpers/useBrowseSearchFields";
 import { ContentRating, useGetSearchMangaQuery } from "generated/graphql";
-import { CurrentlyReading } from "helpers/useCurrentlyReading";
 
 const useStyles = makeStyles((theme) => ({
   formRoot: {

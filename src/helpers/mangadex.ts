@@ -1,5 +1,4 @@
 import {
-  ContentRating,
   Description,
   GenericResponse,
   Manga,

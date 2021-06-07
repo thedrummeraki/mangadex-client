@@ -10,7 +10,6 @@ import {
 } from "@material-ui/core";
 import { BBDescription } from "components";
 import { MangaLinkButton } from "components/MangaLinkButton";
-import { mangaDescription } from "helpers";
 import { MangaLinkKey } from "types";
 import { decodeHTML, notEmpty } from "utils";
 

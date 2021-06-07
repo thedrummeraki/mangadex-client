@@ -1,12 +1,6 @@
 import { Thumbnail } from "components";
 import { AllowedIcons } from "components/Thumbnail/types";
-import {
-  DisplayCoverSize,
-  getCoverUrl,
-  isExplicit,
-  preferredTitle,
-  useLocalCurrentlyReading,
-} from "helpers";
+import { preferredTitle, useLocalCurrentlyReading } from "helpers";
 import { Cover, Manga } from "types";
 
 interface Props {

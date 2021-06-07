@@ -1,9 +1,7 @@
-import { NetworkStatus, useQuery } from "@apollo/client";
 import { Typography } from "@material-ui/core";
 import { Page } from "components";
 import { useParams } from "react-router";
 import { ViewManga } from "./ViewManga";
-import ViewMangaQuery from "./queries/ViewMangaQuery";
 import { useGetMangaQuery } from "generated/graphql";
 import { useEffect, useRef, useState } from "react";
 import usePagination from "helpers/usePagination";
@@ -43,7 +41,7 @@ export default function ViewMangaContainer() {
       chapterLimit,
       chapterOffset,
     });
-  }, [chapterLimit, chapterOffset, locales]);
+  }, [refetch, chapterLimit, chapterOffset, locales]);
 
   useEffect(() => {
     if (initialized.current) {

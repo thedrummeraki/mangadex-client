@@ -1,8 +1,6 @@
-import { ChapterReader } from "components";
 import { SingleChapter, useGetMangaQuery } from "generated/graphql";
 import { bindKeyboard } from "react-swipeable-views-utils";
-import { useLocalCurrentlyReading, useSearchMangaList } from "helpers";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 
 import SwipeableViews from "react-swipeable-views";
 import { CSSProperties } from "@material-ui/styles";
@@ -21,9 +19,6 @@ const zoomedInStyles: CSSProperties = { width: "100%" };
 
 // TODO: Rename to ViewChapterPage (to stay consistent)
 export function ReadChapterPage({ chapter }: Props) {
-  const { setCurrentlyReading } = useLocalCurrentlyReading({
-    manga: chapter.mangaId,
-  });
   const [index, setIndex] = useState(0);
   const [zoomed, setZoomed] = useState(false);
   const { data } = useGetMangaQuery({ variables: { id: chapter.mangaId } });

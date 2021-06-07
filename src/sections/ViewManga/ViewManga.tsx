@@ -1,36 +1,11 @@
-import { useQuery } from "@apollo/client";
-import {
-  CustomGrid,
-  Page,
-  Thumbnail,
-  TitledSection,
-  TitledSectionTag,
-} from "components";
-import {
-  DisplayCoverSize,
-  getCoverUrl,
-  isExplicit,
-  preferredTitle,
-  relationship,
-  relationshipIds,
-} from "helpers/mangadex";
-import { useHistory } from "react-router";
-import useAggregate from "helpers/useAggregate";
-import useAuthors from "helpers/useAuthors";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Cover, GenericResponse } from "types";
-import { Author } from "types/authors";
-import { ChaptersList } from "./ChaptersList";
+import { Page, TitledSection } from "components";
+import { isExplicit } from "helpers/mangadex";
+import { useMemo } from "react";
 import { MangaDetails } from "./MangaDetails";
-import GetCoversForManga from "./queries/GetCoversForManga";
 import FaceIcon from "@material-ui/icons/Face";
 import BrushIcon from "@material-ui/icons/Brush";
-import LocalOfferIcon from "@material-ui/icons/LocalOffer";
-import { getFollowUrl, noEmptyString, notEmpty } from "utils";
 import { SingleManga } from "generated/graphql";
 import LanguageSelector from "components/LanguageSelector";
-import ISO6391 from "iso-639-1";
-import usePagination from "helpers/usePagination";
 import { Pagination } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core";
 
@@ -67,14 +42,7 @@ export function ViewManga({
   onLocaleChange,
   onPageChange,
 }: Props) {
-  const history = useHistory();
   const classes = useStyles();
-
-  const [currentVolume, setCurrentVolume] = useState<string | null>(null);
-  const [authorsState, setAuthorsStatus] = useState<{
-    authors: GenericResponse<Author>[];
-    artists: GenericResponse<Author>[];
-  }>({ authors: [], artists: [] });
 
   const covers = useMemo(() => manga.covers || [], [manga]);
   const mainCover = useMemo(() => covers[0], [covers]);
@@ -97,7 +65,7 @@ export function ViewManga({
     const cover = mainCover;
 
     return cover ? cover.url : null;
-  }, [mainCover, manga]);
+  }, [mainCover]);
 
   return (
     <Page

@@ -1,26 +1,11 @@
 import { NetworkStatus } from "@apollo/client";
 import { makeStyles, TextField } from "@material-ui/core";
 import { CustomGrid, Page, Thumbnail } from "components";
-import { MangaCategory } from "components/MangaCategory";
 import { ThumbnailSkeleton } from "components/Thumbnail/ThumbnailSkeleton";
-import { MangaThumbnail } from "components/Thumbnails";
 import { useAuth } from "config/providers";
-import {
-  Status,
-  useGetHomePageQuery,
-  useGetSearchMangaQuery,
-} from "generated/graphql";
-import { useSearchMangaList } from "helpers";
-import useBrowseSearchFields from "helpers/useBrowseSearchFields";
-import usePagination from "helpers/usePagination";
-import { useEffect, useState } from "react";
-import { MangaStatus, PublicationDemographic } from "types";
-import {
-  removeFromArray,
-  repeat,
-  useDebouncedValue,
-  useQueryParam,
-} from "utils";
+import { Status, useGetSearchMangaQuery } from "generated/graphql";
+import { useState } from "react";
+import { repeat, useDebouncedValue } from "utils";
 
 const useStyles = makeStyles((theme) => ({
   searchField: {
@@ -36,7 +21,6 @@ interface Search {
 
 export function HomePage() {
   const classes = useStyles();
-  const firstPage = useQueryParam("page");
   const { currentUser } = useAuth();
 
   const [search, setSearch] = useState<Partial<Search>>({});

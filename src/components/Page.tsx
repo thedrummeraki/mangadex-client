@@ -1,5 +1,5 @@
 import { Container, Grid, IconButton, makeStyles } from "@material-ui/core";
-import { PropsWithChildren, ReactNode, useRef } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import { TitledSection, TitledSectionProps } from "./TitledSection";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
