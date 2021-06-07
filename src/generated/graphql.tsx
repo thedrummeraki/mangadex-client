@@ -418,7 +418,7 @@ export type GetChapterQuery = (
     & Pick<SingleChapter, 'id' | 'type' | 'mangaId'>
     & { attributes: (
       { __typename?: 'ChapterAttributes' }
-      & Pick<ChapterAttributes, 'title' | 'translatedLanguage' | 'chapterHash' | 'data' | 'dataSaver' | 'version' | 'createdAt' | 'updatedAt' | 'publishAt'>
+      & Pick<ChapterAttributes, 'title' | 'translatedLanguage' | 'chapterHash' | 'data' | 'dataSaver' | 'version' | 'volume' | 'createdAt' | 'updatedAt' | 'publishAt'>
     ), pages: Array<(
       { __typename?: 'ChapterPage' }
       & Pick<ChapterPage, 'url' | 'expiresAt'>
@@ -431,6 +431,7 @@ export type GetMangaQueryVariables = Exact<{
   chapterLimit?: Maybe<Scalars['Int']>;
   chapterOffset?: Maybe<Scalars['Int']>;
   translatedLanguage?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  chaptersForVolume?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -748,6 +749,7 @@ export const GetChapterDocument = gql`
       data
       dataSaver
       version
+      volume
       createdAt
       updatedAt
       publishAt
@@ -789,11 +791,11 @@ export type GetChapterQueryHookResult = ReturnType<typeof useGetChapterQuery>;
 export type GetChapterLazyQueryHookResult = ReturnType<typeof useGetChapterLazyQuery>;
 export type GetChapterQueryResult = Apollo.QueryResult<GetChapterQuery, GetChapterQueryVariables>;
 export const GetMangaDocument = gql`
-    query GetManga($id: String!, $chapterLimit: Int, $chapterOffset: Int, $translatedLanguage: [String!]) {
+    query GetManga($id: String!, $chapterLimit: Int, $chapterOffset: Int, $translatedLanguage: [String!], $chaptersForVolume: String) {
   manga(
     id: $id
     coverSize: thumb512
-    chapterParams: {limit: $chapterLimit, offset: $chapterOffset, translatedLanguage: $translatedLanguage}
+    chapterParams: {limit: $chapterLimit, offset: $chapterOffset, translatedLanguage: $translatedLanguage, volume: $chaptersForVolume}
   ) {
     id
     attributes {
@@ -919,6 +921,7 @@ export const GetMangaDocument = gql`
  *      chapterLimit: // value for 'chapterLimit'
  *      chapterOffset: // value for 'chapterOffset'
  *      translatedLanguage: // value for 'translatedLanguage'
+ *      chaptersForVolume: // value for 'chaptersForVolume'
  *   },
  * });
  */

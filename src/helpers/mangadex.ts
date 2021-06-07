@@ -8,6 +8,8 @@ import {
 import {
   SingleManga as GraphqlSingleManga,
   ContentRating as GraphqlContentRating,
+  Chapter as GraphqlChapter,
+  SingleChapter as GraphqlSingleChapter,
 } from "generated/graphql";
 import { Chapter } from "types/chapter";
 
@@ -64,12 +66,17 @@ export function preferredDescription(description: Description) {
   return DOMPurify.sanitize(description.en, { USE_PROFILES: { html: true } });
 }
 
-export function chapterTitle(chapter: Chapter) {
+export function chapterTitle(
+  chapter: Chapter | GraphqlChapter | GraphqlSingleChapter,
+  includeNumber: boolean = false
+) {
   const {
     attributes: { title, chapter: number },
   } = chapter;
   if (title) {
-    return decodeHTML(title);
+    return includeNumber && chapter.attributes.chapter != null
+      ? `${chapter.attributes.chapter}) ${title}`
+      : title;
   }
 
   return number != null ? `Chapter ${number}` : "Chapter";

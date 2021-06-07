@@ -3,6 +3,7 @@ query GetManga(
   $chapterLimit: Int
   $chapterOffset: Int
   $translatedLanguage: [String!]
+  $chaptersForVolume: String
 ) {
   manga(
     id: $id
@@ -11,6 +12,7 @@ query GetManga(
       limit: $chapterLimit
       offset: $chapterOffset
       translatedLanguage: $translatedLanguage
+      volume: $chaptersForVolume
     }
   ) {
     id

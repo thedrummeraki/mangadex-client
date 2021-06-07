@@ -10,6 +10,7 @@ query GetChapter($id: String!, $dataSaver: Boolean) {
       data
       dataSaver
       version
+      volume
       createdAt
       updatedAt
       publishAt
