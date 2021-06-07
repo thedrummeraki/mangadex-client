@@ -104,5 +104,16 @@ query GetManga(
         publishAt
       }
     }
+    people {
+      id
+      type
+      attributes {
+        name
+        imageUrl
+        createdAt
+        updatedAt
+        version
+      }
+    }
   }
 }

@@ -4,15 +4,15 @@ import ISO6391 from "iso-639-1";
 import { TextField } from "@material-ui/core";
 
 interface Props {
-  defaultLocale?: string;
+  defaultLocales?: string[];
   onLocaleChange?: (locales: string[]) => void;
 }
 
 export default function LanguageSelector({
   onLocaleChange,
-  defaultLocale = "en",
+  defaultLocales = ["en"],
 }: Props) {
-  const [locales, setLocales] = useState([defaultLocale]);
+  const [locales, setLocales] = useState(defaultLocales);
 
   return (
     <Autocomplete

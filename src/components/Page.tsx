@@ -48,29 +48,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function Page({
-  backUrl,
-  title,
-  badges,
-  tags,
-  maxWitdh,
-  showcase,
-  children,
-  primaryAction,
-  searchFields,
-  onScrolledToBottom,
-}: PropsWithChildren<PageProps>) {
+export function Page(props: PropsWithChildren<PageProps>) {
+  const {
+    backUrl,
+    title,
+    badges,
+    tags,
+    maxWitdh,
+    showcase,
+    children,
+    primaryAction,
+    searchFields,
+    onScrolledToBottom,
+  } = props;
   const classes = useStyles();
   const history = useHistory();
   const defaultBackUrl = useQueryParam("from", backUrl);
 
   useDocumentTitle({ title });
 
-  useScrollListeners(null, () => {
-    if (onScrolledToBottom) {
-      onScrolledToBottom();
-    }
-  });
+  useScrollListeners(
+    null,
+    () => {
+      if (onScrolledToBottom) {
+        onScrolledToBottom();
+      }
+    },
+    { offset: 400 }
+  );
 
   const imageMarkup = showcase?.imageUrl && (
     <img
@@ -131,13 +136,7 @@ export function Page({
   return (
     <Container maxWidth={maxWitdh}>
       {searchFieldsMarkup}
-      <TitledSection
-        variant="h5"
-        title={titleMarkup}
-        badges={badges}
-        primaryAction={primaryAction}
-        tags={tags}
-      />
+      <TitledSection {...props} variant="h5" title={titleMarkup} />
       <div className={classes.root}>{children}</div>
     </Container>
   );

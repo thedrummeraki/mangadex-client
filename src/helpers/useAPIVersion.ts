@@ -1,21 +1,15 @@
-import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
-
-const query = gql`
-  query GetAPIVersion {
-    version @rest(type: "Version", path: "/version") {
-      version
-    }
-  }
-`;
+import { useEffect, useState } from "react";
 
 export default function useAPIVersion() {
-  const result = useQuery(query);
-  const { data, error, loading } = result;
+  const [loading, setLoading] = useState(true);
+  const [version, setVersion] = useState<string | null>(null);
 
-  if (!data || error || loading) {
-    return { ...result, version: null };
-  }
+  useEffect(() => {
+    fetch("http://localhost:3001/version")
+      .then((res) => res.json())
+      .then((res) => setVersion(res.version))
+      .finally(() => setLoading(false));
+  }, []);
 
-  return { ...result, version: data?.version?.version as string };
+  return { version, loading };
 }

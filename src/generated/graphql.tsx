@@ -171,6 +171,23 @@ export type Mutation = {
   testField: Scalars['String'];
 };
 
+/** A basic instance of a Person. */
+export type Person = {
+  __typename?: 'Person';
+  attributes: PersonAttributes;
+  id: Scalars['ID'];
+  type: Scalars['String'];
+};
+
+export type PersonAttributes = {
+  __typename?: 'PersonAttributes';
+  createdAt: Scalars['ISO8601DateTime'];
+  imageUrl?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  updatedAt: Scalars['ISO8601DateTime'];
+  version: Scalars['Int'];
+};
+
 export enum PublicationDemographic {
   Shounen = 'SHOUNEN',
   Shoujo = 'SHOUJO',
@@ -246,6 +263,7 @@ export type SingleManga = {
   chaptersCount: Scalars['Int'];
   covers?: Maybe<Array<Cover>>;
   id: Scalars['ID'];
+  people: Array<Person>;
   type: Scalars['String'];
   volumes?: Maybe<Array<Scalars['String']>>;
 };
@@ -460,6 +478,13 @@ export type GetMangaQuery = (
       & { attributes: (
         { __typename?: 'ChapterAttributes' }
         & Pick<ChapterAttributes, 'chapter' | 'version' | 'chapterHash' | 'data' | 'dataSaver' | 'title' | 'translatedLanguage' | 'uploader' | 'volume' | 'createdAt' | 'updatedAt' | 'publishAt'>
+      ) }
+    )>, people: Array<(
+      { __typename?: 'Person' }
+      & Pick<Person, 'id' | 'type'>
+      & { attributes: (
+        { __typename?: 'PersonAttributes' }
+        & Pick<PersonAttributes, 'name' | 'imageUrl' | 'createdAt' | 'updatedAt' | 'version'>
       ) }
     )> }
   )> }
@@ -859,6 +884,17 @@ export const GetMangaDocument = gql`
         createdAt
         updatedAt
         publishAt
+      }
+    }
+    people {
+      id
+      type
+      attributes {
+        name
+        imageUrl
+        createdAt
+        updatedAt
+        version
       }
     }
   }

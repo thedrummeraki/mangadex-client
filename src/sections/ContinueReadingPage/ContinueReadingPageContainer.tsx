@@ -14,9 +14,9 @@ import { useHistory } from "react-router";
 import BasicModal from "components/modals/BasicModal";
 import useLocalCurrentReadingHistoryManagament from "helpers/useLocalCurrentReadingHistoryManagament";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
-import { ContentRating } from "types";
 import useBrowseSearchFields from "helpers/useBrowseSearchFields";
-import { useGetSearchMangaQuery } from "generated/graphql";
+import { ContentRating, useGetSearchMangaQuery } from "generated/graphql";
+import { CurrentlyReading } from "helpers/useCurrentlyReading";
 
 const useStyles = makeStyles((theme) => ({
   formRoot: {
@@ -31,6 +31,7 @@ export default function ContinueReadingPageContainer() {
   const classes = useStyles();
   const history = useHistory();
   const { currentlyReading } = useLocalCurrentlyReading();
+  //const currentlyReading: CurrentlyReading[] = [];
   const mangaIds = useMemo(
     () => Array.from(new Set(currentlyReading.map((cr) => cr.mangaId))),
     [currentlyReading]
@@ -46,7 +47,12 @@ export default function ContinueReadingPageContainer() {
   const { currentUser } = useAuth();
 
   const { data, loading, error } = useGetSearchMangaQuery({
-    variables: { limit: 100, offset: 0, ids: mangaIds },
+    variables: {
+      limit: 100,
+      offset: 0,
+      ids: mangaIds,
+      contentRating: Object.values(ContentRating),
+    },
   });
 
   const { clearHistory } = useLocalCurrentReadingHistoryManagament();
@@ -126,7 +132,7 @@ export default function ContinueReadingPageContainer() {
         </Alert>
       )}
       <CustomGrid>
-        {mangaList.map((manga) => (
+        {sortedMangaList.map((manga) => (
           <Thumbnail
             key={manga.id}
             features={[manga.attributes.status]}

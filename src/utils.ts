@@ -186,6 +186,18 @@ export function useBreakpoints() {
   return { ...theme.breakpoints.values };
 }
 
+export function removeFromArray<T>(array: T[], value: T) {
+  let removed = false;
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === value) {
+      removed = true;
+      array.splice(i, 1);
+    }
+  }
+
+  return removed ? value : null;
+}
+
 export const getWindowWidth = () =>
   window.innerWidth ||
   document.documentElement.clientWidth ||

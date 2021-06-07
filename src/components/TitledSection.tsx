@@ -25,6 +25,7 @@ export interface TitledSectionProps {
 
 type Props = TitledSectionProps & {
   variant?: Variant;
+  id?: string;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -70,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function TitledSection({
   title,
+  id,
   variant = "h6",
   badges,
   primaryAction,
@@ -85,7 +87,11 @@ export function TitledSection({
       .filter(notEmpty);
 
   return (
-    <div key={title?.toString()} className={classes.titledSection}>
+    <div
+      key={id || title?.toString()}
+      id={id}
+      className={classes.titledSection}
+    >
       <div className={classes.titledSectionTitleContainer}>
         <>
           <Typography

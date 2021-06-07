@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tagsContainer: {
     width: "100%",
-    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.5),
 
     "&:first-child": {
       marginLeft: 0,
@@ -117,36 +117,63 @@ export function MangaDetails({ manga }: Props) {
         startIcon={<PlayArrowIcon />}
         className={classes.readNowButton}
       >
-        Read now
+        Read Chapter 1 now
       </Button>
 
-      {tagGroups.map(
-        (tagGroup) =>
-          tagGroup.tags.length > 0 && (
-            <div className={classes.tagsContainer}>
-              <Typography
-                component="span"
-                variant="subtitle2"
-                className={classes.tagsDescription}
-              >
-                {tagGroup.name}
-              </Typography>
-              {tagGroup.tags.map((tag, index) => {
-                return (
-                  <Chip
-                    key={`${tag}-${index}`}
-                    variant={"outlined"}
-                    color={"default"}
-                    size="small"
-                    label={tag.attributes.name.en}
-                    className={classes.tag}
-                  />
-                );
-              })}
-            </div>
-          )
-      )}
       <div className={classes.accordionRoot}>
+        {(manga.attributes.altTitles.length > 0 || tagGroups.length > 0) && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography className={classes.accordionHeading}>
+                Details
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  {tagGroups.map(
+                    (tagGroup) =>
+                      tagGroup.tags.length > 0 && (
+                        <div className={classes.tagsContainer}>
+                          <Typography
+                            component="span"
+                            variant="subtitle2"
+                            className={classes.tagsDescription}
+                          >
+                            {tagGroup.name}
+                          </Typography>
+                          {tagGroup.tags.map((tag, index) => {
+                            return (
+                              <Chip
+                                key={`${tag}-${index}`}
+                                variant={"outlined"}
+                                color={"default"}
+                                size="small"
+                                label={tag.attributes.name.en}
+                                className={classes.tag}
+                              />
+                            );
+                          })}
+                        </div>
+                      )
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography component="span" variant="subtitle2">
+                    Also known as:{" "}
+                  </Typography>
+                  <Typography variant="caption" className={classes.altTitles}>
+                    <em>
+                      {manga.attributes.altTitles
+                        .map((title) => decodeHTML(title.en || ""))
+                        .join("・")}
+                    </em>
+                  </Typography>
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
+        )}
         {description?.en && (
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -158,29 +185,6 @@ export function MangaDetails({ manga }: Props) {
               <Typography variant="body2">
                 <BBDescription description={description.en} />
               </Typography>
-            </AccordionDetails>
-          </Accordion>
-        )}
-        {manga.attributes.altTitles.length > 0 && (
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography className={classes.accordionHeading}>
-                Other details
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div>
-                <Typography component="span" variant="subtitle2">
-                  Also known as:{" "}
-                </Typography>
-                <Typography variant="caption" className={classes.altTitles}>
-                  <em>
-                    {manga.attributes.altTitles
-                      .map((title) => decodeHTML(title.en || ""))
-                      .join("・")}
-                  </em>
-                </Typography>
-              </div>
             </AccordionDetails>
           </Accordion>
         )}

@@ -17,7 +17,7 @@ import {
 import { useHistory } from "react-router";
 import useAggregate from "helpers/useAggregate";
 import useAuthors from "helpers/useAuthors";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Cover, GenericResponse } from "types";
 import { Author } from "types/authors";
 import { ChaptersList } from "./ChaptersList";
@@ -37,12 +37,14 @@ import { makeStyles } from "@material-ui/core";
 import ImageIcon from "@material-ui/icons/Image";
 // import ListIcon from "@material-ui/icons/List";
 import GridOnIcon from "@material-ui/icons/GridOn";
+import { ChapterCustomGrid } from "./ChaptersCustomGrid";
 
 interface Props {
   manga: SingleManga;
   page: number;
   pagesCount: number;
   requestedLocales: string[];
+  refetching: boolean;
   onLocaleChange: (locale: string[]) => void;
   onPageChange: (page: number) => void;
 }
@@ -61,6 +63,7 @@ export function ViewManga({
   requestedLocales,
   page,
   pagesCount,
+  refetching,
   onLocaleChange,
   onPageChange,
 }: Props) {
@@ -76,6 +79,20 @@ export function ViewManga({
   const covers = useMemo(() => manga.covers || [], [manga]);
   const mainCover = useMemo(() => covers[0], [covers]);
 
+  const { people } = manga;
+
+  const authors = people.filter((person) => person.type === "author");
+  const artists = people.filter((person) => person.type === "artist");
+
+  const authorsTags = authors.map((author) => ({
+    content: author.attributes.name,
+    icon: <FaceIcon />,
+  }));
+  const artistsTags = artists.map((artist) => ({
+    content: artist.attributes.name,
+    icon: <BrushIcon />,
+  }));
+
   const currentCoverUrl = useMemo(() => {
     const cover = mainCover;
 
@@ -90,13 +107,15 @@ export function ViewManga({
         isExplicit(manga, { conservative: false }) ? "EXPLICIT" : null,
         manga.attributes.contentRating || null,
       ]}
-      tags={[]}
+      tags={authorsTags.concat(artistsTags)}
+      tagsDescription="People involved"
       showcase={{
         imageUrl: currentCoverUrl,
         content: <MangaDetails manga={manga} />,
       }}
     >
       <TitledSection
+        id="chapters-list"
         title="Chapters list"
         variant="h6"
         tags={[
@@ -108,54 +127,27 @@ export function ViewManga({
         primaryAction={
           <div style={{ width: 300 }}>
             <LanguageSelector
-              defaultLocale={"en"}
+              defaultLocales={requestedLocales}
               onLocaleChange={onLocaleChange}
             />
           </div>
         }
       />
 
-      <CustomGrid>
-        {manga.chapters.map((chapter) => {
-          const {
-            dataSaver,
-            chapterHash,
-            title,
-            translatedLanguage,
-            chapter: number,
-            volume,
-          } = chapter.attributes;
-          const filename = dataSaver[0];
-          const img = [
-            "https://uploads.mangadex.org",
-            "data-saver",
-            chapterHash,
-            filename,
-          ].join("/");
+      <ChapterCustomGrid refetching={refetching} chapters={manga.chapters} />
 
-          const pagesCount =
-            dataSaver.length === 1 ? "1 page" : `${dataSaver.length} pages`;
-
-          return (
-            <Thumbnail
-              features={[
-                volume ? `Vol. ${volume}` : null,
-                ISO6391.getName(translatedLanguage.split("-")[0]),
-                pagesCount,
-              ]}
-              img={img}
-              url={getFollowUrl(`/manga/read/${chapter.id}`)}
-              title={`${number}) ${title || `Chapter ${number}`}`}
-            />
-          );
-        })}
-      </CustomGrid>
       {pagesCount > 1 && (
         <div className={classes.paginationRoot}>
           <Pagination
             count={pagesCount}
             page={page}
-            onChange={(_, number) => onPageChange(number)}
+            onChange={(_, number) => {
+              const titleElement = document.getElementById("chapters-list");
+              if (titleElement) {
+                titleElement.scrollIntoView({ behavior: "smooth" });
+              }
+              onPageChange(number);
+            }}
           />
         </div>
       )}

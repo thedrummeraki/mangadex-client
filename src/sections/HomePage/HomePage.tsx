@@ -1,26 +1,62 @@
+import { NetworkStatus } from "@apollo/client";
+import { makeStyles, TextField } from "@material-ui/core";
 import { CustomGrid, Page, Thumbnail } from "components";
 import { MangaCategory } from "components/MangaCategory";
+import { ThumbnailSkeleton } from "components/Thumbnail/ThumbnailSkeleton";
 import { MangaThumbnail } from "components/Thumbnails";
 import { useAuth } from "config/providers";
-import { useGetHomePageQuery } from "generated/graphql";
+import {
+  Status,
+  useGetHomePageQuery,
+  useGetSearchMangaQuery,
+} from "generated/graphql";
 import { useSearchMangaList } from "helpers";
 import useBrowseSearchFields from "helpers/useBrowseSearchFields";
 import usePagination from "helpers/usePagination";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MangaStatus, PublicationDemographic } from "types";
-import { useQueryParam } from "utils";
+import {
+  removeFromArray,
+  repeat,
+  useDebouncedValue,
+  useQueryParam,
+} from "utils";
+
+const useStyles = makeStyles((theme) => ({
+  searchField: {
+    marginBottom: theme.spacing(3),
+    width: "100%",
+  },
+}));
+
+interface Search {
+  title: string | null;
+  status: Status | null;
+}
 
 export function HomePage() {
+  const classes = useStyles();
   const firstPage = useQueryParam("page");
   const { currentUser } = useAuth();
 
-  const { data, error, loading, fetchMore } = useGetHomePageQuery({
-    variables: { limit: 100, offset: 0 },
-  });
+  const [search, setSearch] = useState<Partial<Search>>({});
+
+  const debouncedSearch = useDebouncedValue(search, 500);
+
+  const { data, error, loading, networkStatus, fetchMore } =
+    useGetSearchMangaQuery({
+      variables: { limit: 100, offset: 0, ...debouncedSearch },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+    });
+
+  const fetchingMore = networkStatus === NetworkStatus.fetchMore;
 
   if (error) {
     return <p>error</p>;
   }
+
+  console.log(data);
 
   const mangas = data?.mangas || [];
 
@@ -31,6 +67,15 @@ export function HomePage() {
           ? `Welcome, ${currentUser.attributes.username}.`
           : `Hottest manga`
       }
+      tags={Object.values(Status).map((status) => ({
+        content: status,
+        onClick: () =>
+          setSearch((search) => ({
+            ...search,
+            status: search.status === status ? null : status,
+          })),
+      }))}
+      selectedTag={search.status ? String(search.status) : null}
       onScrolledToBottom={() => {
         if (loading) {
           return;
@@ -39,16 +84,30 @@ export function HomePage() {
         fetchMore({ variables: { offset: mangas.length } });
       }}
     >
+      <TextField
+        variant="outlined"
+        label="Search by title..."
+        value={search.title}
+        onChange={(event) =>
+          setSearch((search) => ({ ...search, title: event.target.value }))
+        }
+        className={classes.searchField}
+      />
       <CustomGrid>
         {mangas.map((manga) => (
           <Thumbnail
             key={manga.id}
             features={[manga.attributes.status]}
             title={manga.attributes.title.en}
-            img={manga.covers ? manga.covers[0].url : "#"}
+            img={manga.covers?.length ? manga.covers[0].url : "#"}
             url={`/manga/${manga.id}`}
           />
         ))}
+        {fetchingMore ||
+          (loading &&
+            repeat(20, (index) => (
+              <ThumbnailSkeleton key={`manga-skeleton-${index}`} />
+            )))}
       </CustomGrid>
     </Page>
   );

@@ -1,11 +1,11 @@
-import { useQuery } from "@apollo/client";
+import { NetworkStatus, useQuery } from "@apollo/client";
 import { Typography } from "@material-ui/core";
 import { Page } from "components";
 import { useParams } from "react-router";
 import { ViewManga } from "./ViewManga";
 import ViewMangaQuery from "./queries/ViewMangaQuery";
 import { useGetMangaQuery } from "generated/graphql";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import usePagination from "helpers/usePagination";
 
 export default function ViewMangaContainer() {
@@ -13,6 +13,8 @@ export default function ViewMangaContainer() {
   const defaultLocale = "en";
   const [locales, setLocales] = useState([defaultLocale]);
   const pageSize = 100;
+
+  const initialized = useRef(false);
 
   const {
     limit: chapterLimit,
@@ -30,6 +32,26 @@ export default function ViewMangaContainer() {
       translatedLanguage: [defaultLocale],
     },
   });
+
+  useEffect(() => {
+    if (!initialized.current) {
+      return;
+    }
+
+    refetch({
+      translatedLanguage: locales,
+      chapterLimit,
+      chapterOffset,
+    });
+  }, [chapterLimit, chapterOffset, locales]);
+
+  useEffect(() => {
+    if (initialized.current) {
+      return;
+    }
+
+    initialized.current = Boolean(data?.manga);
+  }, [data]);
 
   if (error || (!loading && !data?.manga)) {
     if (error) console.error(error);
@@ -49,6 +71,7 @@ export default function ViewMangaContainer() {
 
   return (
     <ViewManga
+      refetching={false}
       manga={data.manga}
       requestedLocales={locales}
       page={page}
@@ -56,15 +79,9 @@ export default function ViewMangaContainer() {
       onLocaleChange={(locales) => {
         setLocales(locales);
         setPage(1);
-        refetch({
-          translatedLanguage: locales,
-          chapterLimit: pageSize,
-          chapterOffset: 0,
-        });
       }}
       onPageChange={(page) => {
         setPage(page);
-        refetch({ chapterLimit, chapterOffset });
       }}
     />
   );

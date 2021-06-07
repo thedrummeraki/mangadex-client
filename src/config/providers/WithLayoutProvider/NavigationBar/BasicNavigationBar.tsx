@@ -13,13 +13,15 @@ import Badge from "@material-ui/core/Badge";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import HistoryIcon from "@material-ui/icons/History";
 import MailIcon from "@material-ui/icons/Mail";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import { useAuth } from "config/providers/AuthProvider";
+import { useAuth, useLoginModal } from "config/providers/AuthProvider";
 import HomeIcon from "@material-ui/icons/Home";
 import useAPIVersion from "helpers/useAPIVersion";
 import { useHistory } from "react-router";
+import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -87,11 +89,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function AuthenticatedNavigationBar() {
+export default function BasicNavigationBar({
+  loggedIn,
+}: {
+  loggedIn?: boolean;
+}) {
   const { version } = useAPIVersion();
   const classes = useStyles();
   const history = useHistory();
   const { logout } = useAuth();
+  const { requestLoginModal } = useLoginModal();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -135,7 +142,7 @@ export default function AuthenticatedNavigationBar() {
           logout();
         }}
       >
-        Logout
+        {loggedIn ? "Logout" : "Login"}
       </MenuItem>
     </Menu>
   );
@@ -211,14 +218,31 @@ export default function AuthenticatedNavigationBar() {
             </IconButton> */}
             <IconButton
               edge="end"
-              aria-label="account of current user"
+              aria-label="current reading history"
               aria-controls={menuId}
               aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
+              onClick={() => history.push("/continue-reading")}
               color="inherit"
             >
-              <AccountCircle />
+              <HistoryIcon />
             </IconButton>
+            {!loggedIn && (
+              <Button color="inherit" onClick={requestLoginModal}>
+                Login
+              </Button>
+            )}
+            {loggedIn && (
+              <IconButton
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+            )}
           </div>
           <div className={classes.sectionMobile}>
             <IconButton

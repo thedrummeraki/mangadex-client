@@ -6,17 +6,17 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Pagination, Alert, AlertTitle } from "@material-ui/lab";
-import { Page } from "components";
+import { CustomGrid, Page, Thumbnail } from "components";
 import { MangaCustomGrid } from "components/MangaCustomGrid";
 import { useSearchMangaList } from "helpers";
 import { ReadingHistory } from "helpers/useCurrentlyReading";
 import usePagination from "helpers/usePagination";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Manga } from "types";
 import SaveIcon from "@material-ui/icons/Save";
 import BasicModal from "components/modals/BasicModal";
 import useLocalCurrentReadingHistoryManagament from "helpers/useLocalCurrentReadingHistoryManagament";
 import { useHistory } from "react-router";
+import { Manga, useGetSearchMangaLazyQuery } from "generated/graphql";
 
 interface Props {
   readingHistory: ReadingHistory[];
@@ -43,10 +43,11 @@ export function PreviewReadingHistoryImport({ readingHistory }: Props) {
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [override, setOverride] = useState(false);
   const [thinking, setThinking] = useState(false);
-  const { limit, offset, page, setPage, getPagesCount } = usePagination();
-  const { mangaList, loading, searchManga } = useSearchMangaList({
-    limit,
+  const [searchManga, { data, loading }] = useGetSearchMangaLazyQuery({
+    variables: { limit: 100, offset: 0 },
   });
+  const mangaList = useMemo(() => data?.mangas || [], [data]);
+
   const { saveImport } = useLocalCurrentReadingHistoryManagament();
 
   const getChapterIds = useCallback(
@@ -57,16 +58,15 @@ export function PreviewReadingHistoryImport({ readingHistory }: Props) {
     [readingHistory]
   );
 
-  const pagesCount = useMemo(
-    () => getPagesCount(mangaList.total),
-    [getPagesCount, mangaList]
-  );
-
   useEffect(() => {
     searchManga({
-      ids: readingHistory.map((rh) => rh.mangaId),
+      variables: {
+        limit: 100,
+        offset: 0,
+        ids: readingHistory.map((rh) => rh.mangaId),
+      },
     });
-  }, [searchManga, offset, readingHistory]);
+  }, [searchManga, readingHistory]);
 
   useEffect(() => {
     let id: NodeJS.Timeout | null = null;
@@ -106,25 +106,23 @@ export function PreviewReadingHistoryImport({ readingHistory }: Props) {
         we suggest exporting it before pressing "Save" (you can do this by going
         back).
       </Alert>
-      <MangaCustomGrid
-        mangasInfo={mangaList.results || []}
-        overrideFeatures={(mangaInfo) => {
-          const chaptersCount = getChapterIds(mangaInfo.data).length;
+      <CustomGrid>
+        {mangaList.map((manga) => {
+          const chaptersCount = getChapterIds(manga).length;
           const countText =
             chaptersCount === 1 ? "1 chapter" : `${chaptersCount} chapters`;
-          return [`Read ${countText}`];
-        }}
-      />
-      {pagesCount > 1 && (
-        <div className={classes.centerContent}>
-          <Pagination
-            disabled={loading}
-            count={pagesCount}
-            page={page}
-            onChange={(_, number) => setPage(number)}
-          />
-        </div>
-      )}
+
+          return (
+            <Thumbnail
+              key={manga.id}
+              features={[manga.attributes.status]}
+              title={manga.attributes.title.en}
+              img={manga.covers ? manga.covers[0].url : "#"}
+              url={`/manga/${manga.id}`}
+            />
+          );
+        })}
+      </CustomGrid>
       <BasicModal
         open={saveModalOpen}
         onClose={() => setSaveModalOpen(false)}
