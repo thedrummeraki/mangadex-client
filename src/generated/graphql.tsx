@@ -407,6 +407,7 @@ export type GetSearchMangaQuery = (
 
 export type GetChapterQueryVariables = Exact<{
   id: Scalars['String'];
+  dataSaver?: Maybe<Scalars['Boolean']>;
 }>;
 
 
@@ -735,7 +736,7 @@ export type GetSearchMangaQueryHookResult = ReturnType<typeof useGetSearchMangaQ
 export type GetSearchMangaLazyQueryHookResult = ReturnType<typeof useGetSearchMangaLazyQuery>;
 export type GetSearchMangaQueryResult = Apollo.QueryResult<GetSearchMangaQuery, GetSearchMangaQueryVariables>;
 export const GetChapterDocument = gql`
-    query GetChapter($id: String!) {
+    query GetChapter($id: String!, $dataSaver: Boolean) {
   chapter(id: $id) {
     id
     type
@@ -751,7 +752,7 @@ export const GetChapterDocument = gql`
       updatedAt
       publishAt
     }
-    pages {
+    pages(dataSaver: $dataSaver) {
       url
       expiresAt
     }
@@ -772,6 +773,7 @@ export const GetChapterDocument = gql`
  * const { data, loading, error } = useGetChapterQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      dataSaver: // value for 'dataSaver'
  *   },
  * });
  */

@@ -115,9 +115,10 @@ export function MangaDetails({ manga }: Props) {
         color="primary"
         variant="contained"
         startIcon={<PlayArrowIcon />}
+        disabled={manga.chapters.length === 0}
         className={classes.readNowButton}
       >
-        Read Chapter 1 now
+        Read Chapter {manga.chapters[0].attributes.chapter} now
       </Button>
 
       <div className={classes.accordionRoot}>

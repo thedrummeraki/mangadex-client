@@ -1,4 +1,4 @@
-query GetChapter($id: String!) {
+query GetChapter($id: String!, $dataSaver: Boolean) {
   chapter(id: $id) {
     id
     type
@@ -14,7 +14,7 @@ query GetChapter($id: String!) {
       updatedAt
       publishAt
     }
-    pages {
+    pages(dataSaver: $dataSaver) {
       url
       expiresAt
     }

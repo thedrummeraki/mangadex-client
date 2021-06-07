@@ -1,43 +1,55 @@
 import { ChapterReader } from "components";
 import { SingleChapter, useGetMangaQuery } from "generated/graphql";
+import { bindKeyboard } from "react-swipeable-views-utils";
 import { useLocalCurrentlyReading, useSearchMangaList } from "helpers";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import SwipeableViews from "react-swipeable-views";
+import { CSSProperties } from "@material-ui/styles";
 
 interface Props {
   chapter: SingleChapter;
 }
+
+const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
+
+const zoomedOutStyles: CSSProperties = {
+  height: "100vh",
+  objectFit: "contain",
+};
+const zoomedInStyles: CSSProperties = { width: "100%" };
 
 // TODO: Rename to ViewChapterPage (to stay consistent)
 export function ReadChapterPage({ chapter }: Props) {
   const { setCurrentlyReading } = useLocalCurrentlyReading({
     manga: chapter.mangaId,
   });
+  const [index, setIndex] = useState(0);
+  const [zoomed, setZoomed] = useState(false);
   const { data } = useGetMangaQuery({ variables: { id: chapter.mangaId } });
 
   const manga = data?.manga;
-
-  // setCurrentlyReading({ chapter, manga: chapter.mangaId });
-
-  const pageData = chapter.attributes.dataSaver;
-  const pageURLs = pageData.map((_, index) =>
-    ["https://mangadex-client-proxy.herokuapp.com", "at-home", "img"]
-      .join("/")
-      .concat(`?chapterId=${chapter.id}&page=${index + 1}`)
-  );
 
   if (!manga) {
     return null;
   }
 
   return (
-    <p>Reading {chapter.attributes.title}</p>
-    // <ChapterReader
-    //   chapter={chapter}
-    //   manga={manga}
-    //   offset={2}
-    //   pageUrls={pageURLs}
-    //   onPrevious={() => {}}
-    //   onNext={() => {}}
-    // />
+    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+      <BindKeyboardSwipeableViews
+        enableMouseEvents
+        index={index}
+        onChangeIndex={setIndex}
+      >
+        {chapter.pages.map((page, index) => (
+          <img
+            alt={`Page ${index + 1}`}
+            src={page.url}
+            onClick={() => setZoomed((zoomed) => !zoomed)}
+            style={zoomed ? zoomedInStyles : zoomedOutStyles}
+          />
+        ))}
+      </BindKeyboardSwipeableViews>
+    </div>
   );
 }
