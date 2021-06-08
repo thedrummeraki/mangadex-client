@@ -19,7 +19,7 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const uri = "http://localhost:3001/graphql";
+const uri = new URL("/graphql", getClientHost()).toString();
 
 const link = createHttpLink({
   uri,
@@ -48,3 +48,7 @@ const client = new ApolloClient({
 });
 
 export default client;
+
+export function getClientHost() {
+  return process.env.REACT_APP_API_HOST || "http://localhost:3001";
+}

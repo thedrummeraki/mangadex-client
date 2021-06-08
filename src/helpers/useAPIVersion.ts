@@ -1,3 +1,4 @@
+import { getClientHost } from "config/providers/APIProvider/client";
 import { useEffect, useState } from "react";
 
 export default function useAPIVersion() {
@@ -5,7 +6,7 @@ export default function useAPIVersion() {
   const [version, setVersion] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/version")
+    fetch(new URL("/version", getClientHost()).toString())
       .then((res) => res.json())
       .then((res) => setVersion(res.version))
       .finally(() => setLoading(false));
