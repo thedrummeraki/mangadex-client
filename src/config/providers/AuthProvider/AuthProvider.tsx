@@ -1,10 +1,4 @@
-import {
-  gql,
-  useApolloClient,
-  useLazyQuery,
-  useMutation,
-  useQuery,
-} from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 import { LoginModal } from "components/modals";
 import {
   CurrentUser,
@@ -22,62 +16,6 @@ import React, {
 } from "react";
 import { GenericResponse } from "types";
 import { Token, User } from "types/user";
-
-interface CheckSessionResponse extends GenericResponse<User> {
-  session?: string | null;
-  refresh?: string | null;
-}
-
-const currentUserQuery = gql`
-  query CurrentUser {
-    me @rest(type: "User", path: "/user/me") {
-      result
-      data {
-        id
-        type
-        attributes {
-          username
-          version
-        }
-      }
-      relationships
-    }
-  }
-`;
-
-const checkSessionQuery = gql`
-  query CheckSession {
-    currentUser @rest(type: "UserResponse", path: "/auth/check-and-refresh") {
-      result
-      data {
-        id
-        type
-        attributes {
-          username
-          version
-        }
-      }
-      relationships
-      session
-      refresh
-    }
-  }
-`;
-
-const logoutMutation = gql`
-  mutation Logout {
-    logout(body: {})
-      @rest(
-        type: "Logout"
-        method: "POST"
-        path: "/auth/logout"
-        bodyKey: "body"
-      ) {
-      result
-      errors
-    }
-  }
-`;
 
 type AuthUser = CurrentUser | null;
 
