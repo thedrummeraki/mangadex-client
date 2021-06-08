@@ -1,6 +1,6 @@
 import { Page, TitledSection } from "components";
 import { isExplicit } from "helpers/mangadex";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MangaDetails } from "./MangaDetails";
 import FaceIcon from "@material-ui/icons/Face";
 import BrushIcon from "@material-ui/icons/Brush";
@@ -43,7 +43,10 @@ export function ViewManga({
   onPageChange,
 }: Props) {
   const classes = useStyles();
-  const [displayStyle, setDisplayStyle] = useState(DisplayStyle.Image);
+  const [displayStyle, setDisplayStyle] = useState(
+    (localStorage.getItem("display-style") as DisplayStyle) ||
+      DisplayStyle.Image
+  );
 
   const covers = useMemo(() => manga.covers || [], [manga]);
   const mainCover = useMemo(() => covers[0], [covers]);
@@ -67,6 +70,10 @@ export function ViewManga({
 
     return cover ? cover.url : null;
   }, [mainCover]);
+
+  useEffect(() => {
+    localStorage.setItem("display-style", displayStyle);
+  }, [displayStyle]);
 
   return (
     <Page
