@@ -5,6 +5,10 @@ import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
   ...sharedStyles(theme),
+  root: {
+    borderRadius: 5,
+    overflow: "hidden",
+  },
   error: {
     background: "#262626", //theme.palette.background.default,
   },
@@ -46,12 +50,13 @@ export function ThumbnailSkeleton({
   const animation = error ? false : !staticAnimation && "pulse";
 
   return (
-    <div>
+    <div className={classes.root}>
       <div className={classes.container}>
         <MaterialSkeleton
           variant="rect"
           animation={animation}
           className={clsx(error ? classes.error : "", classes.skeleton)}
+          style={{ borderRadius: 5 }}
         />
       </div>
       {!hideTitle && titleMarkup}

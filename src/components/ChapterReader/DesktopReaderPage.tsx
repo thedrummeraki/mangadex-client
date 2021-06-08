@@ -6,6 +6,7 @@ interface Props {
   pageNumber: number;
   pageUrl: string | null;
   shouldDisplay: boolean;
+  fullScreen: boolean;
   onClickLeft: VoidFunction;
   onClickRight: VoidFunction;
   onLoaded: VoidFunction;
@@ -14,10 +15,24 @@ interface Props {
 const useStyles = makeStyles(() => ({
   root: {
     width: "100%",
-    height: "75vh",
-    maxHeight: 900,
-    marginBottom: 48,
+    height: "100%",
     // backgroundColor: "#000",
+  },
+  fullScreenImageContainer: {
+    minWidth: "100%",
+    width: "100%",
+    maxHeight: "calc(100vh - 8px)", // padding from grid item
+    overflow: "hidden",
+    height: "100%",
+  },
+  fullScreenImage: {
+    cursor: "pointer",
+    maxHeight: "calc(100vh - 8px)",
+    minHeight: 0,
+    height: "auto",
+    maxWidth: "100%",
+    minWidth: 0,
+    objectFit: "contain",
   },
   image: {
     width: "100%",
@@ -30,6 +45,7 @@ export function DesktopReaderPage({
   pageNumber,
   pageUrl,
   shouldDisplay,
+  fullScreen,
   onClickLeft,
   onClickRight,
   onLoaded,
@@ -70,20 +86,27 @@ export function DesktopReaderPage({
       <img alt={pageTitle} src={pageUrl} className={classes.image} />
     ) : null;
 
+  if (fullScreen) {
+    if (!pageUrl) {
+      return (
+        <div className={classes.fullScreenImageContainer}>
+          <Skeleton variant="rect" className={classes.fullScreenImage} />
+        </div>
+      );
+    }
+    return (
+      <div className={classes.fullScreenImageContainer}>
+        <img
+          alt={pageTitle}
+          src={pageUrl}
+          className={classes.fullScreenImage}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={classes.root} onClick={onClick}>
-      <div style={{ backgroundColor: "#000", color: "white" }}>
-        <span
-          style={{
-            display: "inline-block",
-            width: "100%",
-            textAlign: "center",
-            padding: 2,
-          }}
-        >
-          {pageTitle}
-        </span>
-      </div>
       {imageMarkup}
     </div>
   );

@@ -4,14 +4,18 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import NavigationDrawer from "./NavigationDrawer";
+import Body from "./Body";
+import NavigationBar from "./NavigationBar";
+// import NavigationDrawer from "./NavigationDrawer";
 
 export function WithLayoutProvider({ children }: PropsWithChildren<{}>) {
   const [visible, setVisible] = useState(true);
 
   return (
     <NavigationBarContext.Provider value={{ visible, setVisible }}>
-      <NavigationDrawer>{children}</NavigationDrawer>
+      <NavigationBar />
+      <Body>{children}</Body>
+      {/* <NavigationDrawer></NavigationDrawer> */}
     </NavigationBarContext.Provider>
   );
 }

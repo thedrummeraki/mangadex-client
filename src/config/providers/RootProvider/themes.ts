@@ -41,6 +41,9 @@ const globalThemeParams = {
       "-ms-user-select": "none",
       "user-select": "none",
     },
+    withPrettyBoxShadow: {
+      boxShadow: "0 14px 30px rgba(0, 0, 0,.15),0 4px 4px rgba(0, 0, 0, 0.05)",
+    },
   },
 };
 

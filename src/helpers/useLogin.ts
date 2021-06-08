@@ -1,29 +1,11 @@
-import { useMutation } from "@apollo/client";
 import { useAuth } from "config/providers";
-import gql from "graphql-tag";
-import { GenericResponse } from "types";
-import { User } from "types/user";
-
-const loginMutation = gql`
-  mutation LoginUser($username: String!, $password: String!) {
-    loginUser(body: { username: $username, password: $password })
-      @rest(
-        type: "Token"
-        method: "POST"
-        bodyKey: "body"
-        path: "/auth/login"
-      ) {
-      result
-      token
-    }
-  }
-`;
+import { CurrentUser, useLoginUserMutation } from "generated/graphql";
 
 export default function useLogin(options?: {
-  onLogin: (response: GenericResponse<User>) => void;
+  onLogin: (response: CurrentUser) => void;
 }) {
   const { login } = useAuth(options);
-  const [requestLogin] = useMutation(loginMutation);
+  const [requestLogin] = useLoginUserMutation();
 
   const loginUser = async ({
     username,
@@ -33,11 +15,13 @@ export default function useLogin(options?: {
     password: string;
   }) => {
     const result = await requestLogin({ variables: { username, password } });
-    if (result.data?.loginUser?.result === "ok") {
-      return login(result.data.loginUser.token);
+    const { data } = result;
+
+    if (!data?.loginUser) {
+      return null;
     }
 
-    return null;
+    return login({ ...data.loginUser });
   };
 
   const logoutUser = () => {};

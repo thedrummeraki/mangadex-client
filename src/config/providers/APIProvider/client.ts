@@ -1,23 +1,33 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { RestLink } from "apollo-link-rest";
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { mangadexOffsetLimitPagination } from "./utilities";
+import {
+  mangadexOffsetLimitPagination,
+  betterOffsetLimitPagination,
+} from "./utilities";
 import { getToken } from "../AuthProvider";
+import { offsetLimitPagination } from "@apollo/client/utilities";
 
 const authLink = setContext((_, { headers }) => {
-  const token = getToken()?.session || "";
+  const { refresh = "", session = "" } = getToken() || {};
 
   return {
     headers: {
       ...headers,
-      authorization: token,
+      authorization: session,
+      "X-Mangadex-Refresh-Token": refresh,
     },
   };
 });
 
-const link = authLink.concat(
-  new RestLink({ uri: "https://mangadex-client-proxy.herokuapp.com" })
-);
+const uri = new URL("/graphql", getClientHost()).toString();
+
+const link = createHttpLink({
+  uri,
+});
+
+// const link = authLink.concat(
+//   new RestLink({ uri: "https://mangadex-client-proxy.herokuapp.com" })
+// );
 
 const client = new ApolloClient({
   cache: new InMemoryCache({
@@ -25,6 +35,8 @@ const client = new ApolloClient({
       Query: {
         keyFields: [],
         fields: {
+          mangas: betterOffsetLimitPagination(),
+          chapters: offsetLimitPagination(),
           mangaList: mangadexOffsetLimitPagination(),
           mangaSearchList: mangadexOffsetLimitPagination(),
           followsList: mangadexOffsetLimitPagination(),
@@ -32,7 +44,11 @@ const client = new ApolloClient({
       },
     },
   }),
-  link,
+  link: authLink.concat(link),
 });
 
 export default client;
+
+export function getClientHost() {
+  return process.env.REACT_APP_API_HOST || "http://localhost:3001";
+}

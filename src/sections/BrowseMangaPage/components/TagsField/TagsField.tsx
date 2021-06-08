@@ -1,6 +1,5 @@
 import { TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
-import useTags from "helpers/useTags";
 import { GenericResponse, MangaTag } from "types";
 import { SearchFieldProps } from "../types";
 
@@ -9,17 +8,21 @@ interface Option extends GenericResponse<MangaTag> {
 }
 
 export default function TagsField({
+  tags,
+  loading,
   value,
   onChange,
-}: SearchFieldProps<GenericResponse<MangaTag>[]>) {
-  const { loading, tags } = useTags();
-
+}: SearchFieldProps<
+  GenericResponse<MangaTag>[],
+  { tags: GenericResponse<MangaTag>[]; loading?: boolean }
+>) {
   return (
     <Autocomplete
       id="tags-field"
       multiple
       disableCloseOnSelect
       limitTags={1}
+      size="small"
       value={asOptions(value)}
       options={asOptions(tags).sort(
         (a, b) => -b.firstLetter.localeCompare(a.firstLetter)
@@ -30,7 +33,9 @@ export default function TagsField({
       disabled={loading}
       groupBy={(option) => option.firstLetter}
       getOptionLabel={(option) => option.data.attributes.name.en}
-      renderInput={(params) => <TextField {...params} label="Tags" />}
+      renderInput={(params) => (
+        <TextField {...params} variant="outlined" label="Tags" />
+      )}
     />
   );
 }

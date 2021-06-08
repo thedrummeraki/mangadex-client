@@ -1,7 +1,7 @@
-import { useTheme } from "@material-ui/core";
 import { Link } from "components/Link";
 import { PropsWithChildren } from "react";
 import { getFollowUrl } from "utils";
+import useThumbnailStyles from "./useThumbnailStyles";
 
 interface Props {
   url?: string | null;
@@ -17,11 +17,17 @@ export function ThumbnailWrapper({
   title,
   onClick,
 }: PropsWithChildren<Props>) {
-  const theme = useTheme();
+  const classes = useThumbnailStyles();
 
   if (onClick) {
     return (
-      <Link title={title || undefined} to="#" onClick={onClick}>
+      <Link
+        title={title || undefined}
+        to="#"
+        onClick={onClick}
+        className={classes.wrapper}
+        underline="none"
+      >
         {children}
       </Link>
     );
@@ -34,7 +40,8 @@ export function ThumbnailWrapper({
       <Link
         title={title || undefined}
         to={finalUrl}
-        style={{ color: theme.palette.text.primary }}
+        className={classes.wrapper}
+        underline="none"
       >
         {children}
       </Link>

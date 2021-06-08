@@ -7,6 +7,7 @@ const query = gql`
     $limit: Int!
     $offset: Int!
     $mangaId: String!
+    $translatedLanguage: [String!]
     $orderChapter: String!
     $orderVolume: String!
     $volume: String
@@ -16,6 +17,7 @@ const query = gql`
       limit: $limit
       offset: $offset
       volume: $volume
+      translatedLanguage: $translatedLanguage
       order: { chapter: $orderChapter, volume: $orderVolume }
     ) @rest(type: "Chapter", path: "/chapter?{args}") {
       limit
@@ -53,6 +55,7 @@ export default query as TypedDocumentNode<
     mangaId: string;
     limit: number;
     offset: number;
+    translatedLanguage?: string[];
     volume?: string | null;
   } & Order<"orderChapter" | "orderVolume">
 >;

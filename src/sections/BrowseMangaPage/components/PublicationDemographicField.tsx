@@ -7,7 +7,7 @@ export function PublicationDemographicField({
   onChange,
 }: SearchFieldProps<PublicationDemographic[]>) {
   return (
-    <FormControl style={{ width: "100%" }}>
+    <FormControl variant="outlined" size="small" style={{ width: "100%" }}>
       <InputLabel>Demographic</InputLabel>
       <Select
         multiple
@@ -15,6 +15,7 @@ export function PublicationDemographicField({
         onChange={(event) =>
           onChange(event.target.value as PublicationDemographic[])
         }
+        label="Demographic"
       >
         <MenuItem value={PublicationDemographic.none}>None</MenuItem>
         <MenuItem value={PublicationDemographic.josei}>Josei</MenuItem>

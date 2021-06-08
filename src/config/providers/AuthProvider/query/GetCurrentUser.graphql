@@ -1,0 +1,12 @@
+query GetCurrentUser {
+  currentUser {
+    id
+    type
+    attributes {
+      username
+      version
+    }
+    refresh
+    session
+  }
+}

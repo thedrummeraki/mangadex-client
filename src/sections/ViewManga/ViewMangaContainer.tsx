@@ -1,25 +1,58 @@
-import { useQuery } from "@apollo/client";
 import { Typography } from "@material-ui/core";
 import { Page } from "components";
 import { useParams } from "react-router";
 import { ViewManga } from "./ViewManga";
-import ViewMangaQuery from "./queries/ViewMangaQuery";
+import { useGetMangaQuery } from "generated/graphql";
+import { useEffect, useRef, useState } from "react";
+import usePagination from "helpers/usePagination";
 
 export default function ViewMangaContainer() {
   const { id } = useParams<{ id: string }>();
-  const { data, loading, error } = useQuery(ViewMangaQuery, {
-    variables: { id },
-    context: {
-      headers: {
-        "X-Allow-Cache": "true",
-      },
+  const defaultLocale = "en";
+  const [locales, setLocales] = useState([defaultLocale]);
+  const pageSize = 100;
+
+  const initialized = useRef(false);
+
+  const {
+    limit: chapterLimit,
+    offset: chapterOffset,
+    page,
+    setPage,
+    getPagesCount,
+  } = usePagination({ pageSize, pushPageInfoToHistory: false });
+
+  const { data, loading, error, refetch } = useGetMangaQuery({
+    variables: {
+      id,
+      chapterLimit: pageSize,
+      chapterOffset: 0,
+      translatedLanguage: [defaultLocale],
     },
   });
 
-  const errored =
-    (!data && !loading) || Boolean(error) || data?.manga?.result === "ko";
+  useEffect(() => {
+    if (!initialized.current) {
+      return;
+    }
 
-  if (errored || (!loading && !data?.manga?.data)) {
+    refetch({
+      translatedLanguage: locales,
+      chapterLimit,
+      chapterOffset,
+    });
+  }, [refetch, chapterLimit, chapterOffset, locales]);
+
+  useEffect(() => {
+    if (initialized.current) {
+      return;
+    }
+
+    initialized.current = Boolean(data?.manga);
+  }, [data]);
+
+  if (error || (!loading && !data?.manga)) {
+    if (error) console.error(error);
     return (
       <Page backUrl="/" title="Uh oh...">
         <Typography>
@@ -34,5 +67,20 @@ export default function ViewMangaContainer() {
     return <Page backUrl="/" title="Loading..." />;
   }
 
-  return <ViewManga mangaInfo={data.manga} />;
+  return (
+    <ViewManga
+      refetching={false}
+      manga={data.manga}
+      requestedLocales={locales}
+      page={page}
+      pagesCount={getPagesCount(data.manga.chaptersCount)}
+      onLocaleChange={(locales) => {
+        setLocales(locales);
+        setPage(1);
+      }}
+      onPageChange={(page) => {
+        setPage(page);
+      }}
+    />
+  );
 }

@@ -1,12 +1,6 @@
 import { Thumbnail } from "components";
 import { AllowedIcons } from "components/Thumbnail/types";
-import {
-  DisplayCoverSize,
-  getCoverUrl,
-  isExplicit,
-  preferredTitle,
-  useLocalCurrentlyReading,
-} from "helpers";
+import { preferredTitle, useLocalCurrentlyReading } from "helpers";
 import { Cover, Manga } from "types";
 
 interface Props {
@@ -44,15 +38,15 @@ export function MangaThumbnail({
   const icons: AllowedIcons[] = [];
   if (isReading) icons.push("play");
 
-  const img = cover
-    ? getCoverUrl(manga, cover.attributes.fileName, DisplayCoverSize.Thumb256)
-    : "";
+  // const img = cover
+  //   ? getCoverUrl(manga, cover.attributes.fileName, DisplayCoverSize.Thumb256)
+  //   : "";
 
   return (
     <Thumbnail
-      img={img}
+      img={"#"}
       follow
-      explicit={isExplicit(manga, { conservative: false })}
+      // explicit={isExplicit(manga, { conservative: false })}
       title={preferredTitle(title)}
       features={
         overrideFeatures || [

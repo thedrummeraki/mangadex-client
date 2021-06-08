@@ -6,9 +6,8 @@ export function TitleField({ value, onChange }: SearchFieldProps<string>) {
     <FormControl style={{ width: "100%" }}>
       <TextField
         label="Manga title"
-        variant="outlined"
-        size="small"
         value={value}
+        variant="outlined"
         onChange={(event) => onChange(event.target.value)}
       />
     </FormControl>

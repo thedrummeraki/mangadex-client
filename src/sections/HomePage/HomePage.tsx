@@ -1,77 +1,103 @@
-import { makeStyles } from "@material-ui/core";
-import { Pagination } from "@material-ui/lab";
-import { Page } from "components";
-import { MangaCustomGrid } from "components/MangaCustomGrid";
+import { NetworkStatus } from "@apollo/client";
+import { makeStyles, TextField } from "@material-ui/core";
+import { CustomGrid, Page, Thumbnail } from "components";
+import { ThumbnailSkeleton } from "components/Thumbnail/ThumbnailSkeleton";
 import { useAuth } from "config/providers";
-import { useSearchMangaList } from "helpers";
-import useBrowseSearchFields from "helpers/useBrowseSearchFields";
-import usePagination from "helpers/usePagination";
-import { useEffect, useMemo } from "react";
-import { BrowseSearchFields } from "sections/BrowseMangaPage/BrowseSearchFields";
-import { useQueryParam } from "utils";
+import { Status, useGetSearchMangaQuery } from "generated/graphql";
+import { useMemo, useState } from "react";
+import { repeat, useDebouncedValue } from "utils";
 
 const useStyles = makeStyles((theme) => ({
-  paginationRoot: {
-    display: "flex",
+  searchField: {
+    marginBottom: theme.spacing(3),
     width: "100%",
-    margin: theme.spacing(2),
-    justifyContent: "center",
   },
 }));
 
+interface Search {
+  title: string | null;
+  status: Status | null;
+}
+
 export function HomePage() {
   const classes = useStyles();
-  const firstPage = useQueryParam("page");
   const { currentUser } = useAuth();
-  const { limit, offset, page, setPage, getPagesCount } = usePagination({
-    pageSize: 100,
-    firstPage: firstPage ? parseInt(firstPage) : 1,
-  });
-  const { mangaList, loading, error, searchManga } = useSearchMangaList({
-    limit,
-    offset,
-  });
-  const { searchState, setSearchState, debouncedSearchState } =
-    useBrowseSearchFields();
 
-  const pagesCount = useMemo(
-    () => getPagesCount(mangaList.total),
-    [getPagesCount, mangaList]
+  const [search, setSearch] = useState<Partial<Search>>({});
+
+  const debouncedSearch = useDebouncedValue(search, 500);
+
+  const { data, error, loading, networkStatus, fetchMore } =
+    useGetSearchMangaQuery({
+      variables: { limit: 100, offset: 0, ...debouncedSearch },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+    });
+
+  const fetchingMore = useMemo(
+    () =>
+      networkStatus === NetworkStatus.fetchMore ||
+      networkStatus === NetworkStatus.setVariables,
+    [networkStatus]
   );
 
-  useEffect(() => {
-    searchManga(debouncedSearchState);
-  }, [searchManga, debouncedSearchState]);
+  const mangas = data?.mangas || [];
 
   if (error) {
     return <p>error</p>;
   }
 
+  console.log(networkStatus);
+
   return (
     <Page
       title={
-        loading
-          ? "Please wait..."
-          : currentUser
+        currentUser
           ? `Welcome, ${currentUser.attributes.username}.`
           : `Hottest manga`
       }
+      tags={Object.values(Status).map((status) => ({
+        content: status,
+        onClick: () =>
+          setSearch((search) => ({
+            ...search,
+            status: search.status === status ? null : status,
+          })),
+      }))}
+      selectedTag={search.status ? String(search.status) : null}
+      scrollTriggerOffset={1000}
+      onScrolledToBottom={() => {
+        if (loading) {
+          return;
+        }
+
+        fetchMore?.({ variables: { offset: mangas.length } });
+      }}
     >
-      <BrowseSearchFields
-        searchOptions={searchState}
-        onChange={setSearchState}
+      <TextField
+        variant="outlined"
+        label="Search by title..."
+        value={search.title}
+        onChange={(event) =>
+          setSearch((search) => ({ ...search, title: event.target.value }))
+        }
+        className={classes.searchField}
       />
-      <MangaCustomGrid mangasInfo={mangaList.results || []} />
-      {pagesCount > 1 && (
-        <div className={classes.paginationRoot}>
-          <Pagination
-            disabled={loading}
-            count={pagesCount}
-            page={page}
-            onChange={(_, number) => setPage(number)}
+      <CustomGrid>
+        {mangas.map((manga) => (
+          <Thumbnail
+            key={manga.id}
+            features={[manga.attributes.status]}
+            title={manga.attributes.title.en}
+            img={manga.covers?.length ? manga.covers[0].url : "#"}
+            url={`/manga/${manga.id}`}
           />
-        </div>
-      )}
+        ))}
+        {(fetchingMore || loading) &&
+          repeat(20, (index) => (
+            <ThumbnailSkeleton key={`manga-skeleton-${index}`} />
+          ))}
+      </CustomGrid>
     </Page>
   );
 }

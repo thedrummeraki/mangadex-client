@@ -9,16 +9,16 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import InputBase from "@material-ui/core/InputBase";
-import Badge from "@material-ui/core/Badge";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-import MenuIcon from "@material-ui/icons/Menu";
-import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import MailIcon from "@material-ui/icons/Mail";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+import HistoryIcon from "@material-ui/icons/History";
 import MoreIcon from "@material-ui/icons/MoreVert";
+import { useAuth, useLoginModal } from "config/providers/AuthProvider";
+import HomeIcon from "@material-ui/icons/Home";
+import useAPIVersion from "helpers/useAPIVersion";
+import { useHistory } from "react-router";
+import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -86,13 +86,19 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function AuthenticatedNavigationBar() {
+export default function BasicNavigationBar({
+  loggedIn,
+}: {
+  loggedIn?: boolean;
+}) {
+  const { version } = useAPIVersion();
   const classes = useStyles();
+  const history = useHistory();
+  const { logout } = useAuth();
+  const { requestLoginModal } = useLoginModal();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [
-    mobileMoreAnchorEl,
-    setMobileMoreAnchorEl,
-  ] = React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+    React.useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -125,8 +131,16 @@ export default function AuthenticatedNavigationBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      {/* <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>My account</MenuItem> */}
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          logout();
+        }}
+      >
+        {loggedIn ? "Logout" : "Login"}
+      </MenuItem>
     </Menu>
   );
 
@@ -141,33 +155,26 @@ export default function AuthenticatedNavigationBar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
+      {!loggedIn && (
+        <MenuItem
+          onClick={() => {
+            handleMobileMenuClose();
+            requestLoginModal();
+          }}
         >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
+          <p>Login</p>
+        </MenuItem>
+      )}
+      {loggedIn && (
+        <MenuItem
+          onClick={() => {
+            handleMobileMenuClose();
+            logout();
+          }}
+        >
+          <p>Logout</p>
+        </MenuItem>
+      )}
     </Menu>
   );
 
@@ -180,28 +187,16 @@ export default function AuthenticatedNavigationBar() {
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
+            onClick={() => history.push("/")}
           >
-            <MenuIcon />
+            <HomeIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            Mangadex Client {version && <small>v{version}</small>}
           </Typography>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ "aria-label": "search" }}
-            />
-          </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton aria-label="show 4 new mails" color="inherit">
+            {/* <IconButton aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="secondary">
                 <MailIcon />
               </Badge>
@@ -210,17 +205,34 @@ export default function AuthenticatedNavigationBar() {
               <Badge badgeContent={17} color="secondary">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
               edge="end"
-              aria-label="account of current user"
+              aria-label="current reading history"
               aria-controls={menuId}
               aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
+              onClick={() => history.push("/continue-reading")}
               color="inherit"
             >
-              <AccountCircle />
+              <HistoryIcon />
             </IconButton>
+            {!loggedIn && (
+              <Button color="inherit" onClick={requestLoginModal}>
+                Login
+              </Button>
+            )}
+            {loggedIn && (
+              <IconButton
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+            )}
           </div>
           <div className={classes.sectionMobile}>
             <IconButton

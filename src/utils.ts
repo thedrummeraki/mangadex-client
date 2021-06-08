@@ -75,7 +75,9 @@ export function useScrollListeners(
         scrollTop + window.innerHeight + (scrollOffset > 0 ? scrollOffset : 0);
       const scrolledToBottom = hasScrolledHeight + 1 >= scrollHeight;
 
-      if (scrolledToBottom) {
+      const scrollable = document.body.clientHeight > window.innerHeight;
+
+      if (scrolledToBottom && scrollable) {
         onScrollToBottom();
       }
       return;
@@ -182,6 +184,18 @@ export function openInNewTab(url: string) {
 export function useBreakpoints() {
   const theme = useTheme();
   return { ...theme.breakpoints.values };
+}
+
+export function removeFromArray<T>(array: T[], value: T) {
+  let removed = false;
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === value) {
+      removed = true;
+      array.splice(i, 1);
+    }
+  }
+
+  return removed ? value : null;
 }
 
 export const getWindowWidth = () =>

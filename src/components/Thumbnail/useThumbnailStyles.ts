@@ -49,6 +49,7 @@ const useThumbnailStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
   thumbnailWrapper: {
+    ...theme.custom.withPrettyBoxShadow,
     position: "absolute",
     top: 0,
   },
@@ -134,6 +135,10 @@ const useThumbnailStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(0.75),
       color: "white",
     },
+  },
+  wrapper: {
+    color: theme.palette.text.primary,
+    borderRadius: theme.spacing(0.5),
   },
   ...sharedStyles(theme),
 }));

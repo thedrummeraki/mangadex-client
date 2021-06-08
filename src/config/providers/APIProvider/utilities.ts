@@ -25,3 +25,37 @@ export function mangadexOffsetLimitPagination<T extends Reference>(
     },
   };
 }
+
+// This is similar to Apollo's offsetLimitPagination. The idea here is to not
+// return anything if there are no incoming results...
+export function betterOffsetLimitPagination<T extends Reference>(
+  keyArgs: KeyArgs = false
+): FieldPolicy<Array<T>> {
+  return {
+    keyArgs,
+    merge(existing, incoming, { args }) {
+      // console.log("existing", existing, "incoming", incoming, "args", args);
+      if (!existing) {
+        return incoming;
+      }
+
+      if (incoming.length === 0) {
+        return existing;
+      }
+
+      // this is the same as Apollo's offsetLimitPagination...
+      const merged = existing ? existing.slice(0) : [];
+      if (args) {
+        const { offset = 0 } = args;
+        for (let i = 0; i < incoming.length; ++i) {
+          merged[offset + i] = incoming[i];
+        }
+      } else {
+        // ...except we actually throw an error... don't ask why.
+        throw new Error("missing arguments");
+      }
+
+      return merged;
+    },
+  };
+}

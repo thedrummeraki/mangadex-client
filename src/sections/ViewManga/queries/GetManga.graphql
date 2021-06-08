@@ -1,0 +1,121 @@
+query GetManga(
+  $id: String!
+  $chapterLimit: Int
+  $chapterOffset: Int
+  $translatedLanguage: [String!]
+  $chaptersForVolume: String
+) {
+  manga(
+    id: $id
+    coverSize: thumb512
+    chapterParams: {
+      limit: $chapterLimit
+      offset: $chapterOffset
+      translatedLanguage: $translatedLanguage
+      volume: $chaptersForVolume
+    }
+  ) {
+    id
+    attributes {
+      altTitles {
+        en
+      }
+      status
+      tags {
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+      }
+      title {
+        en
+      }
+      updatedAt
+      version
+      year
+      contentRating
+      createdAt
+      description {
+        en
+      }
+      isLocked
+      lastChapter
+      lastVolume
+      links {
+        al
+        nu
+        raw
+        amz
+        ap
+        bw
+        cdj
+        ebj
+        engl
+        kt
+        mal
+        mu
+      }
+      originalLanguage
+      publicationDemographic
+      tags {
+        id
+        type
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+      }
+    }
+    type
+    covers {
+      id
+      url
+      type
+      attributes {
+        volume
+        fileName
+        description
+        version
+        createdAt
+        updatedAt
+      }
+    }
+    chaptersCount
+    chapters {
+      id
+      type
+      mangaId
+      attributes {
+        chapter
+        version
+        chapterHash
+        data
+        dataSaver
+        title
+        translatedLanguage
+        uploader
+        volume
+        createdAt
+        updatedAt
+        publishAt
+      }
+    }
+    people {
+      id
+      type
+      attributes {
+        name
+        imageUrl
+        createdAt
+        updatedAt
+        version
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+query GetHomePage($limit: Int!, $offset: Int!) {
+  mangas(limit: $limit, offset: $offset) {
+    id
+    type
+    covers {
+      id
+      type
+      url
+      attributes {
+        volume
+        fileName
+        description
+        version
+        createdAt
+        updatedAt
+      }
+    }
+
+    attributes {
+      altTitles {
+        en
+      }
+      status
+      tags {
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+      }
+      title {
+        en
+      }
+      updatedAt
+      version
+      year
+      contentRating
+      createdAt
+      description {
+        en
+      }
+      isLocked
+      lastChapter
+      lastVolume
+      links {
+        al
+        nu
+        raw
+        amz
+        ap
+        bw
+        cdj
+        ebj
+        engl
+        kt
+        mal
+        mu
+      }
+      originalLanguage
+      publicationDemographic
+      tags {
+        id
+        type
+        attributes {
+          group
+          name {
+            en
+          }
+          version
+        }
+      }
+    }
+  }
+}

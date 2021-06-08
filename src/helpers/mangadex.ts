@@ -1,11 +1,16 @@
 import {
-  ContentRating,
   Description,
   GenericResponse,
   Manga,
   Relationship,
   Title,
 } from "types";
+import {
+  SingleManga as GraphqlSingleManga,
+  ContentRating as GraphqlContentRating,
+  Chapter as GraphqlChapter,
+  SingleChapter as GraphqlSingleChapter,
+} from "generated/graphql";
 import { Chapter } from "types/chapter";
 
 import DOMPurify from "dompurify";
@@ -28,7 +33,7 @@ export function mangaTitle(manga: Manga) {
 }
 
 export function isExplicit(
-  manga: Manga,
+  manga: GraphqlSingleManga,
   options: ExplicatEvaluatorOptions = { conservative: true, strict: false }
 ) {
   // if strict, a manga is explicit if we don't know its rating.
@@ -36,11 +41,11 @@ export function isExplicit(
     return true;
   }
 
-  const explicitContentRatings = [ContentRating.pornographic];
+  const explicitContentRatings = [GraphqlContentRating.Hentai];
 
   // A conservative approach means that we also include eroticas.
   if (options.conservative || options.strict) {
-    explicitContentRatings.push(ContentRating.erotica);
+    explicitContentRatings.push(GraphqlContentRating.Erotica);
   }
 
   return (
@@ -61,12 +66,17 @@ export function preferredDescription(description: Description) {
   return DOMPurify.sanitize(description.en, { USE_PROFILES: { html: true } });
 }
 
-export function chapterTitle(chapter: Chapter) {
+export function chapterTitle(
+  chapter: Chapter | GraphqlChapter | GraphqlSingleChapter,
+  includeNumber: boolean = false
+) {
   const {
     attributes: { title, chapter: number },
   } = chapter;
   if (title) {
-    return decodeHTML(title);
+    return includeNumber && chapter.attributes.chapter != null
+      ? `${chapter.attributes.chapter}) ${title}`
+      : title;
   }
 
   return number != null ? `Chapter ${number}` : "Chapter";
@@ -93,7 +103,7 @@ export function relationshipIds(relationships: Relationship[], type: string) {
 }
 
 export function getCoverUrl(
-  manga: Manga,
+  manga: GraphqlSingleManga,
   filename: string,
   size: DisplayCoverSize = DisplayCoverSize.Original
 ) {
