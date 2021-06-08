@@ -4,7 +4,7 @@ import { CustomGrid, Page, Thumbnail } from "components";
 import { ThumbnailSkeleton } from "components/Thumbnail/ThumbnailSkeleton";
 import { useAuth } from "config/providers";
 import { Status, useGetSearchMangaQuery } from "generated/graphql";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { repeat, useDebouncedValue } from "utils";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,15 +34,20 @@ export function HomePage() {
       fetchPolicy: "no-cache",
     });
 
-  const fetchingMore = networkStatus === NetworkStatus.fetchMore;
+  const fetchingMore = useMemo(
+    () =>
+      networkStatus === NetworkStatus.fetchMore ||
+      networkStatus === NetworkStatus.setVariables,
+    [networkStatus]
+  );
+
+  const mangas = data?.mangas || [];
 
   if (error) {
     return <p>error</p>;
   }
 
-  console.log(data);
-
-  const mangas = data?.mangas || [];
+  console.log(networkStatus);
 
   return (
     <Page
@@ -60,12 +65,13 @@ export function HomePage() {
           })),
       }))}
       selectedTag={search.status ? String(search.status) : null}
+      scrollTriggerOffset={1000}
       onScrolledToBottom={() => {
         if (loading) {
           return;
         }
 
-        fetchMore({ variables: { offset: mangas.length } });
+        fetchMore?.({ variables: { offset: mangas.length } });
       }}
     >
       <TextField
@@ -87,11 +93,10 @@ export function HomePage() {
             url={`/manga/${manga.id}`}
           />
         ))}
-        {fetchingMore ||
-          (loading &&
-            repeat(20, (index) => (
-              <ThumbnailSkeleton key={`manga-skeleton-${index}`} />
-            )))}
+        {(fetchingMore || loading) &&
+          repeat(20, (index) => (
+            <ThumbnailSkeleton key={`manga-skeleton-${index}`} />
+          ))}
       </CustomGrid>
     </Page>
   );

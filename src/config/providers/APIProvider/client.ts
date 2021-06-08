@@ -1,6 +1,9 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { mangadexOffsetLimitPagination } from "./utilities";
+import {
+  mangadexOffsetLimitPagination,
+  betterOffsetLimitPagination,
+} from "./utilities";
 import { getToken } from "../AuthProvider";
 import { offsetLimitPagination } from "@apollo/client/utilities";
 
@@ -31,7 +34,7 @@ const client = new ApolloClient({
       Query: {
         keyFields: [],
         fields: {
-          mangas: offsetLimitPagination(),
+          mangas: betterOffsetLimitPagination(),
           chapters: offsetLimitPagination(),
           mangaList: mangadexOffsetLimitPagination(),
           mangaSearchList: mangadexOffsetLimitPagination(),

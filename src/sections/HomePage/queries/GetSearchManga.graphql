@@ -1,6 +1,6 @@
 query GetSearchManga(
-  $limit: Int!
-  $offset: Int!
+  $limit: Int
+  $offset: Int
   $title: String
   $authors: [String!]
   $artists: [String!]

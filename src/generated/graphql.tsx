@@ -345,8 +345,8 @@ export type GetHomePageQuery = (
 );
 
 export type GetSearchMangaQueryVariables = Exact<{
-  limit: Scalars['Int'];
-  offset: Scalars['Int'];
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
   title?: Maybe<Scalars['String']>;
   authors?: Maybe<Array<Scalars['String']> | Scalars['String']>;
   artists?: Maybe<Array<Scalars['String']> | Scalars['String']>;
@@ -602,7 +602,7 @@ export type GetHomePageQueryHookResult = ReturnType<typeof useGetHomePageQuery>;
 export type GetHomePageLazyQueryHookResult = ReturnType<typeof useGetHomePageLazyQuery>;
 export type GetHomePageQueryResult = Apollo.QueryResult<GetHomePageQuery, GetHomePageQueryVariables>;
 export const GetSearchMangaDocument = gql`
-    query GetSearchManga($limit: Int!, $offset: Int!, $title: String, $authors: [String!], $artists: [String!], $year: Int, $includedTags: [String!], $includedTagsMode: TagMode, $excludedTags: [String!], $excludedTagsMode: TagMode, $status: [Status!], $originalLanguage: [String!], $ids: [String!], $contentRating: [ContentRating!]) {
+    query GetSearchManga($limit: Int, $offset: Int, $title: String, $authors: [String!], $artists: [String!], $year: Int, $includedTags: [String!], $includedTagsMode: TagMode, $excludedTags: [String!], $excludedTagsMode: TagMode, $status: [Status!], $originalLanguage: [String!], $ids: [String!], $contentRating: [ContentRating!]) {
   mangas(
     limit: $limit
     offset: $offset
@@ -725,7 +725,7 @@ export const GetSearchMangaDocument = gql`
  *   },
  * });
  */
-export function useGetSearchMangaQuery(baseOptions: Apollo.QueryHookOptions<GetSearchMangaQuery, GetSearchMangaQueryVariables>) {
+export function useGetSearchMangaQuery(baseOptions?: Apollo.QueryHookOptions<GetSearchMangaQuery, GetSearchMangaQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetSearchMangaQuery, GetSearchMangaQueryVariables>(GetSearchMangaDocument, options);
       }

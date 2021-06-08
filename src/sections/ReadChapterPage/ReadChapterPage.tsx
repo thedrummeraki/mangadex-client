@@ -64,13 +64,34 @@ const useStyles = makeStyles((theme) =>
     content: {
       flexGrow: 1,
       marginLeft: drawerWidth,
+      [theme.breakpoints.down("xs")]: {
+        marginLeft: 0,
+      },
     },
     zoomedOut: {
       height: `calc(100vh - 66px)`,
       objectFit: "contain",
     },
-    zoomedIn: {
+    page: {
+      cursor: "point",
+      minWidth: "100%",
       width: "100%",
+      height: "100%",
+      flexShrink: 1,
+      position: "relative",
+      display: "grid",
+      // gridTemplateRows: "minmax(0px, 1fr) 1fr minmax(0px, 1fr)",
+      "-moz-box-pack": "center",
+      justifyContent: "center",
+      scrollbarWidth: "none",
+    },
+    zoomedIn: {
+      objectFit: "contain",
+      maxWidth: "100%",
+      minWidth: 0,
+      width: "100%",
+      height: "auto",
+      scrollbarWidth: "none",
     },
   })
 );
@@ -202,7 +223,6 @@ export function ReadChapterPage({ chapter }: Props) {
           ignoreNativeScroll
           index={index}
           onChangeIndex={(newIndex) => {
-            console.log(newIndex, index, chapter.pages.length);
             if (newIndex === chapter.pages.length - 1 && index === 0) {
               return;
             }
@@ -213,12 +233,14 @@ export function ReadChapterPage({ chapter }: Props) {
           }}
         >
           {chapter.pages.map((page, index) => (
-            <img
-              alt={`Page ${index + 1}`}
-              src={page.url}
-              onClick={() => setZoomed((zoomed) => !zoomed)}
-              className={zoomed ? classes.zoomedIn : classes.zoomedOut}
-            />
+            <div id={`page-${index + 1}`} className={classes.page}>
+              <img
+                alt={`Page ${index + 1}`}
+                src={page.url}
+                onClick={() => setZoomed((zoomed) => !zoomed)}
+                className={zoomed ? classes.zoomedIn : classes.zoomedOut}
+              />
+            </div>
           ))}
         </BindKeyboardSwipeableViews>
       </main>

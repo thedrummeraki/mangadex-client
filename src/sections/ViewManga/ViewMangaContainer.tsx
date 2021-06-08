@@ -20,7 +20,7 @@ export default function ViewMangaContainer() {
     page,
     setPage,
     getPagesCount,
-  } = usePagination({ pageSize });
+  } = usePagination({ pageSize, pushPageInfoToHistory: false });
 
   const { data, loading, error, refetch } = useGetMangaQuery({
     variables: {

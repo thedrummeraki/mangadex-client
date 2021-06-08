@@ -20,6 +20,7 @@ interface Props {
     imageDescription?: ReactNode;
     content: ReactNode;
   };
+  scrollTriggerOffset?: number;
   onScrolledToBottom?: VoidFunction;
 }
 
@@ -59,6 +60,7 @@ export function Page(props: PropsWithChildren<PageProps>) {
     children,
     primaryAction,
     searchFields,
+    scrollTriggerOffset,
     onScrolledToBottom,
   } = props;
   const classes = useStyles();
@@ -74,7 +76,7 @@ export function Page(props: PropsWithChildren<PageProps>) {
         onScrolledToBottom();
       }
     },
-    { offset: 400 }
+    { offset: scrollTriggerOffset || 400 }
   );
 
   const imageMarkup = showcase?.imageUrl && (
