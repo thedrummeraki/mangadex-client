@@ -7,6 +7,11 @@ const useThumbnailStyles = makeStyles((theme) => ({
     height: 265,
     marginBottom: theme.spacing(8),
 
+    [theme.breakpoints.down(1040)]: {
+      width: "100%",
+      height: 180,
+    },
+
     // [theme.breakpoints.up("xl")]: {
     //   width: 250,
     //   height: 358,
@@ -16,6 +21,10 @@ const useThumbnailStyles = makeStyles((theme) => ({
     position: "relative",
     overflow: "hidden",
     height: 265,
+
+    [theme.breakpoints.down(1040)]: {
+      height: 210,
+    },
 
     // [theme.breakpoints.up("xl")]: {
     //   height: 358,

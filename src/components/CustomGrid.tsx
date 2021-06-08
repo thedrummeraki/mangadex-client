@@ -24,6 +24,18 @@ const useStyles = makeStyles((theme) => ({
       gridTemplateColumns: "repeat(auto-fill, minmax(125px, 1fr))",
       justifyContent: "center",
     },
+    [theme.breakpoints.down(760)]: {
+      padding: "0 20px",
+      gridTemplateColumns: "repeat(auto-fill, minmax(105px, 1fr))",
+      gap: "20px 25px",
+      justifyContent: "center",
+    },
+    [theme.breakpoints.down(400)]: {
+      padding: "0 10px",
+      gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
+      gap: "20px 12px",
+      justifyContent: "center",
+    },
   },
   tight: {
     gap: "10px 0",

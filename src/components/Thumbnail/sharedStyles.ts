@@ -21,7 +21,6 @@ export const sharedStyles = (theme: Theme) =>
       marginTop: theme.spacing(1.5),
       color: theme.palette.text.secondary,
       fontWeight: "bold",
-      width: 185,
       overflow: "hidden",
       textOverflow: "ellipsis",
       display: "-webkit-box",
