@@ -29,6 +29,11 @@ export default function ViewMangaContainer() {
       chapterOffset: 0,
       translatedLanguage: [defaultLocale],
     },
+    context: {
+      headers: {
+        "X-Allow-Cache": "true",
+      },
+    },
   });
 
   useEffect(() => {

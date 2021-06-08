@@ -32,6 +32,11 @@ export function HomePage() {
       variables: { limit: 100, offset: 0, ...debouncedSearch },
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "no-cache",
+      context: {
+        headers: {
+          "X-Allow-Cache": "true",
+        },
+      },
     });
 
   const fetchingMore = useMemo(
