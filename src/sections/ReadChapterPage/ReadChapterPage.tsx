@@ -101,7 +101,7 @@ export function ReadChapterPage({ chapter }: Props) {
   const history = useHistory();
   const classes = useStyles();
   const [index, setIndex] = useState(0);
-  const [zoomed, setZoomed] = useState(true);
+  const [zoomed] = useState(true);
   const { data } = useGetMangaQuery({
     variables: {
       id: chapter.mangaId,
@@ -237,7 +237,6 @@ export function ReadChapterPage({ chapter }: Props) {
               <img
                 alt={`Page ${index + 1}`}
                 src={page.url}
-                onClick={() => setZoomed((zoomed) => !zoomed)}
                 className={zoomed ? classes.zoomedIn : classes.zoomedOut}
               />
             </div>
