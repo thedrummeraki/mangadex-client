@@ -2,15 +2,15 @@ import { Chip, Grid, makeStyles, TableCell, TableRow } from "@material-ui/core";
 import { Link } from "components";
 import { chapterTitle, localeName, useLocalCurrentlyReading } from "helpers";
 import { DateTime } from "luxon";
-import { Chapter, Manga } from "types";
 import { getFollowUrl, localizedDateTime } from "utils";
 
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import DoneIcon from "@material-ui/icons/Done";
 import { savedPage } from "helpers/useCurrentlyReading";
+import { Chapter, Manga, SingleManga } from "generated/graphql";
 
 interface Props {
-  manga: Manga;
+  manga: Manga | SingleManga;
   chapter: Chapter;
 }
 
@@ -29,7 +29,10 @@ export function ViewMangaTableRow({ manga, chapter }: Props) {
   const totalPages = chapter.attributes.data.length - 1;
   const isDone = currentPage !== 0 && currentPage >= totalPages;
 
-  const { isReadingChapter } = useLocalCurrentlyReading({ manga, chapter });
+  const { isReadingChapter } = useLocalCurrentlyReading({
+    manga: manga.id,
+    chapter: chapter.id,
+  });
 
   const iconClassName =
     isReadingChapter || isDone ? classes.readingOrRead : classes.notRead;

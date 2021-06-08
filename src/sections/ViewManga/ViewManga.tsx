@@ -1,6 +1,6 @@
 import { Page, TitledSection } from "components";
 import { isExplicit } from "helpers/mangadex";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { MangaDetails } from "./MangaDetails";
 import FaceIcon from "@material-ui/icons/Face";
 import BrushIcon from "@material-ui/icons/Brush";
@@ -12,7 +12,7 @@ import { makeStyles } from "@material-ui/core";
 import ImageIcon from "@material-ui/icons/Image";
 // import ListIcon from "@material-ui/icons/List";
 import GridOnIcon from "@material-ui/icons/GridOn";
-import { ChapterCustomGrid } from "./ChaptersCustomGrid";
+import { ChapterCustomGrid, DisplayStyle } from "./ChaptersCustomGrid";
 
 interface Props {
   manga: SingleManga;
@@ -43,6 +43,7 @@ export function ViewManga({
   onPageChange,
 }: Props) {
   const classes = useStyles();
+  const [displayStyle, setDisplayStyle] = useState(DisplayStyle.Image);
 
   const covers = useMemo(() => manga.covers || [], [manga]);
   const mainCover = useMemo(() => covers[0], [covers]);
@@ -87,10 +88,18 @@ export function ViewManga({
         title="Chapters list"
         variant="h6"
         tags={[
-          { content: "Image", icon: <ImageIcon />, onClick: () => {} },
-          { content: "Grid", icon: <GridOnIcon />, disabled: true },
+          {
+            content: DisplayStyle.Image,
+            icon: <ImageIcon />,
+            onClick: () => setDisplayStyle(DisplayStyle.Image),
+          },
+          {
+            content: DisplayStyle.Grid,
+            icon: <GridOnIcon />,
+            onClick: () => setDisplayStyle(DisplayStyle.Grid),
+          },
         ]}
-        selectedTag="Image"
+        selectedTag={String(displayStyle)}
         tagsDescription="Preview style"
         primaryAction={
           <div style={{ width: 300 }}>
@@ -102,7 +111,12 @@ export function ViewManga({
         }
       />
 
-      <ChapterCustomGrid refetching={refetching} chapters={manga.chapters} />
+      <ChapterCustomGrid
+        manga={manga}
+        displayStyle={displayStyle}
+        refetching={refetching}
+        chapters={manga.chapters}
+      />
 
       {pagesCount > 1 && (
         <div className={classes.paginationRoot}>

@@ -10,7 +10,6 @@ import usePagination from "helpers/usePagination";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chapter, GenericResponse, Manga } from "types";
 import GetChaptersForManga from "./queries/GetChaptersForManga";
-import { ViewMangaTableRow } from "./ViewMangaTableRow";
 
 interface Props {
   manga: Manga;
@@ -192,9 +191,7 @@ export function ChaptersList({
       />
       <ChaptersGrid
         chaptersResponse={chapters}
-        renderItem={(chapter) => (
-          <ViewMangaTableRow chapter={chapter} manga={manga} />
-        )}
+        renderItem={(chapter) => <p>{chapter.id}</p>}
       />
       {pagesCount > 1 && (
         <div className={classes.paginationRoot}>
