@@ -8,12 +8,13 @@ import { getToken } from "../AuthProvider";
 import { offsetLimitPagination } from "@apollo/client/utilities";
 
 const authLink = setContext((_, { headers }) => {
-  const token = getToken()?.session || "";
+  const { refresh = "", session = "" } = getToken() || {};
 
   return {
     headers: {
       ...headers,
-      authorization: token,
+      authorization: session,
+      "X-Mangadex-Refresh-Token": refresh,
     },
   };
 });
@@ -22,7 +23,7 @@ const uri = "http://localhost:3001/graphql";
 
 const link = createHttpLink({
   uri,
-}).concat(authLink);
+});
 
 // const link = authLink.concat(
 //   new RestLink({ uri: "https://mangadex-client-proxy.herokuapp.com" })
@@ -43,7 +44,7 @@ const client = new ApolloClient({
       },
     },
   }),
-  link,
+  link: authLink.concat(link),
 });
 
 export default client;

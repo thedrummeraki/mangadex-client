@@ -6,6 +6,12 @@ import {
   useQuery,
 } from "@apollo/client";
 import { LoginModal } from "components/modals";
+import {
+  CurrentUser,
+  useGetCurrentUserLazyQuery,
+  useGetCurrentUserQuery,
+  useLogoutMutation,
+} from "generated/graphql";
 import React, {
   PropsWithChildren,
   useCallback,
@@ -73,7 +79,7 @@ const logoutMutation = gql`
   }
 `;
 
-type AuthUser = User | null;
+type AuthUser = CurrentUser | null;
 
 interface AuthContextState {
   currentUser: AuthUser;
@@ -86,27 +92,19 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
   const token = getToken();
   const [currentUser, setCurrentUser] = useState<AuthUser>(null);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const { data, loading } = useQuery(checkSessionQuery, {
-    context: {
-      headers: {
-        "X-Auth-Session": token?.session || "",
-        "X-Auth-Refresh": token?.refresh || "",
-      },
-    },
+  const { data, loading } = useGetCurrentUserQuery({
     skip: token == null,
   });
 
   useEffect(() => {
     if (data?.currentUser) {
-      const response = data?.currentUser as CheckSessionResponse;
-      if (response.result === "ok") {
-        setCurrentUser(response.data);
+      setCurrentUser(data.currentUser);
 
-        if (response.session?.length && response.refresh?.length) {
-          saveToken({ ...response } as Token);
-        }
-      } else {
-        console.error(response);
+      if (
+        data.currentUser.session?.length &&
+        data.currentUser.refresh?.length
+      ) {
+        saveToken({ ...data.currentUser } as Token);
       }
     }
   }, [data]);
@@ -136,7 +134,7 @@ const AuthContext = React.createContext<AuthContextState>({
 });
 
 export function useAuth(options?: {
-  onLogin: (response: GenericResponse<User>) => void;
+  onLogin: (response: CurrentUser) => void;
 }) {
   const client = useApolloClient();
   const { currentUser, setCurrentUser, setLoginModalOpen } =
@@ -144,19 +142,17 @@ export function useAuth(options?: {
   const token = useMemo(getToken, [currentUser]);
 
   const [getCurrentUserCallback, { data, loading, error }] =
-    useLazyQuery(currentUserQuery);
+    useGetCurrentUserLazyQuery();
 
-  const [clearSession] = useMutation(logoutMutation);
+  const [clearSession] = useLogoutMutation();
 
   useEffect(() => {
-    if (data?.me) {
-      const response = data.me as GenericResponse<User>;
-      if (response.result === "ok") {
-        setCurrentUser(response.data);
+    if (data?.currentUser) {
+      const response = data.currentUser;
+      setCurrentUser(response);
 
-        if (options?.onLogin) {
-          options.onLogin(response);
-        }
+      if (options?.onLogin) {
+        options.onLogin(response);
       }
     }
   }, [data, options, setCurrentUser]);
@@ -192,7 +188,7 @@ export function useAuth(options?: {
     }
 
     clearSession().then((result) => {
-      if (result.data?.logout?.result === "ok") {
+      if (result.data?.logout) {
         client
           .resetStore()
           .catch(console.error)

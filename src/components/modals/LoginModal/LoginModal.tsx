@@ -40,7 +40,7 @@ export default function LoginModal({ open, onClose }: Props) {
 
   const { loginUser } = useLogin({
     onLogin: (response) => {
-      setLoggedIn(response.result === "ok");
+      setLoggedIn(Boolean(response));
       setLoading(false);
     },
   });
