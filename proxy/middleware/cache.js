@@ -49,7 +49,7 @@ const cacheResponseBody = (req, response) => {
     parsedResponse =
       typeof response === "string" ? JSON.parse(response) : response;
   } catch (e) {
-    log.error("Could not parse the response.", e, response);
+    log.error("Could not parse the response.", e);
     return null;
   }
 
