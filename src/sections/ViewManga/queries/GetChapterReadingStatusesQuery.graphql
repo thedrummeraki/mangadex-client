@@ -1,0 +1,9 @@
+query GetChapterReadingStatusesQuery($ids: [ID!]!) {
+  chaptersReadingStatus(ids: $ids) {
+    id
+    chapterUuid
+    mangaUuid
+    complete
+    page
+  }
+}

@@ -3,7 +3,7 @@ import { Theme, createStyles } from "@material-ui/core/styles";
 export const sharedStyles = (theme: Theme) =>
   createStyles({
     container: {
-      height: 265,
+      height: "100%",
       width: "100%",
 
       // [theme.breakpoints.up("xl")]: {

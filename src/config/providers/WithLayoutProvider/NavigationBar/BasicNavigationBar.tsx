@@ -206,16 +206,18 @@ export default function BasicNavigationBar({
                 <NotificationsIcon />
               </Badge>
             </IconButton> */}
-            <IconButton
-              edge="end"
-              aria-label="current reading history"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={() => history.push("/continue-reading")}
-              color="inherit"
-            >
-              <HistoryIcon />
-            </IconButton>
+            {loggedIn && (
+              <IconButton
+                edge="end"
+                aria-label="current reading history"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={() => history.push("/continue-reading")}
+                color="inherit"
+              >
+                <HistoryIcon />
+              </IconButton>
+            )}
             {!loggedIn && (
               <Button color="inherit" onClick={requestLoginModal}>
                 Login

@@ -6,13 +6,14 @@ import FaceIcon from "@material-ui/icons/Face";
 import BrushIcon from "@material-ui/icons/Brush";
 import { SingleManga } from "generated/graphql";
 import LanguageSelector from "components/LanguageSelector";
-import { Pagination } from "@material-ui/lab";
+import { Alert, Pagination } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core";
 
 import ImageIcon from "@material-ui/icons/Image";
 // import ListIcon from "@material-ui/icons/List";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import { ChapterCustomGrid, DisplayStyle } from "./ChaptersCustomGrid";
+import { RenderIfLoggedIn } from "components/RenderIfLoggedIn";
 
 interface Props {
   manga: SingleManga;
@@ -117,6 +118,12 @@ export function ViewManga({
           </div>
         }
       />
+
+      <RenderIfLoggedIn loggedIn={false}>
+        <Alert severity="info" style={{ marginBottom: 16 }}>
+          Log in with your MangaDex account to save your reading progress!
+        </Alert>
+      </RenderIfLoggedIn>
 
       <ChapterCustomGrid
         manga={manga}

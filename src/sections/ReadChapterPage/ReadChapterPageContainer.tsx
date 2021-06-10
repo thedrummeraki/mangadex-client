@@ -1,4 +1,8 @@
-import { useGetChapterQuery } from "generated/graphql";
+import {
+  useGetChapterQuery,
+  useGetChapterReadingStatusesQueryLazyQuery,
+} from "generated/graphql";
+import { useEffect } from "react";
 import { useParams } from "react-router";
 import { ReadChapterPage } from "./ReadChapterPage";
 
@@ -7,12 +11,22 @@ export default function ReadChapterPageContainer() {
 
   const { data } = useGetChapterQuery({
     variables: { id, dataSaver: false },
+    fetchPolicy: "no-cache",
   });
+  const [getCurrentChapterReadingStatus, { data: chaptersReadingStatusData }] =
+    useGetChapterReadingStatusesQueryLazyQuery();
   const chapter = data?.chapter;
+  const status = chaptersReadingStatusData?.chaptersReadingStatus;
 
-  if (!chapter) {
+  useEffect(() => {
+    if (chapter) {
+      getCurrentChapterReadingStatus({ variables: { ids: [chapter.id] } });
+    }
+  }, [getCurrentChapterReadingStatus, chapter]);
+
+  if (!chapter || !status?.length) {
     return null;
   }
 
-  return <ReadChapterPage chapter={chapter} />;
+  return <ReadChapterPage chapter={chapter} initialPage={status[0].page} />;
 }

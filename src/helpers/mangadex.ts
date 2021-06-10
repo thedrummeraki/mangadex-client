@@ -74,9 +74,7 @@ export function chapterTitle(
     attributes: { title, chapter: number },
   } = chapter;
   if (title) {
-    return includeNumber && chapter.attributes.chapter != null
-      ? `${chapter.attributes.chapter}) ${title}`
-      : title;
+    return includeNumber && number != null ? `${number}) ${title}` : title;
   }
 
   return number != null ? `Chapter ${number}` : "Chapter";

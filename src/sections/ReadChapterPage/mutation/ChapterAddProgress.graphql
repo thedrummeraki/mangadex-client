@@ -1,0 +1,19 @@
+mutation ChapterAddProgress(
+  $chapterUuid: String!
+  $mangaUuid: String!
+  $page: Int
+  $complete: Boolean
+) {
+  chapterAddProgress(
+    chapterUuid: $chapterUuid
+    mangaUuid: $mangaUuid
+    page: $page
+    complete: $complete
+  ) {
+    id
+    chapterUuid
+    mangaUuid
+    page
+    complete
+  }
+}

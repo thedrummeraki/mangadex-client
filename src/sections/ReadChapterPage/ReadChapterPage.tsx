@@ -1,4 +1,9 @@
-import { SingleChapter, useGetMangaQuery } from "generated/graphql";
+import {
+  SingleChapter,
+  useChapterAddProgressMutation,
+  useGetChapterReadingStatusesQueryLazyQuery,
+  useGetMangaQuery,
+} from "generated/graphql";
 import { bindKeyboard } from "react-swipeable-views-utils";
 import { useEffect, useState } from "react";
 
@@ -12,6 +17,7 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
   makeStyles,
   Toolbar,
@@ -20,11 +26,14 @@ import {
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import DoneIcon from "@material-ui/icons/Done";
 import { useHistory } from "react-router";
 import { chapterTitle } from "helpers";
 
 interface Props {
   chapter: SingleChapter;
+  initialPage: number;
 }
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
@@ -97,10 +106,10 @@ const useStyles = makeStyles((theme) =>
 );
 
 // TODO: Rename to ViewChapterPage (to stay consistent)
-export function ReadChapterPage({ chapter }: Props) {
+export function ReadChapterPage({ chapter, initialPage }: Props) {
   const history = useHistory();
   const classes = useStyles();
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(initialPage - 1);
   const [zoomed] = useState(true);
   const { data } = useGetMangaQuery({
     variables: {
@@ -111,6 +120,11 @@ export function ReadChapterPage({ chapter }: Props) {
     },
   });
 
+  const [getChapterReadingStatuses, { data: readingStatusData }] =
+    useGetChapterReadingStatusesQueryLazyQuery();
+
+  const [addProgressForChapter] = useChapterAddProgressMutation();
+
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -118,15 +132,33 @@ export function ReadChapterPage({ chapter }: Props) {
     setMobileOpen(!mobileOpen);
   };
 
-  useEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, [index]);
-
   const manga = data?.manga;
 
-  if (!manga) {
-    return null;
-  }
+  useEffect(() => {
+    if (manga) {
+      getChapterReadingStatuses({
+        variables: { ids: manga.chapters.map((chapter) => chapter.id) },
+      });
+    }
+  }, [getChapterReadingStatuses, manga]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+
+    const page = index + 1;
+    const complete = page === chapter.attributes.data.length || undefined;
+    if (manga) {
+      addProgressForChapter({
+        variables: {
+          chapterUuid: chapter.id,
+          mangaUuid: manga.id,
+          page,
+          complete,
+        },
+        refetchQueries: ["GetChapterReadingStatusesQuery"],
+      });
+    }
+  }, [addProgressForChapter, index, chapter, manga]);
 
   const drawer = (
     <div>
@@ -146,22 +178,40 @@ export function ReadChapterPage({ chapter }: Props) {
       </div>
       <Divider />
       <List>
-        {manga.chapters.map((otherChapter) => (
-          <ListItem
-            key={otherChapter.id}
-            button
-            selected={chapter.id === otherChapter.id}
-            onClick={() => history.replace(`/manga/read/${otherChapter.id}`)}
-          >
-            <ListItemText primary={chapterTitle(otherChapter, true)} />
-          </ListItem>
-        ))}
+        {manga?.chapters?.map((otherChapter) => {
+          const readingStatus = readingStatusData?.chaptersReadingStatus?.find(
+            (status) => status.chapterUuid === otherChapter.id
+          );
+
+          const done = readingStatus?.complete;
+          const reading = !done && Boolean(readingStatus);
+
+          return (
+            <ListItem
+              key={otherChapter.id}
+              button
+              selected={chapter.id === otherChapter.id}
+              onClick={() => {
+                history.replace(`/manga/read/${otherChapter.id}`);
+                setIndex(0);
+              }}
+            >
+              <ListItemText primary={chapterTitle(otherChapter, true)} />
+              {(reading || done) && (
+                <ListItemIcon>
+                  {reading && <PlayArrowIcon />}
+                  {done && <DoneIcon />}
+                </ListItemIcon>
+              )}
+            </ListItem>
+          );
+        })}
       </List>
     </div>
   );
 
-  return (
-    <div className={classes.root}>
+  const drawerToolbar = (
+    <>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <IconButton
@@ -214,6 +264,12 @@ export function ReadChapterPage({ chapter }: Props) {
           {drawer}
         </Drawer>
       </Hidden>
+    </>
+  );
+
+  return (
+    <div className={classes.root}>
+      {drawerToolbar}
       <main className={classes.content}>
         <div className={classes.toolbar} />
 

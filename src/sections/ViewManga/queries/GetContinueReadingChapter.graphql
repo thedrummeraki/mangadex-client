@@ -1,0 +1,21 @@
+query GetContinueReadingChapter($mangaId: ID!) {
+  continueReading(mangaUuid: $mangaId) {
+    id
+    mangaId
+    type
+    attributes {
+      chapter
+      chapterHash
+      createdAt
+      data
+      dataSaver
+      publishAt
+      title
+      translatedLanguage
+      uploader
+      updatedAt
+      version
+      volume
+    }
+  }
+}

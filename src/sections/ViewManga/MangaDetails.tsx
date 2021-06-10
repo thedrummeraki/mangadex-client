@@ -14,10 +14,15 @@ import { MangaLinkKey } from "types";
 import { decodeHTML, notEmpty } from "utils";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { SingleManga } from "generated/graphql";
+import {
+  Chapter,
+  SingleManga,
+  useGetContinueReadingChapterQuery,
+} from "generated/graphql";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
 import { useHistory } from "react-router";
+import { useEffect, useState } from "react";
 
 export interface Props {
   manga: SingleManga;
@@ -78,7 +83,18 @@ export function MangaDetails({ manga }: Props) {
     attributes: { description },
   } = manga;
 
-  const readNowChapter = manga.chapters[0];
+  const [readNowChapter, setReadNowChapter] = useState<Chapter | null>(
+    manga.chapters[0] || null
+  );
+  const { data, loading } = useGetContinueReadingChapterQuery({
+    variables: { mangaId: manga.id },
+  });
+
+  useEffect(() => {
+    if (data?.continueReading) {
+      setReadNowChapter(data.continueReading);
+    }
+  }, [data]);
 
   const links = manga.attributes.links
     ? Object.entries(manga.attributes.links)
@@ -118,10 +134,12 @@ export function MangaDetails({ manga }: Props) {
         size="large"
         color="primary"
         variant="contained"
+        disabled={loading || !readNowChapter}
         startIcon={readNowChapter ? <PlayArrowIcon /> : <ErrorOutlineIcon />}
-        disabled={!readNowChapter}
         onClick={() =>
-          readNowChapter && history.push(`/manga/read/${readNowChapter.id}`)
+          !loading &&
+          readNowChapter &&
+          history.push(`/manga/read/${readNowChapter.id}`)
         }
         className={classes.readNowButton}
       >

@@ -6,6 +6,7 @@ query GetChapter($id: String!, $dataSaver: Boolean) {
     attributes {
       title
       translatedLanguage
+      chapter
       chapterHash
       data
       dataSaver

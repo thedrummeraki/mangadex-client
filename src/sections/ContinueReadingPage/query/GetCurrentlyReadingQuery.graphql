@@ -1,0 +1,9 @@
+query GetCurrentReadingQuery {
+  currentlyReading {
+    id
+    mangaUuid
+    chapterUuid
+    complete
+    page
+  }
+}

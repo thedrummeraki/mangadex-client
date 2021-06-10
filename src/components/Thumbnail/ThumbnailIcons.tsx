@@ -17,7 +17,7 @@ interface Props {
 export function ThumbnailIcons({ icons }: Props) {
   const classes = useThumbnailStyles();
 
-  if (icons == null) {
+  if (icons == null || icons.length === 0) {
     return null;
   }
 

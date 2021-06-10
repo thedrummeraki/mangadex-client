@@ -1,5 +1,11 @@
 import { CustomGrid, Thumbnail } from "components";
-import { Chapter, Manga, SingleManga } from "generated/graphql";
+import {
+  Chapter,
+  Manga,
+  SingleManga,
+  useGetChapterReadingStatusesQueryQuery,
+} from "generated/graphql";
+import { AllowedIcons } from "components/Thumbnail/types";
 import { getFollowUrl, repeat } from "utils";
 import ISO6391 from "iso-639-1";
 import { ThumbnailSkeleton } from "components/Thumbnail/ThumbnailSkeleton";
@@ -32,7 +38,11 @@ export function ChapterCustomGrid({
   chapters,
   displayStyle = DisplayStyle.Image,
 }: Props) {
-  if (refetching) {
+  const { data, loading } = useGetChapterReadingStatusesQueryQuery({
+    variables: { ids: chapters.map((chapter) => chapter.id) },
+  });
+
+  if (refetching || loading) {
     if (displayStyle === DisplayStyle.Image) {
       return (
         <CustomGrid>
@@ -60,16 +70,32 @@ export function ChapterCustomGrid({
             filename,
           ].join("/");
 
-          const pagesCount =
-            dataSaver.length === 1 ? "1 page" : `${dataSaver.length} pages`;
+          const pagesCount = dataSaver.length;
+          const readingHistory = data?.chaptersReadingStatus?.find(
+            (readingHistory) => readingHistory.chapterUuid === chapter.id
+          );
+
+          const icons: AllowedIcons[] = [];
+          if (readingHistory?.complete) {
+            icons.push("done");
+          } else if (readingHistory) {
+            icons.push("play");
+          }
+
+          const pagesCountText = readingHistory
+            ? `${readingHistory.page}/${pagesCount}`
+            : pagesCount === 1
+            ? "1 page"
+            : `${pagesCount} pages`;
 
           return (
             <Thumbnail
               features={[
                 volume ? `Vol. ${volume}` : null,
                 ISO6391.getName(translatedLanguage.split("-")[0]),
-                pagesCount,
+                pagesCountText,
               ]}
+              icons={icons}
               img={img}
               url={getFollowUrl(`/manga/read/${chapter.id}`)}
               title={chapterTitle(chapter, true)}

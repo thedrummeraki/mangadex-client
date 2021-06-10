@@ -378,6 +378,7 @@ function proxyRequest(req, res, requestPath, proxiedHeaders) {
   log.printObject("Body", req.body);
   const headers = {
     Authorization: req.header("Authorization") || "",
+    "X-Mangadex-Refresh-Token": req.header("X-Mangadex-Refresh-Token") || "",
     ...proxiedHeaders,
   };
   log.printObject("Headers", headers);

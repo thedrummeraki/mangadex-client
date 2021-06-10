@@ -10,6 +10,6 @@ export interface UserAttributes {
 }
 
 export interface Token {
-  session: string;
-  refresh: string;
+  session: string | null;
+  refresh: string | null;
 }

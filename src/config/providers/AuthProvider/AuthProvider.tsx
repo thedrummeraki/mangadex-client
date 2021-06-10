@@ -38,6 +38,8 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
     if (data?.currentUser) {
       setCurrentUser(data.currentUser);
 
+      console.log(data.currentUser);
+
       if (
         data.currentUser.session?.length &&
         data.currentUser.refresh?.length
@@ -159,7 +161,7 @@ export function getToken(): Token | null {
   const savedSession = sessionStorage.getItem("auth.session");
   const savedRefresh = sessionStorage.getItem("auth.refresh");
 
-  if (savedSession?.length && savedRefresh?.length) {
+  if (savedSession?.length || savedRefresh?.length) {
     return { session: savedSession, refresh: savedRefresh };
   }
 
@@ -167,8 +169,8 @@ export function getToken(): Token | null {
 }
 
 function saveToken(token: Token) {
-  sessionStorage.setItem("auth.session", token.session);
-  sessionStorage.setItem("auth.refresh", token.refresh);
+  if (token.session) sessionStorage.setItem("auth.session", token.session);
+  if (token.refresh) sessionStorage.setItem("auth.refresh", token.refresh);
 }
 
 function clearToken() {

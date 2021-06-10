@@ -177,8 +177,17 @@ export type MangaLinksData = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  chapterAddProgress?: Maybe<ReadingHistory>;
   loginUser?: Maybe<Token>;
   logout: Scalars['Boolean'];
+};
+
+
+export type MutationChapterAddProgressArgs = {
+  chapterUuid?: Maybe<Scalars['String']>;
+  mangaUuid?: Maybe<Scalars['String']>;
+  page?: Maybe<Scalars['Int']>;
+  complete?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -216,7 +225,12 @@ export type Query = {
   __typename?: 'Query';
   /** Find a chapter by ID. */
   chapter?: Maybe<SingleChapter>;
+  chapterHistory?: Maybe<ReadingHistory>;
+  chapters: Array<Chapter>;
+  chaptersReadingStatus?: Maybe<Array<ReadingHistory>>;
+  continueReading?: Maybe<Chapter>;
   currentUser?: Maybe<CurrentUser>;
+  currentlyReading?: Maybe<Array<ReadingHistory>>;
   /** Find a manga by ID. */
   manga?: Maybe<SingleManga>;
   /** List manga */
@@ -226,6 +240,34 @@ export type Query = {
 
 export type QueryChapterArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryChapterHistoryArgs = {
+  chapterUuid: Scalars['String'];
+};
+
+
+export type QueryChaptersArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  manga?: Maybe<Array<Scalars['String']>>;
+  ids?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  groups?: Maybe<Array<Scalars['String']>>;
+  volume?: Maybe<Array<Scalars['String']>>;
+  chapter?: Maybe<Array<Scalars['String']>>;
+  translatedLanguage?: Maybe<Array<Scalars['String']>>;
+};
+
+
+export type QueryChaptersReadingStatusArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type QueryContinueReadingArgs = {
+  mangaUuid: Scalars['ID'];
 };
 
 
@@ -254,6 +296,16 @@ export type QueryMangasArgs = {
   publicationDemographic?: Maybe<Array<PublicationDemographic>>;
   ids?: Maybe<Array<Scalars['String']>>;
   contentRating?: Maybe<Array<ContentRating>>;
+};
+
+/** A basic instance of a ReadingHistory (a relationship of manga, chapter and user). */
+export type ReadingHistory = {
+  __typename?: 'ReadingHistory';
+  chapterUuid: Scalars['ID'];
+  complete: Scalars['Boolean'];
+  id: Scalars['ID'];
+  mangaUuid: Scalars['ID'];
+  page: Scalars['Int'];
 };
 
 /** An instance of a single chapter. Used when fetching a chapter by ID. */
@@ -359,6 +411,17 @@ export type LoginUserMutation = (
     { __typename?: 'Token' }
     & Pick<Token, 'refresh' | 'session'>
   )> }
+);
+
+export type GetCurrentReadingQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCurrentReadingQueryQuery = (
+  { __typename?: 'Query' }
+  & { currentlyReading?: Maybe<Array<(
+    { __typename?: 'ReadingHistory' }
+    & Pick<ReadingHistory, 'id' | 'mangaUuid' | 'chapterUuid' | 'complete' | 'page'>
+  )>> }
 );
 
 export type GetHomePageQueryVariables = Exact<{
@@ -471,6 +534,22 @@ export type GetSearchMangaQuery = (
   )> }
 );
 
+export type ChapterAddProgressMutationVariables = Exact<{
+  chapterUuid: Scalars['String'];
+  mangaUuid: Scalars['String'];
+  page?: Maybe<Scalars['Int']>;
+  complete?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type ChapterAddProgressMutation = (
+  { __typename?: 'Mutation' }
+  & { chapterAddProgress?: Maybe<(
+    { __typename?: 'ReadingHistory' }
+    & Pick<ReadingHistory, 'id' | 'chapterUuid' | 'mangaUuid' | 'page' | 'complete'>
+  )> }
+);
+
 export type GetChapterQueryVariables = Exact<{
   id: Scalars['String'];
   dataSaver?: Maybe<Scalars['Boolean']>;
@@ -484,11 +563,41 @@ export type GetChapterQuery = (
     & Pick<SingleChapter, 'id' | 'type' | 'mangaId'>
     & { attributes: (
       { __typename?: 'ChapterAttributes' }
-      & Pick<ChapterAttributes, 'title' | 'translatedLanguage' | 'chapterHash' | 'data' | 'dataSaver' | 'version' | 'volume' | 'createdAt' | 'updatedAt' | 'publishAt'>
+      & Pick<ChapterAttributes, 'title' | 'translatedLanguage' | 'chapter' | 'chapterHash' | 'data' | 'dataSaver' | 'version' | 'volume' | 'createdAt' | 'updatedAt' | 'publishAt'>
     ), pages: Array<(
       { __typename?: 'ChapterPage' }
       & Pick<ChapterPage, 'url' | 'expiresAt'>
     )> }
+  )> }
+);
+
+export type GetChapterReadingStatusesQueryQueryVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type GetChapterReadingStatusesQueryQuery = (
+  { __typename?: 'Query' }
+  & { chaptersReadingStatus?: Maybe<Array<(
+    { __typename?: 'ReadingHistory' }
+    & Pick<ReadingHistory, 'id' | 'chapterUuid' | 'mangaUuid' | 'complete' | 'page'>
+  )>> }
+);
+
+export type GetContinueReadingChapterQueryVariables = Exact<{
+  mangaId: Scalars['ID'];
+}>;
+
+
+export type GetContinueReadingChapterQuery = (
+  { __typename?: 'Query' }
+  & { continueReading?: Maybe<(
+    { __typename?: 'Chapter' }
+    & Pick<Chapter, 'id' | 'mangaId' | 'type'>
+    & { attributes: (
+      { __typename?: 'ChapterAttributes' }
+      & Pick<ChapterAttributes, 'chapter' | 'chapterHash' | 'createdAt' | 'data' | 'dataSaver' | 'publishAt' | 'title' | 'translatedLanguage' | 'uploader' | 'updatedAt' | 'version' | 'volume'>
+    ) }
   )> }
 );
 
@@ -665,6 +774,44 @@ export function useLoginUserMutation(baseOptions?: Apollo.MutationHookOptions<Lo
 export type LoginUserMutationHookResult = ReturnType<typeof useLoginUserMutation>;
 export type LoginUserMutationResult = Apollo.MutationResult<LoginUserMutation>;
 export type LoginUserMutationOptions = Apollo.BaseMutationOptions<LoginUserMutation, LoginUserMutationVariables>;
+export const GetCurrentReadingQueryDocument = gql`
+    query GetCurrentReadingQuery {
+  currentlyReading {
+    id
+    mangaUuid
+    chapterUuid
+    complete
+    page
+  }
+}
+    `;
+
+/**
+ * __useGetCurrentReadingQueryQuery__
+ *
+ * To run a query within a React component, call `useGetCurrentReadingQueryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCurrentReadingQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCurrentReadingQueryQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCurrentReadingQueryQuery(baseOptions?: Apollo.QueryHookOptions<GetCurrentReadingQueryQuery, GetCurrentReadingQueryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCurrentReadingQueryQuery, GetCurrentReadingQueryQueryVariables>(GetCurrentReadingQueryDocument, options);
+      }
+export function useGetCurrentReadingQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCurrentReadingQueryQuery, GetCurrentReadingQueryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCurrentReadingQueryQuery, GetCurrentReadingQueryQueryVariables>(GetCurrentReadingQueryDocument, options);
+        }
+export type GetCurrentReadingQueryQueryHookResult = ReturnType<typeof useGetCurrentReadingQueryQuery>;
+export type GetCurrentReadingQueryLazyQueryHookResult = ReturnType<typeof useGetCurrentReadingQueryLazyQuery>;
+export type GetCurrentReadingQueryQueryResult = Apollo.QueryResult<GetCurrentReadingQueryQuery, GetCurrentReadingQueryQueryVariables>;
 export const GetHomePageDocument = gql`
     query GetHomePage($limit: Int!, $offset: Int!) {
   mangas(limit: $limit, offset: $offset) {
@@ -908,6 +1055,51 @@ export function useGetSearchMangaLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetSearchMangaQueryHookResult = ReturnType<typeof useGetSearchMangaQuery>;
 export type GetSearchMangaLazyQueryHookResult = ReturnType<typeof useGetSearchMangaLazyQuery>;
 export type GetSearchMangaQueryResult = Apollo.QueryResult<GetSearchMangaQuery, GetSearchMangaQueryVariables>;
+export const ChapterAddProgressDocument = gql`
+    mutation ChapterAddProgress($chapterUuid: String!, $mangaUuid: String!, $page: Int, $complete: Boolean) {
+  chapterAddProgress(
+    chapterUuid: $chapterUuid
+    mangaUuid: $mangaUuid
+    page: $page
+    complete: $complete
+  ) {
+    id
+    chapterUuid
+    mangaUuid
+    page
+    complete
+  }
+}
+    `;
+export type ChapterAddProgressMutationFn = Apollo.MutationFunction<ChapterAddProgressMutation, ChapterAddProgressMutationVariables>;
+
+/**
+ * __useChapterAddProgressMutation__
+ *
+ * To run a mutation, you first call `useChapterAddProgressMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChapterAddProgressMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [chapterAddProgressMutation, { data, loading, error }] = useChapterAddProgressMutation({
+ *   variables: {
+ *      chapterUuid: // value for 'chapterUuid'
+ *      mangaUuid: // value for 'mangaUuid'
+ *      page: // value for 'page'
+ *      complete: // value for 'complete'
+ *   },
+ * });
+ */
+export function useChapterAddProgressMutation(baseOptions?: Apollo.MutationHookOptions<ChapterAddProgressMutation, ChapterAddProgressMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChapterAddProgressMutation, ChapterAddProgressMutationVariables>(ChapterAddProgressDocument, options);
+      }
+export type ChapterAddProgressMutationHookResult = ReturnType<typeof useChapterAddProgressMutation>;
+export type ChapterAddProgressMutationResult = Apollo.MutationResult<ChapterAddProgressMutation>;
+export type ChapterAddProgressMutationOptions = Apollo.BaseMutationOptions<ChapterAddProgressMutation, ChapterAddProgressMutationVariables>;
 export const GetChapterDocument = gql`
     query GetChapter($id: String!, $dataSaver: Boolean) {
   chapter(id: $id) {
@@ -917,6 +1109,7 @@ export const GetChapterDocument = gql`
     attributes {
       title
       translatedLanguage
+      chapter
       chapterHash
       data
       dataSaver
@@ -962,6 +1155,96 @@ export function useGetChapterLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetChapterQueryHookResult = ReturnType<typeof useGetChapterQuery>;
 export type GetChapterLazyQueryHookResult = ReturnType<typeof useGetChapterLazyQuery>;
 export type GetChapterQueryResult = Apollo.QueryResult<GetChapterQuery, GetChapterQueryVariables>;
+export const GetChapterReadingStatusesQueryDocument = gql`
+    query GetChapterReadingStatusesQuery($ids: [ID!]!) {
+  chaptersReadingStatus(ids: $ids) {
+    id
+    chapterUuid
+    mangaUuid
+    complete
+    page
+  }
+}
+    `;
+
+/**
+ * __useGetChapterReadingStatusesQueryQuery__
+ *
+ * To run a query within a React component, call `useGetChapterReadingStatusesQueryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChapterReadingStatusesQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChapterReadingStatusesQueryQuery({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function useGetChapterReadingStatusesQueryQuery(baseOptions: Apollo.QueryHookOptions<GetChapterReadingStatusesQueryQuery, GetChapterReadingStatusesQueryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChapterReadingStatusesQueryQuery, GetChapterReadingStatusesQueryQueryVariables>(GetChapterReadingStatusesQueryDocument, options);
+      }
+export function useGetChapterReadingStatusesQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChapterReadingStatusesQueryQuery, GetChapterReadingStatusesQueryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChapterReadingStatusesQueryQuery, GetChapterReadingStatusesQueryQueryVariables>(GetChapterReadingStatusesQueryDocument, options);
+        }
+export type GetChapterReadingStatusesQueryQueryHookResult = ReturnType<typeof useGetChapterReadingStatusesQueryQuery>;
+export type GetChapterReadingStatusesQueryLazyQueryHookResult = ReturnType<typeof useGetChapterReadingStatusesQueryLazyQuery>;
+export type GetChapterReadingStatusesQueryQueryResult = Apollo.QueryResult<GetChapterReadingStatusesQueryQuery, GetChapterReadingStatusesQueryQueryVariables>;
+export const GetContinueReadingChapterDocument = gql`
+    query GetContinueReadingChapter($mangaId: ID!) {
+  continueReading(mangaUuid: $mangaId) {
+    id
+    mangaId
+    type
+    attributes {
+      chapter
+      chapterHash
+      createdAt
+      data
+      dataSaver
+      publishAt
+      title
+      translatedLanguage
+      uploader
+      updatedAt
+      version
+      volume
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetContinueReadingChapterQuery__
+ *
+ * To run a query within a React component, call `useGetContinueReadingChapterQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetContinueReadingChapterQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetContinueReadingChapterQuery({
+ *   variables: {
+ *      mangaId: // value for 'mangaId'
+ *   },
+ * });
+ */
+export function useGetContinueReadingChapterQuery(baseOptions: Apollo.QueryHookOptions<GetContinueReadingChapterQuery, GetContinueReadingChapterQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetContinueReadingChapterQuery, GetContinueReadingChapterQueryVariables>(GetContinueReadingChapterDocument, options);
+      }
+export function useGetContinueReadingChapterLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetContinueReadingChapterQuery, GetContinueReadingChapterQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetContinueReadingChapterQuery, GetContinueReadingChapterQueryVariables>(GetContinueReadingChapterDocument, options);
+        }
+export type GetContinueReadingChapterQueryHookResult = ReturnType<typeof useGetContinueReadingChapterQuery>;
+export type GetContinueReadingChapterLazyQueryHookResult = ReturnType<typeof useGetContinueReadingChapterLazyQuery>;
+export type GetContinueReadingChapterQueryResult = Apollo.QueryResult<GetContinueReadingChapterQuery, GetContinueReadingChapterQueryVariables>;
 export const GetMangaDocument = gql`
     query GetManga($id: String!, $chapterLimit: Int, $chapterOffset: Int, $translatedLanguage: [String!], $chaptersForVolume: String) {
   manga(
