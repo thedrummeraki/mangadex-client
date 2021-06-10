@@ -29,6 +29,7 @@ interface Props {
   manga: Manga | SingleManga;
   refetching: boolean;
   chapters: Chapter[];
+  requestingOneLocale: boolean;
   displayStyle?: DisplayStyle;
 }
 
@@ -36,6 +37,7 @@ export function ChapterCustomGrid({
   manga,
   refetching,
   chapters,
+  requestingOneLocale,
   displayStyle = DisplayStyle.Image,
 }: Props) {
   const { data, loading } = useGetChapterReadingStatusesQueryQuery({
@@ -92,7 +94,9 @@ export function ChapterCustomGrid({
             <Thumbnail
               features={[
                 volume ? `Vol. ${volume}` : null,
-                ISO6391.getName(translatedLanguage.split("-")[0]),
+                requestingOneLocale
+                  ? null
+                  : ISO6391.getName(translatedLanguage.split("-")[0]),
                 pagesCountText,
               ]}
               icons={icons}

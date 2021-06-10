@@ -129,6 +129,7 @@ export function ViewManga({
         manga={manga}
         displayStyle={displayStyle}
         refetching={refetching}
+        requestingOneLocale={requestedLocales.length === 1}
         chapters={manga.chapters}
       />
 

@@ -49,11 +49,17 @@ export default function LoginModal({ open, onClose }: Props) {
     if (validEntry && !loading) {
       setLoading(true);
       setErrored(false);
-      loginUser({ username, password }).catch((error) => {
-        console.error(error);
-        setLoading(false);
-        setErrored(true);
-      });
+      loginUser({ username, password })
+        .then((response) => {
+          if (!response) {
+            setErrored(true);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          setErrored(true);
+        })
+        .finally(() => setLoading(false));
     }
   };
 

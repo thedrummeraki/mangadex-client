@@ -223,7 +223,10 @@ export function ChapterDrawerToolbar({
   return (
     <div className={classes.root}>
       {drawerToolbar}
-      <main className={classes.content}>{children}</main>
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
+        {children}
+      </main>
     </div>
   );
 }

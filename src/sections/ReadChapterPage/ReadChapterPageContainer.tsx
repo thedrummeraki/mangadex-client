@@ -63,7 +63,7 @@ export default function ReadChapterPageContainer() {
       onPageChange={setPage}
       onChapterChange={(chapterId) => {
         refetch({ id: chapterId });
-        pageInitialized.current = false;
+        setPage(1);
       }}
     />
   );
