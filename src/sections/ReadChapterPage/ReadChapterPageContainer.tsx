@@ -33,7 +33,7 @@ export default function ReadChapterPageContainer() {
   return (
     <ReadChapterPage
       chapter={chapter}
-      initialPage={status ? status[0].page : 1}
+      initialPage={status?.length ? status[0].page : 1}
     />
   );
 }
