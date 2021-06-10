@@ -38,8 +38,6 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
     if (data?.currentUser) {
       setCurrentUser(data.currentUser);
 
-      console.log(data.currentUser);
-
       if (
         data.currentUser.session?.length &&
         data.currentUser.refresh?.length

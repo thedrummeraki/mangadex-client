@@ -52,8 +52,6 @@ export function HomePage() {
     return <p>error</p>;
   }
 
-  console.log(networkStatus);
-
   return (
     <Page
       title={

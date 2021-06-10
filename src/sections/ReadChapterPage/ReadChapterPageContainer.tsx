@@ -13,8 +13,10 @@ export default function ReadChapterPageContainer() {
     variables: { id, dataSaver: false },
     fetchPolicy: "no-cache",
   });
-  const [getCurrentChapterReadingStatus, { data: chaptersReadingStatusData }] =
-    useGetChapterReadingStatusesQueryLazyQuery();
+  const [
+    getCurrentChapterReadingStatus,
+    { data: chaptersReadingStatusData, loading: statusLoading },
+  ] = useGetChapterReadingStatusesQueryLazyQuery();
   const chapter = data?.chapter;
   const status = chaptersReadingStatusData?.chaptersReadingStatus;
 
@@ -24,9 +26,14 @@ export default function ReadChapterPageContainer() {
     }
   }, [getCurrentChapterReadingStatus, chapter]);
 
-  if (!chapter || !status?.length) {
+  if (!chapter || statusLoading) {
     return null;
   }
 
-  return <ReadChapterPage chapter={chapter} initialPage={status[0].page} />;
+  return (
+    <ReadChapterPage
+      chapter={chapter}
+      initialPage={status ? status[0].page : 1}
+    />
+  );
 }
