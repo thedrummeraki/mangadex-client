@@ -1,16 +1,24 @@
-import { Typography } from "@material-ui/core";
+import { Typography, ThemeProvider } from "@material-ui/core";
 import { Page } from "components";
 import { useParams } from "react-router";
 import { ViewManga } from "./ViewManga";
 import { useGetMangaQuery } from "generated/graphql";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import usePagination from "helpers/usePagination";
+import { WithLayoutProvider } from "config/providers";
+import { customTheme } from "config/providers/RootProvider/themes";
 
 export default function ViewMangaContainer() {
   const { id } = useParams<{ id: string }>();
   const defaultLocale = "en";
   const [locales, setLocales] = useState([defaultLocale]);
+  const [primaryThemeColour, setPrimaryThemeColour] = useState("#f44336");
   const pageSize = 100;
+
+  const theme = useMemo(
+    () => customTheme(primaryThemeColour, primaryThemeColour),
+    [primaryThemeColour]
+  );
 
   const initialized = useRef(false);
 
@@ -49,6 +57,25 @@ export default function ViewMangaContainer() {
   }, [refetch, chapterLimit, chapterOffset, locales]);
 
   useEffect(() => {
+    if (data?.manga && data.manga.covers?.length) {
+      const imageUrl = data.manga.covers[0].url;
+      if (imageUrl) {
+        fetch(
+          `http://localhost:3001/palette?imageUrl=${encodeURIComponent(
+            imageUrl
+          )}`
+        )
+          .then((res) => res.json())
+          .then((res) => {
+            if (res.success) {
+              setPrimaryThemeColour(res.color);
+            }
+          });
+      }
+    }
+  }, [data]);
+
+  useEffect(() => {
     if (initialized.current) {
       return;
     }
@@ -69,23 +96,33 @@ export default function ViewMangaContainer() {
   }
 
   if (loading || !data?.manga) {
-    return <Page backUrl="/" title="Loading..." />;
+    return (
+      <ThemeProvider theme={theme}>
+        <WithLayoutProvider>
+          <Page backUrl="/" title="Loading..." />
+        </WithLayoutProvider>
+      </ThemeProvider>
+    );
   }
 
   return (
-    <ViewManga
-      refetching={false}
-      manga={data.manga}
-      requestedLocales={locales}
-      page={page}
-      pagesCount={getPagesCount(data.manga.chaptersCount)}
-      onLocaleChange={(locales) => {
-        setLocales(locales);
-        setPage(1);
-      }}
-      onPageChange={(page) => {
-        setPage(page);
-      }}
-    />
+    <ThemeProvider theme={theme}>
+      <WithLayoutProvider>
+        <ViewManga
+          refetching={false}
+          manga={data.manga}
+          requestedLocales={locales}
+          page={page}
+          pagesCount={getPagesCount(data.manga.chaptersCount)}
+          onLocaleChange={(locales) => {
+            setLocales(locales);
+            setPage(1);
+          }}
+          onPageChange={(page) => {
+            setPage(page);
+          }}
+        />
+      </WithLayoutProvider>
+    </ThemeProvider>
   );
 }

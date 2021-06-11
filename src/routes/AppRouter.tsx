@@ -28,9 +28,9 @@ export function AppRouter() {
         <LayoutRoute exact path="/">
           <HomePage />
         </LayoutRoute>
-        <LayoutRoute exact path="/manga/:id">
+        <Route exact path="/manga/:id">
           <ViewManga />
-        </LayoutRoute>
+        </Route>
         <LayoutRoute exact path="/browse-manga">
           <BrowseMangaPage />
         </LayoutRoute>

@@ -150,3 +150,22 @@ export const lightTheme = () =>
     //   },
     // },
   });
+
+export const customTheme = (
+  primary: string,
+  secondary?: string,
+  type: "light" | "dark" = "light"
+) =>
+  createMuiTheme({
+    palette: {
+      type,
+      primary: {
+        main: primary,
+      },
+      secondary: secondary
+        ? {
+            main: secondary,
+          }
+        : undefined,
+    },
+  });
