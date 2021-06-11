@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import usePagination from "helpers/usePagination";
 import { WithLayoutProvider } from "config/providers";
 import { customTheme } from "config/providers/RootProvider/themes";
+import { getClientHost } from "config/providers/APIProvider/client";
 
 export default function ViewMangaContainer() {
   const { id } = useParams<{ id: string }>();
@@ -61,9 +62,10 @@ export default function ViewMangaContainer() {
       const imageUrl = data.manga.covers[0].url;
       if (imageUrl) {
         fetch(
-          `http://localhost:3001/palette?imageUrl=${encodeURIComponent(
-            imageUrl
-          )}`
+          new URL(
+            `/palette?imageUrl=${encodeURIComponent(imageUrl)}`,
+            getClientHost()
+          ).toString()
         )
           .then((res) => res.json())
           .then((res) => {
