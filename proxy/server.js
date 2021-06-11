@@ -7,6 +7,7 @@ var express = require("express"),
 
 const log = require("./logger");
 const yaml = require("js-yaml");
+const Vibrant = require("node-vibrant");
 
 const {
   cacheMiddleware,
@@ -150,6 +151,29 @@ app.get("/version", (req, res) => {
       res.send({ version: yaml.load(response.body).info.version });
     }
   });
+});
+
+app.get("/palette", (req, res) => {
+  const imageUrl = req.query.imageUrl || req.body.imageUrl;
+  console.log("imageUrl", imageUrl, req.query, req.body);
+
+  if (imageUrl) {
+    Vibrant.from(imageUrl)
+      .getPalette()
+      .then((palette) => {
+        const { rgb } = palette.Vibrant;
+        const hex = rgb.length >= 3 ? rgbToHex(rgb[0], rgb[1], rgb[2]) : null;
+
+        log.debug("Color", rgb, hex);
+        res.send({ success: true, color: hex, rgb });
+      })
+      .catch((err) => {
+        console.log("error", err);
+        res.send({ success: false });
+      });
+  } else {
+    res.send({ success: false, reason: "missing imageUrl" });
+  }
 });
 
 app.get("/at-home/img", async (req, res) => {
@@ -417,4 +441,13 @@ function proxyRequest(req, res, requestPath, proxiedHeaders) {
       }
     }
   ).pipe(res);
+}
+
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
